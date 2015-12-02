@@ -1622,7 +1622,7 @@ class Program
         [Fact, Trait(Traits.Feature, Traits.Features.Formatting)]
         public async Task FormatInvalidCode_1()
         {
-            var content = @">	Roslyn.Utilities.dll! 	Basic";
+            var content = @">	Roslyn.Utilities.dll) 	Basic";
             await AssertFormatAsync(content, content);
         }
 
@@ -1630,8 +1630,8 @@ class Program
         [Fact, Trait(Traits.Feature, Traits.Features.Formatting)]
         public async Task FormatInvalidCode_2()
         {
-            var content = @">	Roslyn.Utilities.dll! Line 43 + 0x5 bytes	Basic";
-            var expectedContent = @">	Roslyn.Utilities.dll! Line 43 + 0x5 bytes Basic";
+            var content = @">	Roslyn.Utilities.dll) Line 43 + 0x5 bytes	Basic";
+            var expectedContent = @">	Roslyn.Utilities.dll) Line 43 + 0x5 bytes Basic";
             await AssertFormatAsync(expectedContent, content);
         }
 

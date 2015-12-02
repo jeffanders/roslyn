@@ -112,6 +112,8 @@ namespace Microsoft.CodeAnalysis.CSharp
         IDS_OperationCausedStackOverflow = MessageBase + 12703,
         IDS_AwaitInCatchAndFinally = MessageBase + 12704,
         IDS_FeatureReadonlyAutoImplementedProperties = MessageBase + 12705,
+
+        IDS_FeatureNonNullable = MessageBase + 12706,
     }
 
     // Message IDs may refer to strings that need to be localized.
@@ -173,6 +175,8 @@ namespace Microsoft.CodeAnalysis.CSharp
                 case MessageID.IDS_FeatureInterpolatedStrings:
                 case MessageID.IDS_AwaitInCatchAndFinally:
                 case MessageID.IDS_FeatureReadonlyAutoImplementedProperties:
+                // TODO: C# 7 Features (move to new LanguageVersion
+                case MessageID.IDS_FeatureNonNullable:
                     return LanguageVersion.CSharp6;
 
                 // C# 5 features.

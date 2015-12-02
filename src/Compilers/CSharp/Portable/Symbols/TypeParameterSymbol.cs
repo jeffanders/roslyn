@@ -3,6 +3,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Roslyn.Utilities;
+using Microsoft.CodeAnalysis.Symbols;
+using System.Threading;
 
 namespace Microsoft.CodeAnalysis.CSharp.Symbols
 {
@@ -487,6 +489,39 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         public abstract bool HasValueTypeConstraint { get; }
 
         public abstract VarianceKind Variance { get; }
+
+        public virtual NullabilityPreservationKind NullabilityPreservation
+        {
+            get
+            {
+                return NullabilityPreservationKind.None;
+            }
+        }
+
+        private TypeParameterSymbol _ErasedNullabilityTypeParameter;
+        public TypeParameterSymbol ErasedNullabilityTypeParameter
+        {
+            get
+            {
+                if (_ErasedNullabilityTypeParameter == null)
+                {
+                    TypeParameterSymbol erased;
+                    if (this.NullabilityPreservation == NullabilityPreservationKind.None)
+                        erased = this;
+                    else
+                        erased = GetErasedNullabilityTypeParameter();
+                    Interlocked.CompareExchange(ref _ErasedNullabilityTypeParameter, erased, null);
+                }
+
+                return _ErasedNullabilityTypeParameter;
+            }
+
+        }
+
+        protected virtual TypeParameterSymbol GetErasedNullabilityTypeParameter()
+        {
+            return this;
+        }
 
         internal sealed override bool GetUnificationUseSiteDiagnosticRecursive(ref DiagnosticInfo result, Symbol owner, ref HashSet<TypeSymbol> checkedTypes)
         {

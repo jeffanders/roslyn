@@ -587,6 +587,7 @@
     <Compile Include="Symbols\NamespaceSymbol.cs" />
     <Compile Include="Symbols\NonMissingAssemblySymbol.cs" />
     <Compile Include="Symbols\NonMissingModuleSymbol.cs" />
+    <Compile Include="Symbols\NonNullableReferenceTypeSymbol.cs" />
     <Compile Include="Symbols\NoPiaAmbiguousCanonicalTypeSymbol.cs" />
     <Compile Include="Symbols\NoPiaIllegalGenericInstantiationSymbol.cs" />
     <Compile Include="Symbols\NoPiaMissingCanonicalTypeSymbol.cs" />

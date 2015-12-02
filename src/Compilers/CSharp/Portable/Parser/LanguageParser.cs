@@ -5295,7 +5295,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 return _syntaxFactory.TypeParameter(
                     default(SyntaxList<AttributeListSyntax>),
                     default(SyntaxToken),
-                    this.AddError(CreateMissingIdentifierToken(), ErrorCode.ERR_IdentifierExpected));
+                    this.AddError(CreateMissingIdentifierToken(), ErrorCode.ERR_IdentifierExpected),
+                    default(SyntaxToken));
             }
 
             var attrs = _pool.Allocate<AttributeListSyntax>();
@@ -5324,7 +5325,16 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     }
                 }
 
-                return _syntaxFactory.TypeParameter(attrs, varianceToken, this.ParseIdentifierToken());
+                var identifierToken = this.ParseIdentifierToken();
+
+                SyntaxToken preservationToken = null;
+                if (this.CurrentToken.Kind == SyntaxKind.ExclamationQuestionToken)
+                {
+                    preservationToken = this.EatToken();
+                    preservationToken = CheckFeatureAvailability(preservationToken, MessageID.IDS_FeatureNonNullable);
+                }
+
+                return _syntaxFactory.TypeParameter(attrs, varianceToken, identifierToken, preservationToken);
             }
             finally
             {
@@ -5908,6 +5918,11 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             /// Might be a pointer type or a multiplication.
             /// </summary>
             PointerOrMultiplication,
+
+            /// <summary>
+            /// Non-Nullable type (ending with !).
+            /// </summary>
+            NonNullableType,
         }
 
         private bool IsPossibleType()
@@ -6046,6 +6061,12 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 result = ScanTypeFlags.NullableType;
             }
 
+            if (this.CurrentToken.Kind == SyntaxKind.ExclamationToken)
+            {
+                lastTokenOfType = this.EatToken();
+                result = ScanTypeFlags.NonNullableType;
+            }
+
             // Now check for pointer type(s)
             while (this.CurrentToken.Kind == SyntaxKind.AsteriskToken)
             {
@@ -6150,6 +6171,30 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
 
                     question = CheckFeatureAvailability(question, MessageID.IDS_FeatureNullable);
                     type = _syntaxFactory.NullableType(type, question);
+                }
+                finally
+                {
+                    this.Release(ref resetPoint);
+                }
+            }
+
+            if (this.CurrentToken.Kind == SyntaxKind.ExclamationToken)
+            {
+                var resetPoint = this.GetResetPoint();
+                try
+                {
+                    var exclamation = this.EatToken();
+
+                    if (isOrAs && (IsTerm() || IsPredefinedType(this.CurrentToken.Kind) || SyntaxFacts.IsAnyUnaryExpression(this.CurrentToken.Kind)))
+                    {
+                        this.Reset(ref resetPoint);
+
+                        Debug.Assert(type != null);
+                        return type;
+                    }
+
+                    exclamation = CheckFeatureAvailability(exclamation, MessageID.IDS_FeatureNonNullable);
+                    type = _syntaxFactory.NonNullableType(type, exclamation);
                 }
                 finally
                 {
@@ -6853,6 +6898,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     case SyntaxKind.DotToken:
                     case SyntaxKind.AsteriskToken:
                     case SyntaxKind.QuestionToken:
+                    case SyntaxKind.ExclamationToken:
                     case SyntaxKind.OpenBracketToken:
                     case SyntaxKind.LessThanToken:
                     case SyntaxKind.ColonColonToken:
@@ -9153,10 +9199,12 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
             // If we have any of the following, we know it must be a cast:
             // 1) (Foo*)bar;
             // 2) (Foo?)bar;
-            // 3) "(int)bar" or "(int[])bar"
-            // 4) (G::Foo)bar
+            // 2) (Foo!)bar;
+            // 4) "(int)bar" or "(int[])bar"
+            // 5) (G::Foo)bar
             if (type == ScanTypeFlags.PointerOrMultiplication ||
                 type == ScanTypeFlags.NullableType ||
+                type == ScanTypeFlags.NonNullableType ||
                 type == ScanTypeFlags.MustBeType ||
                 type == ScanTypeFlags.AliasQualifiedName)
             {

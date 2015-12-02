@@ -2550,6 +2550,12 @@ namespace Microsoft.CodeAnalysis.CSharp
             // We store the conversion from expression's operand type to target type to enable these
             // optimizations during is/as operator rewrite.
 
+            if (targetTypeKind == TypeKind.NonNullableReference)
+            {
+                Error(diagnostics, ErrorCode.ERR_NonNullableReferenceUsedInAsOrIsExpression, node, targetType);
+                return new BoundAsOperator(node, operand, typeExpression, Conversion.NoConversion, resultType, hasErrors: true);
+            }
+
             switch (operand.Kind)
             {
                 case BoundKind.UnboundLambda:
@@ -2912,7 +2918,13 @@ namespace Microsoft.CodeAnalysis.CSharp
             // will always evaluate to a constant to generate warnings (always true/false/null).
             // We also need this analysis result during rewrite to optimize away redundant isinst instructions.
             // We store the conversion kind from expression's operand type to target type to enable these
-            // optimizations during is/as operator rewrite.            
+            // optimizations during is/as operator rewrite.   
+            
+            if (targetTypeKind == TypeKind.NonNullableReference)
+            {
+                Error(diagnostics, ErrorCode.ERR_NonNullableReferenceUsedInAsOrIsExpression, node, targetType);
+                return new BoundAsOperator(node, operand, typeExpression, Conversion.NoConversion, resultType, hasErrors: true);
+            }
 
             switch (operand.Kind)
             {

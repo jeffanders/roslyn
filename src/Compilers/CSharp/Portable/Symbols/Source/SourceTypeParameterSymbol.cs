@@ -8,6 +8,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis.Symbols;
+using System;
 
 namespace Microsoft.CodeAnalysis.CSharp.Symbols
 {
@@ -20,17 +22,19 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         private readonly ImmutableArray<Location> _locations;
         private readonly string _name;
         private readonly short _ordinal;
+        private readonly NullabilityPreservationKind _preservationKind;
 
         private SymbolCompletionState _state;
         private CustomAttributesBag<CSharpAttributeData> _lazyCustomAttributesBag;
         private TypeParameterBounds _lazyBounds = TypeParameterBounds.Unset;
 
-        protected SourceTypeParameterSymbolBase(string name, int ordinal, ImmutableArray<Location> locations, ImmutableArray<SyntaxReference> syntaxRefs)
+        protected SourceTypeParameterSymbolBase(string name, int ordinal, NullabilityPreservationKind preservationKind, ImmutableArray<Location> locations, ImmutableArray<SyntaxReference> syntaxRefs)
         {
             Debug.Assert(!syntaxRefs.IsEmpty);
 
             _name = name;
             _ordinal = (short)ordinal;
+            _preservationKind = preservationKind;
             _locations = locations;
             _syntaxRefs = syntaxRefs;
         }
@@ -72,6 +76,14 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
             get
             {
                 return VarianceKind.None;
+            }
+        }
+
+        public override NullabilityPreservationKind NullabilityPreservation
+        {
+            get
+            {
+                return _preservationKind;
             }
         }
 
@@ -303,8 +315,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         private readonly SourceNamedTypeSymbol _owner;
         private readonly VarianceKind _varianceKind;
 
-        public SourceTypeParameterSymbol(SourceNamedTypeSymbol owner, string name, int ordinal, VarianceKind varianceKind, ImmutableArray<Location> locations, ImmutableArray<SyntaxReference> syntaxRefs)
-            : base(name, ordinal, locations, syntaxRefs)
+        public SourceTypeParameterSymbol(SourceNamedTypeSymbol owner, string name, int ordinal, VarianceKind varianceKind, NullabilityPreservationKind preservationKind, ImmutableArray<Location> locations, ImmutableArray<SyntaxReference> syntaxRefs)
+            : base(name, ordinal, preservationKind, locations, syntaxRefs)
         {
             _owner = owner;
             _varianceKind = varianceKind;
@@ -327,6 +339,12 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         {
             get { return _varianceKind; }
         }
+
+        protected override TypeParameterSymbol GetErasedNullabilityTypeParameter()
+        {
+            return new SourceTypeParameterSymbol(_owner, this.Name, this.Ordinal, this.Variance, NullabilityPreservationKind.None, this.Locations, this.SyntaxReferences);
+        }
+
 
         public override bool HasConstructorConstraint
         {
@@ -376,8 +394,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
     {
         private readonly SourceMemberMethodSymbol _owner;
 
-        public SourceMethodTypeParameterSymbol(SourceMemberMethodSymbol owner, string name, int ordinal, ImmutableArray<Location> locations, ImmutableArray<SyntaxReference> syntaxRefs)
-            : base(name, ordinal, locations, syntaxRefs)
+        public SourceMethodTypeParameterSymbol(SourceMemberMethodSymbol owner, string name, int ordinal, NullabilityPreservationKind preservationKind, ImmutableArray<Location> locations, ImmutableArray<SyntaxReference> syntaxRefs)
+            : base(name, ordinal, preservationKind, locations, syntaxRefs)
         {
             _owner = owner;
         }
@@ -393,6 +411,11 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         public override Symbol ContainingSymbol
         {
             get { return _owner; }
+        }
+
+        protected override TypeParameterSymbol GetErasedNullabilityTypeParameter()
+        {
+            return new SourceMethodTypeParameterSymbol(_owner, this.Name, this.Ordinal, NullabilityPreservationKind.None, this.Locations, this.SyntaxReferences);
         }
 
         public override bool HasConstructorConstraint
@@ -559,8 +582,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
     {
         private readonly OverriddenMethodTypeParameterMapBase _map;
 
-        public SourceOverridingMethodTypeParameterSymbol(OverriddenMethodTypeParameterMapBase map, string name, int ordinal, ImmutableArray<Location> locations, ImmutableArray<SyntaxReference> syntaxRefs)
-            : base(name, ordinal, locations, syntaxRefs)
+        public SourceOverridingMethodTypeParameterSymbol(OverriddenMethodTypeParameterMapBase map, string name, int ordinal, NullabilityPreservationKind preservationKind, ImmutableArray<Location> locations, ImmutableArray<SyntaxReference> syntaxRefs)
+            : base(name, ordinal, preservationKind, locations, syntaxRefs)
         {
             _map = map;
         }
@@ -581,6 +604,11 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         public override Symbol ContainingSymbol
         {
             get { return this.Owner; }
+        }
+
+        protected override TypeParameterSymbol GetErasedNullabilityTypeParameter()
+        {
+            return new SourceOverridingMethodTypeParameterSymbol(_map, this.Name, this.Ordinal, NullabilityPreservationKind.None, this.Locations, this.SyntaxReferences);
         }
 
         public override bool HasConstructorConstraint

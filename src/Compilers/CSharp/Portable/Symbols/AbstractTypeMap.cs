@@ -105,6 +105,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 case SymbolKind.ArrayType:
                     result = SubstituteArrayType((ArrayTypeSymbol)previous);
                     break;
+                case SymbolKind.NonNullableReference:
+                    result = SubstituteNonNullableType((NonNullableReferenceTypeSymbol)previous);
+                    break;
                 case SymbolKind.PointerType:
                     result = SubstitutePointerType((PointerTypeSymbol)previous);
                     break;
@@ -242,6 +245,21 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 t.LowerBounds,
                 t.BaseTypeNoUseSiteDiagnostics,
                 element.CustomModifiers);
+        }
+
+        private TypeSymbol SubstituteNonNullableType(NonNullableReferenceTypeSymbol t)
+        {
+            var oldUnderlyingType = new TypeWithModifiers(t.UnderlyingType);
+            TypeWithModifiers underlyingType = oldUnderlyingType.SubstituteType(this);
+            if (underlyingType == oldUnderlyingType)
+            {
+                return t;
+            }
+
+            if (underlyingType.Type.IsValueType)
+                return underlyingType.Type;
+
+            return underlyingType.Type as NonNullableReferenceTypeSymbol ?? NonNullableReferenceTypeSymbol.CreateNonNullableReference(underlyingType.Type);
         }
 
         private PointerTypeSymbol SubstitutePointerType(PointerTypeSymbol t)

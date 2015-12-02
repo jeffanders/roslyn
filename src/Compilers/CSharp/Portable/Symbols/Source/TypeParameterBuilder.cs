@@ -34,6 +34,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 syntaxNode.Identifier.ValueText,
                 ordinal,
                 syntaxNode.VarianceKeyword.VarianceKindFromToken(),
+                syntaxNode.ExclamationQuestionToken.NullabilityPreservationKindFromToken(),
                 ToLocations(builders),
                 ToSyntaxRefs(builders));
 

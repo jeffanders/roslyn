@@ -62,6 +62,7 @@ namespace Microsoft.CodeAnalysis.CSharp
                 case SymbolKind.ArrayType:
                 case SymbolKind.PointerType:
                 case SymbolKind.Parameter:
+                case SymbolKind.NonNullableReference:
                     break; // Can sensibly append location, after unwrapping.
                 case SymbolKind.DynamicType:
                     break; // Can't sensibly append location, but it should never be ambiguous.
@@ -144,6 +145,9 @@ namespace Microsoft.CodeAnalysis.CSharp
                         continue;
                     case SymbolKind.ArrayType:
                         symbol = ((ArrayTypeSymbol)symbol).ElementType;
+                        continue;
+                    case SymbolKind.NonNullableReference:
+                        symbol = ((NonNullableReferenceTypeSymbol)symbol).UnderlyingType;
                         continue;
                     default:
                         return symbol;

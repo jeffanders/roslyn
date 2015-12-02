@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Roslyn.Utilities;
 using System.ComponentModel;
+using Microsoft.CodeAnalysis.Symbols;
 
 namespace Microsoft.CodeAnalysis
 {
@@ -200,6 +201,16 @@ namespace Microsoft.CodeAnalysis.CSharp
                 case SyntaxKind.InKeyword: return VarianceKind.In;
                 default: return VarianceKind.None;
             }
+        }
+
+        public static NullabilityPreservationKind NullabilityPreservationKindFromToken(this SyntaxToken node)
+        {
+            if (node != null)
+            {
+                if (node.Kind() == SyntaxKind.ExclamationQuestionToken)
+                    return NullabilityPreservationKind.ExplicitlyPreserved;
+            }
+            return NullabilityPreservationKind.None;
         }
 
         /// <summary>

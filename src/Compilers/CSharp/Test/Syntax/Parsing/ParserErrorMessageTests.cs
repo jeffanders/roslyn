@@ -1840,7 +1840,7 @@ Diagnostic(ErrorCode.ERR_EOFExpected, "}"));
         [Fact]
         public void CS1022ERR_EOFExpected02()
         {
-            var test = @" > Roslyn.Utilities.dll!  Basic";
+            var test = @" > Roslyn.Utilities.dll)  Basic";
 
             CreateCompilationWithMscorlib(test).VerifyDiagnostics(
                 // (1,2): error CS1022: Type or namespace definition, or end-of-file expected
@@ -1848,7 +1848,7 @@ Diagnostic(ErrorCode.ERR_EOFExpected, "}"));
                 // (1,21): error CS0116: A namespace does not directly contain members such as fields or methods
                 Diagnostic(ErrorCode.ERR_NamespaceUnexpected, "dll").WithLocation(1, 21),
                 // (1,24): error CS1022: Type or namespace definition, or end-of-file expected
-                Diagnostic(ErrorCode.ERR_EOFExpected, "!").WithLocation(1, 24),
+                Diagnostic(ErrorCode.ERR_EOFExpected, ")").WithLocation(1, 24),
                 // (1,27): error CS0116: A namespace does not directly contain members such as fields or methods
                 Diagnostic(ErrorCode.ERR_NamespaceUnexpected, "Basic").WithLocation(1, 27));
         }

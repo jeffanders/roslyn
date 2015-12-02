@@ -100,5 +100,10 @@ namespace Microsoft.CodeAnalysis
         {
             return DefaultVisit(symbol);
         }
+
+        public virtual TResult VisitNonNullableReferenceType(INonNullableReferenceTypeSymbol symbol)
+        {
+            return DefaultVisit(symbol);
+        }
     }
 }

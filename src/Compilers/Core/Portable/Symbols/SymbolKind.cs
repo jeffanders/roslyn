@@ -101,5 +101,10 @@ namespace Microsoft.CodeAnalysis
         /// Symbol is a preprocessing/conditional compilation constant.
         /// </summary>
         Preprocessing = 18,
+
+        /// <summary>
+        /// Symbol is a non-nullable reference type.
+        /// </summary>
+        NonNullableReference = 19,
     }
 }

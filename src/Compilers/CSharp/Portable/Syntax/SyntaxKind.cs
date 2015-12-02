@@ -74,6 +74,7 @@ namespace Microsoft.CodeAnalysis.CSharp
         MinusEqualsToken = 8281,
         CaretEqualsToken = 8282,
         PercentEqualsToken = 8283,
+        ExclamationQuestionToken = 8284,
 
         // Keywords
         BoolKeyword = 8304,
@@ -301,6 +302,7 @@ namespace Microsoft.CodeAnalysis.CSharp
         PointerType = 8624,
         NullableType = 8625,
         OmittedTypeArgument = 8626,
+        NonNullableType = 8627,
 
         // expressions
         ParenthesizedExpression = 8632,

@@ -4669,4 +4669,19 @@ To remove the warning, you can use /reference instead (set the Embed Interop Typ
   <data name="ERR_InvalidReal" xml:space="preserve">
     <value>Invalid real literal.</value>
   </data>
+  <data name="ERR_ValueTypeUsedInNonNullableType" xml:space="preserve">
+    <value>A value type may not be used with the non-nullable modifier</value>
+  </data>
+  <data name="IDS_FeatureNonNullable" xml:space="preserve">
+    <value>Non-Nullable References</value>
+  </data>
+  <data name="ERR_NullAssignedToNonNullableType" xml:space="preserve">
+    <value>Assignment of null to a non nullable reference '{0}'</value>
+  </data>
+  <data name="ERR_DefaultOperatorUsedWithPreservedTypeParameter" xml:space="preserve">
+    <value>The Default operator may not be used with a Preserved Type Parameter</value>
+  </data>
+  <data name="ERR_NonNullableReferenceUsedInAsOrIsExpression" xml:space="preserve">
+    <value>The as and is operators may not be used with a non nullable reference type '{0}'</value>
+  </data>
 </root>

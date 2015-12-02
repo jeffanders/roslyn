@@ -817,6 +817,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
             {
                 var parameter = typeParameters[ordinal];
                 var identifier = parameter.Identifier;
+                var preservationKind = parameter.ExclamationQuestionToken.NullabilityPreservationKindFromToken();
                 var location = identifier.GetLocation();
                 var name = identifier.ValueText;
 
@@ -848,12 +849,14 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                         typeMap,
                         name,
                         ordinal,
+                        preservationKind,
                         locations,
                         syntaxRefs) :
                     new SourceMethodTypeParameterSymbol(
                         this,
                         name,
                         ordinal,
+                        preservationKind,
                         locations,
                         syntaxRefs);
 

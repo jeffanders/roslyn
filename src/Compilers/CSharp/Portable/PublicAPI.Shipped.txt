@@ -1687,7 +1687,6 @@ Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax.AddCons
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax.ColonToken.get -> Microsoft.CodeAnalysis.SyntaxToken
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax.Constraints.get -> Microsoft.CodeAnalysis.SeparatedSyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintSyntax>
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax.Name.get -> Microsoft.CodeAnalysis.CSharp.Syntax.IdentifierNameSyntax
-Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax.Update(Microsoft.CodeAnalysis.SyntaxToken whereKeyword, Microsoft.CodeAnalysis.CSharp.Syntax.IdentifierNameSyntax name, Microsoft.CodeAnalysis.SyntaxToken colonToken, Microsoft.CodeAnalysis.SeparatedSyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintSyntax> constraints) -> Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax.WhereKeyword.get -> Microsoft.CodeAnalysis.SyntaxToken
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax.WithColonToken(Microsoft.CodeAnalysis.SyntaxToken colonToken) -> Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax.WithConstraints(Microsoft.CodeAnalysis.SeparatedSyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintSyntax> constraints) -> Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterConstraintClauseSyntax
@@ -1707,7 +1706,6 @@ Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax.AddAttributeLists(params Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax[] items) -> Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax.AttributeLists.get -> Microsoft.CodeAnalysis.SyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax>
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax.Identifier.get -> Microsoft.CodeAnalysis.SyntaxToken
-Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax.Update(Microsoft.CodeAnalysis.SyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax> attributeLists, Microsoft.CodeAnalysis.SyntaxToken varianceKeyword, Microsoft.CodeAnalysis.SyntaxToken identifier) -> Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax.VarianceKeyword.get -> Microsoft.CodeAnalysis.SyntaxToken
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax.WithAttributeLists(Microsoft.CodeAnalysis.SyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax> attributeLists) -> Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax
 Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax.WithIdentifier(Microsoft.CodeAnalysis.SyntaxToken identifier) -> Microsoft.CodeAnalysis.CSharp.Syntax.TypeParameterSyntax

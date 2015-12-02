@@ -543,7 +543,16 @@ namespace Microsoft.CodeAnalysis.CSharp
                 bool isOutOrRef = GetRefKind(arg) != RefKind.None;
 
                 TypeSymbol target = _formalParameterTypes[arg];
-                TypeSymbol source = _arguments[arg].Type;
+                TypeSymbol source = argument.Type;
+                if (target.Kind == SymbolKind.NonNullableReference)
+                    target = ((NonNullableReferenceTypeSymbol)target).UnderlyingType;
+                if (argument.EffectiveNullability == EffectiveNullability.NonNullable)
+                {
+                    if (target.Kind == SymbolKind.TypeParameter && ((TypeParameterSymbol)target).NullabilityPreservation != CodeAnalysis.Symbols.NullabilityPreservationKind.None)
+                    {
+                        source = NonNullableReferenceTypeSymbol.CreateNonNullableReference(source);
+                    }
+                }
 
 
                 // If the argument is a TYPEORNAMESPACEERROR and the pSource is an

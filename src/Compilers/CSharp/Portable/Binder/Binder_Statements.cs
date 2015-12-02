@@ -2368,6 +2368,20 @@ namespace Microsoft.CodeAnalysis.CSharp
                         Error(diagnostics, ErrorCode.ERR_NoImplicitConv, syntax, distinguisher.First, distinguisher.Second);
                     }
                 }
+                else if (sourceType.Kind == SymbolKind.TypeParameter && targetType.Kind == SymbolKind.TypeParameter)
+                {
+                    TypeParameterSymbol sourceParameter = (TypeParameterSymbol)sourceType;
+                    TypeParameterSymbol targetParameter = (TypeParameterSymbol)targetType;
+                    if (sourceParameter.NullabilityPreservation != targetParameter.NullabilityPreservation && sourceParameter.ErasedNullabilityTypeParameter == targetParameter.ErasedNullabilityTypeParameter)
+                    {
+                        Error(diagnostics, ErrorCode.ERR_DefaultOperatorUsedWithPreservedTypeParameter, syntax);
+                    }
+                    else
+                    {
+                        SymbolDistinguisher distinguisher = new SymbolDistinguisher(compilation, sourceType, targetType);
+                        Error(diagnostics, ErrorCode.ERR_NoImplicitConv, syntax, distinguisher.First, distinguisher.Second);
+                    }
+                }
                 else
                 {
                     SymbolDistinguisher distinguisher = new SymbolDistinguisher(compilation, sourceType, targetType);
@@ -2407,6 +2421,11 @@ namespace Microsoft.CodeAnalysis.CSharp
 
             if (expression.IsLiteralNull())
             {
+                if (targetType.GetEffectiveNullability() != EffectiveNullability.Nullable)
+                {
+                    Error(diagnostics, ErrorCode.ERR_NullAssignedToNonNullableType, syntax, targetType);
+                    return;
+                }
                 if (targetType.TypeKind == TypeKind.TypeParameter)
                 {
                     Error(diagnostics, ErrorCode.ERR_TypeVarCantBeNull, syntax, targetType);

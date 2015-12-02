@@ -2996,6 +2996,15 @@ namespace Microsoft.CodeAnalysis.CSharp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Default operator may not be used with a Preserved Type Parameter.
+        /// </summary>
+        internal static string ERR_DefaultOperatorUsedWithPreservedTypeParameter {
+            get {
+                return ResourceManager.GetString("ERR_DefaultOperatorUsedWithPreservedTypeParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Argument of type &apos;{0}&apos; is not applicable for the DefaultParameterValue attribute.
         /// </summary>
         internal static string ERR_DefaultValueBadValueType {
@@ -6353,6 +6362,15 @@ namespace Microsoft.CodeAnalysis.CSharp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The as and is operators may not be used with a non nullable reference type &apos;{0}&apos;.
+        /// </summary>
+        internal static string ERR_NonNullableReferenceUsedInAsOrIsExpression {
+            get {
+                return ResourceManager.GetString("ERR_NonNullableReferenceUsedInAsOrIsExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot embed interop types from assembly &apos;{0}&apos; because it is missing the &apos;{1}&apos; attribute..
         /// </summary>
         internal static string ERR_NoPIAAssemblyMissingAttribute {
@@ -6502,6 +6520,15 @@ namespace Microsoft.CodeAnalysis.CSharp {
         internal static string ERR_NoVoidParameter {
             get {
                 return ResourceManager.GetString("ERR_NoVoidParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assignment of null to a non nullable reference &apos;{0}&apos;.
+        /// </summary>
+        internal static string ERR_NullAssignedToNonNullableType {
+            get {
+                return ResourceManager.GetString("ERR_NullAssignedToNonNullableType", resourceCulture);
             }
         }
         
@@ -8531,6 +8558,15 @@ namespace Microsoft.CodeAnalysis.CSharp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A value type may not be used with the non-nullable modifier.
+        /// </summary>
+        internal static string ERR_ValueTypeUsedInNonNullableType {
+            get {
+                return ResourceManager.GetString("ERR_ValueTypeUsedInNonNullableType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to __arglist is not allowed in the parameter list of async methods.
         /// </summary>
         internal static string ERR_VarargsAsync {
@@ -9104,6 +9140,15 @@ namespace Microsoft.CodeAnalysis.CSharp {
         internal static string IDS_FeatureNameof {
             get {
                 return ResourceManager.GetString("IDS_FeatureNameof", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Non-Nullable References.
+        /// </summary>
+        internal static string IDS_FeatureNonNullable {
+            get {
+                return ResourceManager.GetString("IDS_FeatureNonNullable", resourceCulture);
             }
         }
         

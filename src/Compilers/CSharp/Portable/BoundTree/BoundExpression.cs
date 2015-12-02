@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
@@ -9,6 +10,26 @@ using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis.CSharp
 {
+    internal enum EffectiveNullability { Nullable = 0, Preserved = 1, NonNullable = 2 }
+
+    internal static class EffectiveNullabilityExtensions
+    {
+        internal static bool IsWeakerThan(this EffectiveNullability effectiveNullability1, EffectiveNullability effectiveNullability2)
+        {
+            return effectiveNullability1 < effectiveNullability2;
+        }
+
+        internal static EffectiveNullability WeakestOf(this EffectiveNullability effectiveNullability1, EffectiveNullability effectiveNullability2)
+        {
+            return effectiveNullability1.IsWeakerThan(effectiveNullability2) ? effectiveNullability1 : effectiveNullability2;
+        }
+
+        internal static EffectiveNullability StrongestOf(this EffectiveNullability effectiveNullability1, EffectiveNullability effectiveNullability2)
+        {
+            return effectiveNullability1.IsWeakerThan(effectiveNullability2) ? effectiveNullability2 : effectiveNullability1;
+        }
+    }
+
     internal partial class BoundExpression
     {
         public virtual ConstantValue ConstantValue
@@ -47,6 +68,14 @@ namespace Microsoft.CodeAnalysis.CSharp
                 return false;
             }
         }
+
+        public virtual EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.Nullable;
+            }
+        }
     }
 
     internal partial class BoundCall
@@ -69,7 +98,104 @@ namespace Microsoft.CodeAnalysis.CSharp
         //
         // DevDiv 1087283 tracks deciding whether or not to refactor this into BoundNodes.xml.
         public ImmutableArray<MethodSymbol> OriginalMethodsOpt { get; private set; }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Type.GetEffectiveNullability();
+            }
+        }
     }
+
+    internal partial class BoundConditionalAccess
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.Nullable;
+            }
+        }
+    }
+
+    internal partial class BoundLoweredConditionalAccess
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.Nullable;
+            }
+        }
+    }
+
+    internal partial class BoundConditionalReceiver
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                // TODO: Not sure about this one
+                return EffectiveNullability.Nullable;
+            }
+        }
+    }    
+
+    internal partial class BoundObjectInitializerExpression
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Type.GetEffectiveNullability();
+            }
+        }
+    }
+
+    internal partial class BoundEventAssignmentOperator
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.Nullable;
+            }
+        }
+    }
+
+    internal partial class BoundDynamicObjectCreationExpression
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }
+
+    internal partial class BoundNoPiaObjectCreationExpression
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }
+
+    internal partial class BoundQueryClause
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }    
 
     internal partial class BoundTypeExpression
     {
@@ -87,6 +213,15 @@ namespace Microsoft.CodeAnalysis.CSharp
                     return errorType.ResultKind;
                 else
                     return LookupResultKind.Viable;
+            }
+        }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                // TODO: Unsure of what this really is and therefore what nullability to assign
+                return EffectiveNullability.Nullable;
             }
         }
     }
@@ -110,6 +245,25 @@ namespace Microsoft.CodeAnalysis.CSharp
         {
             get { return this.LocalSymbol; }
         }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Type.GetEffectiveNullability();
+            }
+        }
+    }
+
+    internal partial class BoundArrayCreation
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
     }
 
     internal partial class BoundFieldAccess
@@ -123,6 +277,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         {
             get { return this.FieldSymbol; }
         }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Type.GetEffectiveNullability();
+            }
+        }
     }
 
     internal partial class BoundPropertyAccess
@@ -130,6 +292,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         public override Symbol ExpressionSymbol
         {
             get { return this.PropertySymbol; }
+        }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Type.GetEffectiveNullability();
+            }
         }
     }
 
@@ -158,6 +328,14 @@ namespace Microsoft.CodeAnalysis.CSharp
                 return !this.OriginalIndexersOpt.IsDefault ? LookupResultKind.OverloadResolutionFailure : base.ResultKind;
             }
         }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Type.GetEffectiveNullability();
+            }
+        }
     }
 
     internal partial class BoundDynamicIndexerAccess
@@ -182,6 +360,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         {
             get { return this.EventSymbol; }
         }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.Nullable;
+            }
+        }
     }
 
     internal partial class BoundParameter
@@ -189,6 +375,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         public override Symbol ExpressionSymbol
         {
             get { return this.ParameterSymbol; }
+        }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Type.GetEffectiveNullability();
+            }
         }
     }
 
@@ -216,6 +410,28 @@ namespace Microsoft.CodeAnalysis.CSharp
         public ImmutableArray<MethodSymbol> OriginalUserDefinedOperatorsOpt { get; }
     }
 
+    internal partial class BoundSequence
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Value.EffectiveNullability;
+            }
+        }
+    }
+
+    internal partial class BoundSequencePointExpression
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Expression.EffectiveNullability;
+            }
+        }
+    }
+
     internal partial class BoundUserDefinedConditionalLogicalOperator
     {
         public override Symbol ExpressionSymbol
@@ -233,6 +449,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         //
         // DevDiv 1087283 tracks deciding whether or not to refactor this into BoundNodes.xml.
         public ImmutableArray<MethodSymbol> OriginalUserDefinedOperatorsOpt { get; }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Type.GetEffectiveNullability();
+            }
+        }
     }
 
     internal partial class BoundUnaryOperator
@@ -257,6 +481,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         //
         // DevDiv 1087283 tracks deciding whether or not to refactor this into BoundNodes.xml.
         public ImmutableArray<MethodSymbol> OriginalUserDefinedOperatorsOpt { get; }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Operand.EffectiveNullability;
+            }
+        }
     }
 
     internal partial class BoundIncrementOperator
@@ -276,6 +508,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         //
         // DevDiv 1087283 tracks deciding whether or not to refactor this into BoundNodes.xml.
         public ImmutableArray<MethodSymbol> OriginalUserDefinedOperatorsOpt { get; }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Operand.EffectiveNullability;
+            }
+        }
     }
 
     internal partial class BoundCompoundAssignmentOperator
@@ -295,6 +535,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         //
         // DevDiv 1087283 tracks deciding whether or not to refactor this into BoundNodes.xml.
         public ImmutableArray<MethodSymbol> OriginalUserDefinedOperatorsOpt { get; }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Left.EffectiveNullability;
+            }
+        }
     }
 
     internal partial class BoundLiteral
@@ -302,6 +550,14 @@ namespace Microsoft.CodeAnalysis.CSharp
         public override ConstantValue ConstantValue
         {
             get { return this.ConstantValueOpt; }
+        }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return ConstantValue.Discriminator == ConstantValueTypeDiscriminator.Null ? EffectiveNullability.Nullable : EffectiveNullability.NonNullable;
+            }
         }
     }
 
@@ -362,6 +618,14 @@ namespace Microsoft.CodeAnalysis.CSharp
 
             return true;
         }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Operand.Type.GetEffectiveNullability();
+            }
+        }
     }
 
     internal partial class BoundObjectCreationExpression
@@ -395,6 +659,14 @@ namespace Microsoft.CodeAnalysis.CSharp
                 initializerExpressionOpt: newInitializerExpression,
                 type: changeTypeOpt ?? Type);
         }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
     }
 
     internal partial class BoundAnonymousObjectCreationExpression
@@ -402,6 +674,28 @@ namespace Microsoft.CodeAnalysis.CSharp
         public override Symbol ExpressionSymbol
         {
             get { return this.Constructor; }
+        }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }
+
+    internal partial class BoundArrayAccess
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.Nullable;
+                /*if (this.Type.Kind == SymbolKind.PointerType)
+                    return ((PointerTypeSymbol)this.Type).PointedAtType.GetEffectiveNullability();
+                return ((ArrayTypeSymbol)this.Type).ElementType.GetEffectiveNullability();*/
+            }
         }
     }
 
@@ -435,6 +729,25 @@ namespace Microsoft.CodeAnalysis.CSharp
         {
             get { return this.ConstantValueOpt; }
         }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Type.IsValueType ? EffectiveNullability.NonNullable : EffectiveNullability.Nullable;
+            }
+        }
+    }
+
+    internal partial class BoundThisReference
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
     }
 
     internal partial class BoundConditionalOperator
@@ -456,7 +769,38 @@ namespace Microsoft.CodeAnalysis.CSharp
                 return this.Condition.Kind == BoundKind.UnaryOperator && ((BoundUnaryOperator)this.Condition).OperatorKind.IsDynamic();
             }
         }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Consequence.EffectiveNullability.WeakestOf(this.Alternative.EffectiveNullability);
+            }
+        }
     }
+
+    internal partial class BoundArrayLength
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }
+
+    internal partial class BoundTypeOfOperator
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }
+      
 
     internal partial class BoundSizeOfOperator
     {
@@ -476,6 +820,80 @@ namespace Microsoft.CodeAnalysis.CSharp
             get
             {
                 return this.RangeVariableSymbol;
+            }
+        }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Type.GetEffectiveNullability();
+            }
+        }
+    }
+
+    internal partial class BoundDelegateCreationExpression
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }
+
+    internal partial class BoundArrayInitialization
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }
+
+    internal partial class BoundStackAllocArrayCreation
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }
+    
+    internal partial class BoundHoistedFieldAccess
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Type.GetEffectiveNullability();
+            }
+        }
+    }
+
+    internal partial class BoundNewT
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }
+
+    internal partial class BoundImplicitReceiver
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
             }
         }
     }
@@ -508,6 +926,15 @@ namespace Microsoft.CodeAnalysis.CSharp
         {
             get { return (object)this.GetResult == null; }
         }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                // TODO: Not sure this is correct, possibly need to unwrap Task<T> to get T
+                return this.Type.GetEffectiveNullability();
+            }
+        }
     }
 
     internal partial class BoundCollectionElementInitializer
@@ -519,6 +946,14 @@ namespace Microsoft.CodeAnalysis.CSharp
                 return this.AddMethod;
             }
         }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
     }
 
     internal partial class BoundBaseReference
@@ -526,6 +961,47 @@ namespace Microsoft.CodeAnalysis.CSharp
         public override bool SuppressVirtualCalls
         {
             get { return true; }
+        }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable; // same as this expression
+            }
+        }
+    }
+
+    internal partial class BoundAsOperator
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.Nullable;
+            }
+        }
+    }
+
+    internal partial class BoundIsOperator
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }
+
+    internal partial class BoundInterpolatedString
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
         }
     }
 
@@ -536,6 +1012,58 @@ namespace Microsoft.CodeAnalysis.CSharp
             get
             {
                 return this.ConstantValueOpt;
+            }
+        }
+
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return EffectiveNullability.NonNullable;
+            }
+        }
+    }
+
+    internal partial class BoundTypeOrValueExpression
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Data.TypeExpression.EffectiveNullability;
+            }
+        }
+    }
+
+    internal partial class BoundAssignmentOperator
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Left.EffectiveNullability;
+            }
+        }
+    }
+
+    internal partial class BoundBinaryOperator
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.Left.EffectiveNullability.WeakestOf(this.Right.EffectiveNullability);
+            }
+        }
+    }
+
+    internal partial class BoundNullCoalescingOperator
+    {
+        public override EffectiveNullability EffectiveNullability
+        {
+            get
+            {
+                return this.LeftOperand.EffectiveNullability.StrongestOf(this.RightOperand.EffectiveNullability);
             }
         }
     }

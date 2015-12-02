@@ -5,11 +5,23 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using Roslyn.Utilities;
+using Microsoft.CodeAnalysis.Symbols;
 
 namespace Microsoft.CodeAnalysis.CSharp.Symbols
 {
     internal static partial class TypeSymbolExtensions
     {
+        public static EffectiveNullability GetEffectiveNullability(this TypeSymbol symbol)
+        {
+            if (symbol == null) // Some symbols, such as the null literal have no type
+                return EffectiveNullability.Nullable;
+            if (symbol.Kind == SymbolKind.NonNullableReference)
+                return EffectiveNullability.NonNullable;
+            if (symbol.Kind == SymbolKind.TypeParameter && ((TypeParameterSymbol)symbol).NullabilityPreservation != NullabilityPreservationKind.None)
+                return EffectiveNullability.Preserved;
+            return EffectiveNullability.Nullable;
+        }
+
         public static bool ImplementsInterface(this TypeSymbol subType, TypeSymbol superInterface, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             foreach (NamedTypeSymbol @interface in subType.AllInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics))
@@ -281,6 +293,10 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
             {
                 type = ((NamedTypeSymbol)type).TypeArgumentsNoUseSiteDiagnostics[0];
             }
+            /*else if (type.Kind == SymbolKind.NonNullableReference)
+            {
+                type = ((NonNullableReferenceTypeSymbol)type).UnderlyingType;
+            }*/
 
             return type.IsDelegateType() ? (NamedTypeSymbol)type : null;
         }
@@ -345,6 +361,10 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         public static bool IsDelegateType(this TypeSymbol type)
         {
             Debug.Assert((object)type != null);
+            /*if (type.Kind == SymbolKind.NonNullableReference)
+            {
+                type = ((NonNullableReferenceTypeSymbol)type).UnderlyingType;
+            }*/
             return type.TypeKind == TypeKind.Delegate;
         }
 
@@ -525,6 +545,10 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
 
                     case TypeKind.Pointer:
                         current = ((PointerTypeSymbol)current).PointedAtType;
+                        continue;
+
+                    case TypeKind.NonNullableReference:
+                        current = ((NonNullableReferenceTypeSymbol)current).UnderlyingType;
                         continue;
 
                     default:

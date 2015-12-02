@@ -10,6 +10,12 @@ namespace Microsoft.CodeAnalysis.CSharp
 {
     internal partial class SymbolDisplayVisitor
     {
+        public override void VisitNonNullableReferenceType(INonNullableReferenceTypeSymbol symbol)
+        {
+            symbol.UnderlyingType.Accept(this);
+            AddPunctuation(SyntaxKind.ExclamationToken);
+        }
+
         public override void VisitArrayType(IArrayTypeSymbol symbol)
         {
             if (TryAddAlias(symbol, builder))

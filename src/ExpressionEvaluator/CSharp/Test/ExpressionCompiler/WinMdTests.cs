@@ -295,7 +295,7 @@ class C
         }
 
         [WorkItem(1117084)]
-        [Fact]
+        [ConditionalFact(typeof(OSVersionWin8))]
         public void OtherFrameworkAssembly()
         {
             var source =

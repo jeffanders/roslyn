@@ -904,6 +904,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Emit
                 case SymbolKind.ArrayType:
                     return Translate((ArrayTypeSymbol)typeSymbol);
 
+                case SymbolKind.NonNullableReference:
+                    return Translate((NonNullableReferenceTypeSymbol)typeSymbol, syntaxNodeOpt, diagnostics);
+
                 case SymbolKind.ErrorType:
                 case SymbolKind.NamedType:
                     return Translate((NamedTypeSymbol)typeSymbol, syntaxNodeOpt, diagnostics);
@@ -1269,6 +1272,14 @@ namespace Microsoft.CodeAnalysis.CSharp.Emit
         internal static Cci.IPointerTypeReference Translate(PointerTypeSymbol symbol)
         {
             return symbol;
+        }
+
+        internal Cci.ITypeReference Translate(
+            NonNullableReferenceTypeSymbol symbol,
+            CSharpSyntaxNode syntaxNodeOpt,
+            DiagnosticBag diagnostics)
+        {
+            return Translate(symbol.UnderlyingType, syntaxNodeOpt, diagnostics);
         }
 
         /// <summary>

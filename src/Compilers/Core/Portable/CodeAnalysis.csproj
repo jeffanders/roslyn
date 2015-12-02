@@ -73,6 +73,8 @@
     <Compile Include="RealParser.cs" />
     <Compile Include="ReferenceManager\MergedAliases.cs" />
     <Compile Include="StrongName\CryptoBlobParser.cs" />
+    <Compile Include="Symbols\INonNullableReferenceTypeSymbol.cs" />
+    <Compile Include="Symbols\NullabilityPreservationKind.cs" />
     <Compile Include="UnicodeCharacterUtilities.cs" />
     <Compile Include="CodeAnalysisResources.Designer.cs">
       <AutoGen>True</AutoGen>

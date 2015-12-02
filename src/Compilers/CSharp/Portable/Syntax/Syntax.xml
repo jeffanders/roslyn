@@ -239,6 +239,26 @@
       <summary>Creates an NullableTypeSyntax node.</summary>
     </FactoryComment>
   </Node>
+  <Node Name="NonNullableTypeSyntax" Base="TypeSyntax">
+    <Kind Name="NonNullableType"/>
+    <Field Name="ElementType" Type="TypeSyntax">
+      <PropertyComment>
+        <summary>TypeSyntax node representing the type of the element.</summary>
+      </PropertyComment>
+    </Field>
+    <Field Name="ExclamationToken" Type="SyntaxToken">
+      <Kind Name="ExclamationToken"/>
+      <PropertyComment>
+        <summary>SyntaxToken representing the exclamation mark.</summary>
+      </PropertyComment>
+    </Field>
+    <TypeComment>
+      <summary>Class which represents the syntax node for a non nullable type.</summary>
+    </TypeComment>
+    <FactoryComment>
+      <summary>Creates an NonNullableTypeSyntax node.</summary>
+    </FactoryComment>
+  </Node>
   <Node Name="OmittedTypeArgumentSyntax" Base="TypeSyntax">
     <Kind Name="OmittedTypeArgument"/>
     <Field Name="OmittedTypeArgumentToken" Type="SyntaxToken">
@@ -2452,6 +2472,12 @@
         <summary>Gets the identifier.</summary>
       </PropertyComment>
       <Kind Name="IdentifierToken"/>
+    </Field>
+    <Field Name="ExclamationQuestionToken" Type="SyntaxToken" Optional="true">
+      <PropertyComment>
+        <summary>Gets the !? token.</summary>
+      </PropertyComment>
+      <Kind Name="ExclamationQuestionToken"/>
     </Field>
   </Node>
   <AbstractNode Name="BaseTypeDeclarationSyntax" Base="MemberDeclarationSyntax">

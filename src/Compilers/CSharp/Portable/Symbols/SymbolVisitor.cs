@@ -102,5 +102,10 @@ namespace Microsoft.CodeAnalysis.CSharp
         {
             DefaultVisit(symbol);
         }
+
+        public virtual void VisitNonNullableReferenceType(NonNullableReferenceTypeSymbol symbol)
+        {
+            DefaultVisit(symbol);
+        }
     }
 }

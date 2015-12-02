@@ -773,6 +773,7 @@ namespace Comments.XmlComments.UndocumentedKeywords
             int f = true ? 1 : 0;/*? :*/   // YES :
             i++;/*++*/
             i--;/*--*/
+            string! nns = "nns";/*! */
             b = true &amp;&amp; false || true;/*&amp;&amp; ||*/
             i &lt;&lt; 5;/*&lt;&lt;*/
             i &gt;&gt; 5;/*&gt;&gt;*/

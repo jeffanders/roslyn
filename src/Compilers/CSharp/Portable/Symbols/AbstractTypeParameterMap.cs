@@ -26,6 +26,10 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
             TypeWithModifiers result;
             if (Mapping.TryGetValue(typeParameter, out result))
             {
+                if (typeParameter.NullabilityPreservation == CodeAnalysis.Symbols.NullabilityPreservationKind.None && result.Type.Kind == SymbolKind.NonNullableReference)
+                {
+                    return new TypeWithModifiers(((NonNullableReferenceTypeSymbol)result.Type).UnderlyingType);
+                }
                 return result;
             }
 

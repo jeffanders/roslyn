@@ -70,6 +70,9 @@ namespace Microsoft.CodeAnalysis.CSharp
             Debug.Assert(source != null);
             Debug.Assert((object)destination != null);
 
+            if (destination.Kind == SymbolKind.NonNullableReference)
+                destination = ((NonNullableReferenceTypeSymbol)destination).UnderlyingType;
+
             Conversion implicitConversion = ClassifyImplicitConversionFromExpression(source, destination, ref useSiteDiagnostics);
             if (implicitConversion.Exists && !implicitConversion.IsUserDefined && !implicitConversion.IsDynamic)
             {
@@ -138,6 +141,15 @@ namespace Microsoft.CodeAnalysis.CSharp
                 return new Conversion(kind);
             }
 
+            if (destination.Kind == SymbolKind.NonNullableReference && !sourceExpression.EffectiveNullability.IsWeakerThan(EffectiveNullability.NonNullable))
+            {
+                Conversion conversion = ClassifyImplicitConversionFromExpression(sourceExpression, source, ((NonNullableReferenceTypeSymbol)destination).UnderlyingType, ref useSiteDiagnostics);
+                if (conversion != Conversion.NoConversion)
+                {
+                    return conversion;
+                }
+            }
+
             switch (sourceExpression.Kind)
             {
                 case BoundKind.Literal:
@@ -204,7 +216,11 @@ namespace Microsoft.CodeAnalysis.CSharp
             //PERF: identity conversion is by far the most common implicit conversion, check for that first
             if ((object)source != null && HasIdentityConversion(source, destination))
             {
-                return Conversion.Identity;
+                // Will this too negatively impact performance? If so, should consider actually making T!? a separate TypeSymbol and default(T!?) returns type T not T!?
+                if (sourceExpression == null || sourceExpression.Kind != BoundKind.DefaultOperator || !destination.IsReferenceType || destination.GetEffectiveNullability() == EffectiveNullability.Nullable)
+                    return Conversion.Identity;
+                else
+                    return Conversion.NoConversion;
             }
 
             Conversion conversion = ClassifyImplicitBuiltInConversionFromExpression(sourceExpression, source, destination, ref useSiteDiagnostics);
@@ -259,6 +275,8 @@ namespace Microsoft.CodeAnalysis.CSharp
 
             if (destination.IsReferenceType)
             {
+                if (destination.GetEffectiveNullability() != EffectiveNullability.Nullable)
+                    return ConversionKind.NoConversion;
                 return ConversionKind.ImplicitReference;
             }
 
@@ -646,6 +664,11 @@ namespace Microsoft.CodeAnalysis.CSharp
             if (!destination.IsDelegateType())
             {
                 return Conversion.NoConversion;
+            }
+
+            if (destination.Kind == SymbolKind.NonNullableReference)
+            {
+                destination = ((NonNullableReferenceTypeSymbol)destination).UnderlyingType;
             }
 
             var methodSymbol = GetDelegateInvokeMethodIfAvailable(destination);

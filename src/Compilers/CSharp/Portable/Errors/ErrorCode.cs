@@ -1319,5 +1319,10 @@ namespace Microsoft.CodeAnalysis.CSharp
         ERR_BadAwaitInStaticVariableInitializer = 8100,
         ERR_InvalidPathMap = 8101,
         ERR_PublicSignButNoKey = 8102,
+
+        ERR_ValueTypeUsedInNonNullableType = 8103,
+        ERR_NullAssignedToNonNullableType = 8104,
+        ERR_DefaultOperatorUsedWithPreservedTypeParameter = 8105,
+        ERR_NonNullableReferenceUsedInAsOrIsExpression = 8106,
     }
 }

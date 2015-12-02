@@ -1276,6 +1276,8 @@ namespace Microsoft.CodeAnalysis.CSharp
                     return "->";
                 case SyntaxKind.ExclamationEqualsToken:
                     return "!=";
+                case SyntaxKind.ExclamationQuestionToken:
+                    return "!?";
                 case SyntaxKind.EqualsEqualsToken:
                     return "==";
                 case SyntaxKind.EqualsGreaterThanToken:

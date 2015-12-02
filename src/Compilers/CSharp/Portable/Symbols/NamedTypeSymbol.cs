@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Roslyn.Utilities;
+using Microsoft.CodeAnalysis.Symbols;
 
 namespace Microsoft.CodeAnalysis.CSharp.Symbols
 {
@@ -796,9 +797,29 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
             else
             {
                 var builder = ArrayBuilder<TypeWithModifiers>.GetInstance(arguments.Length);
+                int parameterIndex = 0;
                 foreach (TypeSymbol t in arguments)
                 {
-                    builder.Add((object)t == null ? default(TypeWithModifiers) : new TypeWithModifiers(t));
+                    TypeSymbol typeArgument = t;
+                    if (typeArgument != null && typeArgument.Kind == SymbolKind.NonNullableReference)
+                    {
+                        TypeParameterSymbol typeParameter = TypeParameters[parameterIndex];
+                        if (typeParameter.NullabilityPreservation == NullabilityPreservationKind.None)
+                            typeArgument = ((NonNullableReferenceTypeSymbol)t).UnderlyingType;
+                    }
+                    if (typeArgument != null && typeArgument.Kind == SymbolKind.TypeParameter)
+                    {
+                        TypeParameterSymbol typeParameterArgument = (TypeParameterSymbol)typeArgument;
+                        if (typeParameterArgument.NullabilityPreservation != NullabilityPreservationKind.None)
+                        {
+                            TypeParameterSymbol typeParameter = TypeParameters[parameterIndex];
+                            if (typeParameter.NullabilityPreservation == NullabilityPreservationKind.None)
+                                typeArgument = typeParameterArgument;
+                        }
+                    }
+                        
+                    builder.Add((object)typeArgument == null ? default(TypeWithModifiers) : new TypeWithModifiers(typeArgument));
+                    parameterIndex++;
                 }
 
                 modifiedArguments = builder.ToImmutableAndFree();

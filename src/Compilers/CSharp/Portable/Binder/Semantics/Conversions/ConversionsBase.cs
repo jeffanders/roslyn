@@ -1101,6 +1101,17 @@ namespace Microsoft.CodeAnalysis.CSharp
                     }
                     break;
 
+                case TypeKind.NonNullableReference:
+                    {
+                        TypeSymbol underlyingDestination = destination;
+                        if (destination.Kind == SymbolKind.NonNullableReference)
+                        {
+                            underlyingDestination = ((NonNullableReferenceTypeSymbol)destination).UnderlyingType;
+                        }
+                        Conversion conversion = ClassifyImplicitBuiltInConversionSlow(((NonNullableReferenceTypeSymbol)source).UnderlyingType, underlyingDestination, ref useSiteDiagnostics);
+                        return conversion.Exists;
+                    }
+
                 case TypeKind.Interface:
                     // SPEC: From any interface-type S to any interface-type T, provided S is derived from T.
                     // NOTE: This handles variance conversions
@@ -1591,6 +1602,9 @@ namespace Microsoft.CodeAnalysis.CSharp
         {
             Debug.Assert((object)source != null);
             Debug.Assert((object)destination != null);
+
+            if (destination.Kind == SymbolKind.NonNullableReference)
+                destination = ((NonNullableReferenceTypeSymbol)destination).UnderlyingType;
 
             // Certain type parameter conversions are classified as boxing conversions.
             if ((source.TypeKind == TypeKind.TypeParameter) &&

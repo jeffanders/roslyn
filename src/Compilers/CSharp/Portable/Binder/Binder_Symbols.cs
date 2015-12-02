@@ -302,6 +302,17 @@ namespace Microsoft.CodeAnalysis.CSharp
                         return constructedType;
                     }
 
+                case SyntaxKind.NonNullableType:
+                    {
+                        TypeSyntax typeArgumentSyntax = ((NonNullableTypeSyntax)syntax).ElementType;
+                        TypeSymbol typeArgument = BindType(typeArgumentSyntax, diagnostics, basesBeingResolved);
+                        if (typeArgument.IsValueType)
+                        {
+                            return new ExtendedErrorTypeSymbol(typeArgument, LookupResultKind.NotATypeOrNamespace, diagnostics.Add(ErrorCode.ERR_ValueTypeUsedInNonNullableType, typeArgumentSyntax.Location));
+                        }
+                        return NonNullableReferenceTypeSymbol.CreateNonNullableReference(typeArgument);
+                    }
+
                 case SyntaxKind.PredefinedType:
                     {
                         return BindPredefinedTypeSymbol((PredefinedTypeSyntax)syntax, diagnostics);

@@ -481,6 +481,11 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                         TextWindow.AdvanceChar();
                         info.Kind = SyntaxKind.ExclamationEqualsToken;
                     }
+                    else if (TextWindow.PeekChar() == '?')
+                    {
+                        TextWindow.AdvanceChar();
+                        info.Kind = SyntaxKind.ExclamationQuestionToken;
+                    }
                     else
                     {
                         info.Kind = SyntaxKind.ExclamationToken;
@@ -2568,6 +2573,11 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                         TextWindow.AdvanceChar();
                         info.Kind = SyntaxKind.ExclamationEqualsToken;
                     }
+                    else if (TextWindow.PeekChar() == '?')
+                    {
+                        TextWindow.AdvanceChar();
+                        info.Kind = SyntaxKind.ExclamationQuestionToken;
+                    }
                     else
                     {
                         info.Kind = SyntaxKind.ExclamationToken;
@@ -3735,6 +3745,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                     break;
                 case '!':
                     if (AdvanceIfMatches('=')) info.Kind = SyntaxKind.ExclamationEqualsToken;
+                    else if (AdvanceIfMatches('?')) info.Kind = SyntaxKind.ExclamationQuestionToken;
                     else info.Kind = SyntaxKind.ExclamationToken;
                     break;
                 case '>':

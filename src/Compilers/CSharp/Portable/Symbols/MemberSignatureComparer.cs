@@ -607,8 +607,16 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 var param1 = params1[i];
                 var param2 = params2[i];
 
-                var type1 = SubstituteType(typeMap1, new TypeWithModifiers(param1.Type, param1.CustomModifiers));
-                var type2 = SubstituteType(typeMap2, new TypeWithModifiers(param2.Type, param2.CustomModifiers));
+                var paramType1 = param1.Type;
+                var paramType2 = param2.Type;
+
+                if (paramType1.Kind == SymbolKind.TypeParameter)
+                    paramType1 = ((TypeParameterSymbol)paramType1).ErasedNullabilityTypeParameter;
+                if (paramType2.Kind == SymbolKind.TypeParameter)
+                    paramType2 = ((TypeParameterSymbol)paramType2).ErasedNullabilityTypeParameter;
+
+                var type1 = SubstituteType(typeMap1, new TypeWithModifiers(paramType1, param1.CustomModifiers));
+                var type2 = SubstituteType(typeMap2, new TypeWithModifiers(paramType2, param2.CustomModifiers));
 
                 // the runtime compares custom modifiers using (effectively) SequenceEqual
                 if (considerCustomModifiers)

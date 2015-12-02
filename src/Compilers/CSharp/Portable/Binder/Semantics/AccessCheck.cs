@@ -99,6 +99,9 @@ namespace Microsoft.CodeAnalysis.CSharp
                 case SymbolKind.NamedType:
                     return IsNamedTypeAccessible((NamedTypeSymbol)symbol, within, ref useSiteDiagnostics, basesBeingResolved);
 
+                case SymbolKind.NonNullableReference:
+                    return IsSymbolAccessibleCore(((NonNullableReferenceTypeSymbol)symbol).UnderlyingType, within, null, out failedThroughTypeCheck, compilation, ref useSiteDiagnostics);
+
                 case SymbolKind.ErrorType:
                     // Always assume that error types are accessible.
                     return true;
