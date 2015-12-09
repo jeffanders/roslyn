@@ -21,7 +21,7 @@ namespace Microsoft.CodeAnalysis.UnitTests
 
         InlineData("", true, WorkspaceKind.SingleClass, new string[0]),
         InlineData(" ", true, WorkspaceKind.SingleClass, new string[0]),
-        InlineData("☙", true, WorkspaceKind.SingleClass, new string[0]),
+        InlineData("\u2619", true, WorkspaceKind.SingleClass, new string[0]),
 
         InlineData("testcase", true, WorkspaceKind.SingleClass, new[] { "TestCases.TestCase" }),
         InlineData("testcase", false, WorkspaceKind.SingleClass, new string[0]),
@@ -185,7 +185,7 @@ Inner i;
 
          InlineData("", true, WorkspaceKind.SingleClass, new string[0]),
          InlineData(" ", true, WorkspaceKind.SingleClass, new string[0]),
-         InlineData("☙", true, WorkspaceKind.SingleClass, new string[0]),
+         InlineData("\u2619", true, WorkspaceKind.SingleClass, new string[0]),
 
          InlineData("testcase", true, WorkspaceKind.SingleClass, new[] { "TestCases.TestCase" }),
          InlineData("testcase", false, WorkspaceKind.SingleClass, new string[0]),
@@ -292,7 +292,7 @@ Inner i;
 
          InlineData("", true, WorkspaceKind.SingleClass, new string[0]),
          InlineData(" ", true, WorkspaceKind.SingleClass, new string[0]),
-         InlineData("☙", true, WorkspaceKind.SingleClass, new string[0]),
+         InlineData("\u2619", true, WorkspaceKind.SingleClass, new string[0]),
 
          InlineData("testcase", true, WorkspaceKind.SingleClass, new[] { "TestCases.TestCase" }),
          InlineData("testcase", false, WorkspaceKind.SingleClass, new string[0]),
@@ -456,18 +456,10 @@ Inner i;
         [Fact]
         public static void FindSourceDeclarationsAsync_Project_Func_Test_NullPredicate()
         {
-            Assert.Throws<AggregateException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
             {
-                try
-                {
-                    var project = GetProject(WorkspaceKind.SingleClass);
-                    var declarations = SymbolFinder.FindSourceDeclarationsAsync(project, null).Result;
-                }
-                catch (AggregateException ex)
-                {
-                    VerifyInnerExceptionArgumentNull(ex, "predicate");
-                    throw;
-                }
+                var project = GetProject(WorkspaceKind.SingleClass);
+                var declarations = SymbolFinder.FindSourceDeclarationsAsync(project, null).Result;
             });
         }
 
@@ -548,18 +540,10 @@ Inner i;
         [Fact]
         public static void FindSourceDeclarationsAsync_Solution_Func_Test_NullPredicate()
         {
-            Assert.Throws<AggregateException>(() =>
+            Assert.Throws<ArgumentNullException>(() =>
             {
-                try
-                {
-                    var solution = GetSolution(WorkspaceKind.SingleClass);
-                    var declarations = SymbolFinder.FindSourceDeclarationsAsync(solution, null).Result;
-                }
-                catch (AggregateException ex)
-                {
-                    VerifyInnerExceptionArgumentNull(ex, "predicate");
-                    throw;
-                }
+                var solution = GetSolution(WorkspaceKind.SingleClass);
+                var declarations = SymbolFinder.FindSourceDeclarationsAsync(solution, null).Result;
             });
         }
 
