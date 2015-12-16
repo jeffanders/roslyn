@@ -379,6 +379,11 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax
                 return true;
             }
 
+            if (token.IsKind(SyntaxKind.ExclamationToken) && token.Parent is TypeSyntax)
+            {
+                return true;
+            }
+
             if (token.IsKind(SyntaxKind.ColonToken))
             {
                 return true;

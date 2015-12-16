@@ -334,6 +334,32 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         }
 
         [Fact]
+        public void TestLocalDeclarationStatementWithArrayTypeAndNonNullableReferences()
+        {
+            var text = "T![][,]![,,]! a;";
+            var statement = this.ParseStatement(text);
+
+            Assert.NotNull(statement);
+            Assert.Equal(SyntaxKind.LocalDeclarationStatement, statement.Kind());
+            Assert.Equal(text, statement.ToString());
+            Assert.Equal(0, statement.Errors().Length);
+
+            var ds = (LocalDeclarationStatementSyntax)statement;
+            Assert.Equal(0, ds.Modifiers.Count);
+            Assert.NotNull(ds.Declaration.Type);
+            Assert.Equal("T![][,]![,,]!", ds.Declaration.Type.ToString());
+            Assert.Equal(1, ds.Declaration.Variables.Count);
+
+            Assert.NotNull(ds.Declaration.Variables[0].Identifier);
+            Assert.Equal("a", ds.Declaration.Variables[0].Identifier.ToString());
+            Assert.Null(ds.Declaration.Variables[0].ArgumentList);
+            Assert.Null(ds.Declaration.Variables[0].Initializer);
+
+            Assert.NotNull(ds.SemicolonToken);
+            Assert.False(ds.SemicolonToken.IsMissing);
+        }
+
+        [Fact]
         public void TestLocalDeclarationStatementWithPointerType()
         {
             var text = "T* a;";
@@ -374,6 +400,32 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.Equal(0, ds.Modifiers.Count);
             Assert.NotNull(ds.Declaration.Type);
             Assert.Equal("T?", ds.Declaration.Type.ToString());
+            Assert.Equal(1, ds.Declaration.Variables.Count);
+
+            Assert.NotNull(ds.Declaration.Variables[0].Identifier);
+            Assert.Equal("a", ds.Declaration.Variables[0].Identifier.ToString());
+            Assert.Null(ds.Declaration.Variables[0].ArgumentList);
+            Assert.Null(ds.Declaration.Variables[0].Initializer);
+
+            Assert.NotNull(ds.SemicolonToken);
+            Assert.False(ds.SemicolonToken.IsMissing);
+        }
+
+        [Fact]
+        public void TestLocalDeclarationStatementWithNonNullableReference()
+        {
+            var text = "T! a;";
+            var statement = this.ParseStatement(text);
+
+            Assert.NotNull(statement);
+            Assert.Equal(SyntaxKind.LocalDeclarationStatement, statement.Kind());
+            Assert.Equal(text, statement.ToString());
+            Assert.Equal(0, statement.Errors().Length);
+
+            var ds = (LocalDeclarationStatementSyntax)statement;
+            Assert.Equal(0, ds.Modifiers.Count);
+            Assert.NotNull(ds.Declaration.Type);
+            Assert.Equal("T!", ds.Declaration.Type.ToString());
             Assert.Equal(1, ds.Declaration.Variables.Count);
 
             Assert.NotNull(ds.Declaration.Variables[0].Identifier);

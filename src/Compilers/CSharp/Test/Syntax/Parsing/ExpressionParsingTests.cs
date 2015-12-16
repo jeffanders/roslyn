@@ -540,6 +540,28 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         }
 
         [Fact]
+        public void TestNonNullableReferenceCast()
+        {
+            var text = "(a!) b";
+            var expr = this.ParseExpression(text);
+
+            Assert.NotNull(expr);
+            Assert.Equal(SyntaxKind.CastExpression, expr.Kind());
+            Assert.Equal(text, expr.ToString());
+            Assert.Equal(0, expr.Errors().Length);
+            var cs = (CastExpressionSyntax)expr;
+            Assert.NotNull(cs.OpenParenToken);
+            Assert.NotNull(cs.CloseParenToken);
+            Assert.False(cs.OpenParenToken.IsMissing);
+            Assert.False(cs.CloseParenToken.IsMissing);
+            Assert.NotNull(cs.Type);
+            Assert.NotNull(cs.Expression);
+            Assert.Equal(SyntaxKind.NonNullableType, cs.Type.Kind());
+            Assert.Equal("a!", cs.Type.ToString());
+            Assert.Equal("b", cs.Expression.ToString());
+        }
+
+        [Fact]
         public void TestCall()
         {
             var text = "a(b)";
@@ -1105,6 +1127,37 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         }
 
         [Fact]
+        public void TestAnonymousMethodWithNonNullableReferenceParameter()
+        {
+            var text = "delegate (object! a) { }";
+            var expr = this.ParseExpression(text);
+
+            Assert.NotNull(expr);
+            Assert.Equal(SyntaxKind.AnonymousMethodExpression, expr.Kind());
+            Assert.Equal(text, expr.ToString());
+            Assert.Equal(0, expr.Errors().Length);
+            var am = (AnonymousMethodExpressionSyntax)expr;
+
+            Assert.NotNull(am.DelegateKeyword);
+            Assert.False(am.DelegateKeyword.IsMissing);
+
+            Assert.NotNull(am.ParameterList);
+            Assert.NotNull(am.ParameterList.OpenParenToken);
+            Assert.NotNull(am.ParameterList.CloseParenToken);
+            Assert.False(am.ParameterList.OpenParenToken.IsMissing);
+            Assert.False(am.ParameterList.CloseParenToken.IsMissing);
+            Assert.Equal(1, am.ParameterList.Parameters.Count);
+            Assert.Equal("object! a", am.ParameterList.Parameters[0].ToString());
+
+            Assert.NotNull(am.Block);
+            Assert.NotNull(am.Block.OpenBraceToken);
+            Assert.NotNull(am.Block.CloseBraceToken);
+            Assert.False(am.Block.OpenBraceToken.IsMissing);
+            Assert.False(am.Block.CloseBraceToken.IsMissing);
+            Assert.Equal(0, am.Block.Statements.Count);
+        }
+
+        [Fact]
         public void TestAnonymousMethodWithNoArguments()
         {
             var text = "delegate () { }";
@@ -1343,6 +1396,32 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         }
 
         [Fact]
+        public void TestLambdaWithOneNonNullableReferenceTypedParameter()
+        {
+            var text = "(T! a) => b";
+            var expr = this.ParseExpression(text);
+
+            Assert.NotNull(expr);
+            Assert.Equal(SyntaxKind.ParenthesizedLambdaExpression, expr.Kind());
+            Assert.Equal(text, expr.ToString());
+            Assert.Equal(0, expr.Errors().Length);
+            var lambda = (ParenthesizedLambdaExpressionSyntax)expr;
+            Assert.NotNull(lambda.ParameterList.OpenParenToken);
+            Assert.NotNull(lambda.ParameterList.CloseParenToken);
+            Assert.False(lambda.ParameterList.OpenParenToken.IsMissing);
+            Assert.False(lambda.ParameterList.CloseParenToken.IsMissing);
+            Assert.Equal(1, lambda.ParameterList.Parameters.Count);
+            Assert.Equal(SyntaxKind.Parameter, lambda.ParameterList.Parameters[0].Kind());
+            var ps = (ParameterSyntax)lambda.ParameterList.Parameters[0];
+            Assert.NotNull(ps.Type);
+            Assert.Equal(SyntaxKind.NonNullableType, ps.Type.Kind());
+            Assert.Equal("T!", ps.Type.ToString());
+            Assert.Equal("a", ps.Identifier.ToString());
+            Assert.NotNull(lambda.Body);
+            Assert.Equal("b", lambda.Body.ToString());
+        }
+
+        [Fact]
         public void TestFromSelect()
         {
             var text = "from a in A select b";
@@ -1395,6 +1474,40 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.False(fs.FromKeyword.IsMissing);
             Assert.NotNull(fs.Type);
             Assert.Equal("T", fs.Type.ToString());
+            Assert.Equal("a", fs.Identifier.ToString());
+            Assert.NotNull(fs.InKeyword);
+            Assert.False(fs.InKeyword.IsMissing);
+            Assert.Equal("A", fs.Expression.ToString());
+
+            Assert.Equal(SyntaxKind.SelectClause, qs.Body.SelectOrGroup.Kind());
+            var ss = (SelectClauseSyntax)qs.Body.SelectOrGroup;
+            Assert.NotNull(ss.SelectKeyword);
+            Assert.False(ss.SelectKeyword.IsMissing);
+            Assert.Equal("b", ss.Expression.ToString());
+            Assert.Null(qs.Body.Continuation);
+        }
+
+        [Fact]
+        public void TestFromWithNonNullableReferenceType()
+        {
+            var text = "from T! a in A select b";
+            var expr = this.ParseExpression(text);
+
+            Assert.NotNull(expr);
+            Assert.Equal(SyntaxKind.QueryExpression, expr.Kind());
+            Assert.Equal(text, expr.ToString());
+            Assert.Equal(0, expr.Errors().Length);
+
+            var qs = (QueryExpressionSyntax)expr;
+            Assert.Equal(0, qs.Body.Clauses.Count);
+
+            Assert.Equal(SyntaxKind.FromClause, qs.FromClause.Kind());
+            var fs = (FromClauseSyntax)qs.FromClause;
+            Assert.NotNull(fs.FromKeyword);
+            Assert.False(fs.FromKeyword.IsMissing);
+            Assert.NotNull(fs.Type);
+            Assert.Equal("T!", fs.Type.ToString());
+            Assert.Equal(SyntaxKind.NonNullableType, fs.Type.Kind());
             Assert.Equal("a", fs.Identifier.ToString());
             Assert.NotNull(fs.InKeyword);
             Assert.False(fs.InKeyword.IsMissing);
@@ -1956,6 +2069,63 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.False(js.JoinKeyword.IsMissing);
             Assert.NotNull(js.Type);
             Assert.Equal("Tb", js.Type.ToString());
+            Assert.NotNull(js.Identifier);
+            Assert.Equal("b", js.Identifier.ToString());
+            Assert.NotNull(js.InKeyword);
+            Assert.False(js.InKeyword.IsMissing);
+            Assert.NotNull(js.InExpression);
+            Assert.Equal("B", js.InExpression.ToString());
+            Assert.NotNull(js.OnKeyword);
+            Assert.False(js.OnKeyword.IsMissing);
+            Assert.NotNull(js.LeftExpression);
+            Assert.Equal("a", js.LeftExpression.ToString());
+            Assert.NotNull(js.EqualsKeyword);
+            Assert.False(js.EqualsKeyword.IsMissing);
+            Assert.NotNull(js.RightExpression);
+            Assert.Equal("b", js.RightExpression.ToString());
+            Assert.Null(js.Into);
+
+            Assert.Equal(SyntaxKind.SelectClause, qs.Body.SelectOrGroup.Kind());
+            var ss = (SelectClauseSyntax)qs.Body.SelectOrGroup;
+            Assert.NotNull(ss.SelectKeyword);
+            Assert.False(ss.SelectKeyword.IsMissing);
+            Assert.Equal("c", ss.Expression.ToString());
+            Assert.Null(qs.Body.Continuation);
+        }
+
+        [Fact]
+        public void TestFromJoinWithNonNullableReferenceTypesSelect()
+        {
+            var text = "from Ta! a in A join Tb! b in B on a equals b select c";
+            var expr = this.ParseExpression(text);
+
+            Assert.NotNull(expr);
+            Assert.Equal(SyntaxKind.QueryExpression, expr.Kind());
+            Assert.Equal(text, expr.ToString());
+            Assert.Equal(0, expr.Errors().Length);
+
+            var qs = (QueryExpressionSyntax)expr;
+            Assert.Equal(1, qs.Body.Clauses.Count);
+
+            Assert.Equal(SyntaxKind.FromClause, qs.FromClause.Kind());
+            var fs = (FromClauseSyntax)qs.FromClause;
+            Assert.NotNull(fs.FromKeyword);
+            Assert.False(fs.FromKeyword.IsMissing);
+            Assert.NotNull(fs.Type);
+            Assert.Equal("Ta!", fs.Type.ToString());
+            Assert.Equal(SyntaxKind.NonNullableType, fs.Type.Kind());
+            Assert.Equal("a", fs.Identifier.ToString());
+            Assert.NotNull(fs.InKeyword);
+            Assert.False(fs.InKeyword.IsMissing);
+            Assert.Equal("A", fs.Expression.ToString());
+
+            Assert.Equal(SyntaxKind.JoinClause, qs.Body.Clauses[0].Kind());
+            var js = (JoinClauseSyntax)qs.Body.Clauses[0];
+            Assert.NotNull(js.JoinKeyword);
+            Assert.False(js.JoinKeyword.IsMissing);
+            Assert.NotNull(js.Type);
+            Assert.Equal("Tb!", js.Type.ToString());
+            Assert.Equal(SyntaxKind.NonNullableType, js.Type.Kind());
             Assert.NotNull(js.Identifier);
             Assert.Equal("b", js.Identifier.ToString());
             Assert.NotNull(js.InKeyword);

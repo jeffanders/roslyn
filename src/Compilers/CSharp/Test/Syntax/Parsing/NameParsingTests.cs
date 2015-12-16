@@ -210,6 +210,24 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         }
 
         [Fact]
+        public void TestGenericNameWithNonNullableReferenceTypeArgument()
+        {
+            var text = "foo<bar!>";
+            var name = ParseName(text);
+
+            Assert.NotNull(name);
+            Assert.Equal(SyntaxKind.GenericName, name.Kind());
+            Assert.False(name.IsMissing);
+            Assert.Equal(0, name.Errors().Length);
+            var gname = (GenericNameSyntax)name;
+            Assert.Equal(1, gname.TypeArgumentList.Arguments.Count);
+            var typeArg = gname.TypeArgumentList.Arguments[0];
+            Assert.Equal(SyntaxKind.NonNullableType, typeArg.Kind());
+            Assert.False(gname.IsUnboundGenericName);
+            Assert.Equal(text, name.ToString());
+        }
+
+        [Fact]
         public void TestGenericNameWithTwoArguments()
         {
             var text = "foo<bar,zed>";
@@ -323,6 +341,24 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         }
 
         [Fact]
+        public void TestGenericTypeWithNonNullableTypeArgumentName()
+        {
+            var text = "foo<bar!>";
+            var tname = ParseTypeName(text);
+
+            Assert.NotNull(tname);
+            Assert.Equal(SyntaxKind.GenericName, tname.Kind());
+            var name = (NameSyntax)tname;
+            Assert.False(name.IsMissing);
+            Assert.Equal(0, name.Errors().Length);
+            var gname = (GenericNameSyntax)name;
+            Assert.Equal(1, gname.TypeArgumentList.Arguments.Count);
+            Assert.Equal(SyntaxKind.NonNullableType, gname.TypeArgumentList.Arguments[0].Kind());
+            Assert.False(gname.IsUnboundGenericName);
+            Assert.Equal(text, name.ToString());
+        }
+
+        [Fact]
         public void TestNestedGenericTypeName()
         {
             var text = "foo<bar<zed>>";
@@ -406,6 +442,21 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         }
 
         [Fact]
+        public void TestNonNullableReferenceTypeName()
+        {
+            var text = "foo!";
+            var tname = ParseTypeName(text);
+
+            Assert.NotNull(tname);
+            Assert.Equal(SyntaxKind.NonNullableType, tname.Kind());
+            Assert.Equal(text, tname.ToString());
+            var name = (NameSyntax)((NonNullableTypeSyntax)tname).ElementType;
+            Assert.Equal(SyntaxKind.IdentifierName, name.Kind());
+            Assert.False(name.IsMissing);
+            Assert.Equal(0, name.Errors().Length);
+        }
+
+        [Fact]
         public void TestPointerTypeName()
         {
             var text = "foo*";
@@ -467,6 +518,77 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.False(name.IsMissing);
             Assert.Equal(0, name.Errors().Length);
         }
+        
+        [Fact]
+        public void TestArrayTypeNameWithNonNullableReferences()
+        {
+            var text = "foo![]";
+            var tname = ParseTypeName(text);
+
+            Assert.NotNull(tname);
+            Assert.Equal(text, tname.ToString());
+            Assert.Equal(SyntaxKind.ArrayType, tname.Kind());
+
+            var array = (ArrayTypeSyntax)tname;
+            Assert.Equal(1, array.RankSpecifiers.Count);
+            Assert.Equal(1, array.RankSpecifiers[0].Sizes.Count);
+            Assert.Equal(0, array.RankSpecifiers[0].Sizes.SeparatorCount);
+            Assert.Equal(1, array.RankSpecifiers[0].Rank);
+
+            var name = array.ElementType;
+            Assert.Equal(SyntaxKind.NonNullableType, name.Kind());
+            Assert.False(name.IsMissing);
+            Assert.Equal(0, name.Errors().Length);
+        }
+        
+        [Fact]
+        public void TestNonNullableArrayTypeName()
+        {
+            var text = "foo[]!";
+            var tname = ParseTypeName(text);
+
+            Assert.NotNull(tname);
+            Assert.Equal(text, tname.ToString());
+            Assert.Equal(SyntaxKind.NonNullableType, tname.Kind());
+            var arraySyntax = ((NonNullableTypeSyntax)tname).ElementType;
+            Assert.Equal(SyntaxKind.ArrayType, arraySyntax.Kind());
+
+            var array = (ArrayTypeSyntax)arraySyntax;
+            Assert.Equal(1, array.RankSpecifiers.Count);
+            Assert.Equal(1, array.RankSpecifiers[0].Sizes.Count);
+            Assert.Equal(0, array.RankSpecifiers[0].Sizes.SeparatorCount);
+            Assert.Equal(1, array.RankSpecifiers[0].Rank);
+
+            var name = array.ElementType;
+            Assert.Equal(SyntaxKind.IdentifierName, name.Kind());
+            Assert.False(name.IsMissing);
+            Assert.Equal(0, name.Errors().Length);
+        }
+        
+        [Fact]
+        public void TestNonNullableArrayTypeNameWithNonNullableElements()
+        {
+            var text = "foo![]!";
+            var tname = ParseTypeName(text);
+
+            Assert.NotNull(tname);
+            Assert.Equal(text, tname.ToString());
+            Assert.Equal(SyntaxKind.NonNullableType, tname.Kind());
+            var arraySyntax = ((NonNullableTypeSyntax)tname).ElementType;
+            Assert.Equal(SyntaxKind.ArrayType, arraySyntax.Kind());
+
+            var array = (ArrayTypeSyntax)arraySyntax;
+            Assert.Equal(1, array.RankSpecifiers.Count);
+            Assert.Equal(1, array.RankSpecifiers[0].Sizes.Count);
+            Assert.Equal(0, array.RankSpecifiers[0].Sizes.SeparatorCount);
+            Assert.Equal(1, array.RankSpecifiers[0].Rank);
+
+            var name = array.ElementType;
+            Assert.Equal(SyntaxKind.NonNullableType, name.Kind());
+            Assert.False(name.IsMissing);
+            Assert.Equal(0, name.Errors().Length);
+        }
+        
 
         [Fact]
         public void TestMultiDimensionalArrayTypeName()
@@ -516,6 +638,76 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.Equal(3, array.RankSpecifiers[2].Rank);
 
             var name = (NameSyntax)array.ElementType;
+            Assert.Equal(SyntaxKind.IdentifierName, name.Kind());
+            Assert.False(name.IsMissing);
+            Assert.Equal(0, name.Errors().Length);
+        }
+
+        [Fact]
+        public void TestMultiRankedArrayTypeNameAllNonNullable()
+        {
+            var text = "foo![]![]!";
+            var tname = ParseTypeName(text);
+
+            Assert.NotNull(tname);
+            Assert.Equal(text, tname.ToString());
+            Assert.Equal(SyntaxKind.NonNullableType, tname.Kind());
+            var arraySyntax = ((NonNullableTypeSyntax)tname).ElementType;
+            Assert.Equal(SyntaxKind.ArrayType, arraySyntax.Kind());
+
+            var array = (ArrayTypeSyntax)arraySyntax;
+            Assert.Equal(1, array.RankSpecifiers.Count);
+
+            Assert.Equal(1, array.RankSpecifiers[0].Sizes.Count);
+            Assert.Equal(0, array.RankSpecifiers[0].Sizes.SeparatorCount);
+            Assert.Equal(1, array.RankSpecifiers[0].Rank);
+
+            tname = array.ElementType;
+            Assert.Equal(SyntaxKind.NonNullableType, tname.Kind());
+            arraySyntax = ((NonNullableTypeSyntax)tname).ElementType;
+            Assert.Equal(SyntaxKind.ArrayType, arraySyntax.Kind());
+
+            array = (ArrayTypeSyntax)arraySyntax;
+            Assert.Equal(1, array.RankSpecifiers.Count);
+
+            Assert.Equal(1, array.RankSpecifiers[0].Sizes.Count);
+            Assert.Equal(0, array.RankSpecifiers[0].Sizes.SeparatorCount);
+            Assert.Equal(1, array.RankSpecifiers[0].Rank);
+
+            var name = array.ElementType;
+            Assert.Equal(SyntaxKind.NonNullableType, name.Kind());
+            name = ((NonNullableTypeSyntax)name).ElementType;
+            Assert.Equal(SyntaxKind.IdentifierName, name.Kind());
+            Assert.False(name.IsMissing);
+            Assert.Equal(0, name.Errors().Length);
+        }
+
+        [Fact]
+        public void TestMultiRankedArrayTypeNameSomeNonNullable()
+        {
+            var text = "foo![][]!";
+            var tname = ParseTypeName(text);
+
+            Assert.NotNull(tname);
+            Assert.Equal(text, tname.ToString());
+            Assert.Equal(SyntaxKind.NonNullableType, tname.Kind());
+            var arraySyntax = ((NonNullableTypeSyntax)tname).ElementType;
+            Assert.Equal(SyntaxKind.ArrayType, arraySyntax.Kind());
+
+            var array = (ArrayTypeSyntax)arraySyntax;
+            Assert.Equal(2, array.RankSpecifiers.Count);
+
+            Assert.Equal(1, array.RankSpecifiers[0].Sizes.Count);
+            Assert.Equal(0, array.RankSpecifiers[0].Sizes.SeparatorCount);
+            Assert.Equal(1, array.RankSpecifiers[0].Rank);
+
+            Assert.Equal(1, array.RankSpecifiers[1].Sizes.Count);
+            Assert.Equal(0, array.RankSpecifiers[1].Sizes.SeparatorCount);
+            Assert.Equal(1, array.RankSpecifiers[1].Rank);
+
+            var name = array.ElementType;
+            Assert.Equal(SyntaxKind.NonNullableType, name.Kind());
+            name = ((NonNullableTypeSyntax)name).ElementType;
             Assert.Equal(SyntaxKind.IdentifierName, name.Kind());
             Assert.False(name.IsMissing);
             Assert.Equal(0, name.Errors().Length);

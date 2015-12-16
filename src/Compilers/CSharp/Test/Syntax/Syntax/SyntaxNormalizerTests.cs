@@ -118,6 +118,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             // declaration statements
             TestNormalizeStatement("a b;", "a b;");
             TestNormalizeStatement("a?b;", "a? b;");
+            TestNormalizeStatement("a!b;", "a! b;");
             TestNormalizeStatement("a b,c;", "a b, c;");
             TestNormalizeStatement("a b=c;", "a b = c;");
             TestNormalizeStatement("a b=c,d=e;", "a b = c, d = e;");

@@ -1730,6 +1730,52 @@ namespace NS
 
         #endregion
 
+        #region "Non Nullable References"
+
+        [Fact]
+        public void NonNullableReference()
+        {
+            var text =
+@"
+public class A 
+{
+    object! x;
+}
+";
+
+            var comp = CreateCompilationWithMscorlib(text);
+            var classA = comp.SourceModule.GlobalNamespace.GetTypeMembers("A").FirstOrDefault();
+            var varX = classA.GetMembers("x").First() as FieldSymbol;
+            Assert.Equal(SymbolKind.Field, varX.Kind);
+            Assert.Equal(SymbolKind.NonNullableReference, varX.Type.OriginalDefinition.Kind);
+            var varXType = ((NonNullableReferenceTypeSymbol)varX.Type.OriginalDefinition).UnderlyingType;
+            Assert.Same(comp.GetSpecialType(SpecialType.System_Object), varXType.OriginalDefinition);
+        }
+        /*
+        [Fact]
+        public void NonNullableReferenceWithStringLiteral()
+        {
+            var text =
+@"namespace NS
+{
+    public class A 
+    {
+        string! x = """";
+    }
+}";
+
+            var comp = CreateCompilationWithMscorlib(text);
+            var namespaceNS = comp.GlobalNamespace.GetMembers("NS").First() as NamespaceOrTypeSymbol;
+            var classA = namespaceNS.GetTypeMembers("A").First();
+            var varX = classA.GetMembers("x").First() as FieldSymbol;
+            Assert.Equal(SymbolKind.Field, varX.Kind);
+            Assert.Equal(SymbolKind.NonNullableReference, varX.Type.OriginalDefinition.Kind);
+            var varXType = ((NonNullableReferenceTypeSymbol)varX.Type.OriginalDefinition).UnderlyingType;
+            Assert.Same(comp.GetSpecialType(SpecialType.System_String), varXType.OriginalDefinition);
+        }
+        */
+        #endregion
+
         [Fact]
         public void DynamicVersusObject()
         {

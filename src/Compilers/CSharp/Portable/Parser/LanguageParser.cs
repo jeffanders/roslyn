@@ -6188,15 +6188,6 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                 try
                 {
                     var exclamation = this.EatToken();
-
-                    if (isOrAs && (IsTerm() || IsPredefinedType(this.CurrentToken.Kind) || SyntaxFacts.IsAnyUnaryExpression(this.CurrentToken.Kind)))
-                    {
-                        this.Reset(ref resetPoint);
-
-                        Debug.Assert(type != null);
-                        return type;
-                    }
-
                     exclamation = CheckFeatureAvailability(exclamation, MessageID.IDS_FeatureNonNullable);
                     type = _syntaxFactory.NonNullableType(type, exclamation);
                 }
@@ -6221,9 +6212,29 @@ namespace Microsoft.CodeAnalysis.CSharp.Syntax.InternalSyntax
                         var rank = this.ParseArrayRankSpecifier(isArrayCreation, expectSizes, out unused);
                         ranks.Add(rank);
                         expectSizes = false;
+
+                        if (this.CurrentToken.Kind == SyntaxKind.ExclamationToken)
+                        {
+                            var resetPoint = this.GetResetPoint();
+                            try
+                            {
+                                var exclamation = this.EatToken();
+                                exclamation = CheckFeatureAvailability(exclamation, MessageID.IDS_FeatureNonNullable);
+                                type = _syntaxFactory.ArrayType(type, ranks);
+                                ranks.Clear();
+                                type = _syntaxFactory.NonNullableType(type, exclamation);
+                            }
+                            finally
+                            {
+                                this.Release(ref resetPoint);
+                            }
+                        }
                     }
 
-                    type = _syntaxFactory.ArrayType(type, ranks);
+                    if (ranks.Count > 0)
+                    {
+                        type = _syntaxFactory.ArrayType(type, ranks);
+                    }
                 }
                 finally
                 {

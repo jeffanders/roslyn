@@ -15834,6 +15834,66 @@ class A : C {
                         "CandidateSymbols must by N1.B and N2.B in some order");
         }
 
+        [Fact]
+        public void CS8103ERR_ValueTypeUsedInNonNullableType()
+        {
+            var text = @"class A
+{
+    int! i = 1;
+}
+";
+            var comp = DiagnosticsUtils.VerifyErrorsAndGetCompilationWithMscorlib(text,
+                new ErrorDescription { Code = (int)ErrorCode.ERR_ValueTypeUsedInNonNullableType, Line = 3, Column = 5 });
+        }
+
+        [Fact]
+        public void CS8104ERR_NullAssignedToNonNullableType()
+        {
+            var text = @"class A
+{
+    object! o = null;
+}
+";
+            var comp = DiagnosticsUtils.VerifyErrorsAndGetCompilationWithMscorlib(text,
+                new ErrorDescription { Code = (int)ErrorCode.ERR_NullAssignedToNonNullableType, Line = 3, Column = 17 });
+        }
+
+        [Fact]
+        public void CS8104ERR_NullAssignedToPreservedTypeParameter()
+        {
+            var text = @"class A<T!?>
+{
+    T t = null;
+}
+";
+            var comp = DiagnosticsUtils.VerifyErrorsAndGetCompilationWithMscorlib(text,
+                new ErrorDescription { Code = (int)ErrorCode.ERR_NullAssignedToNonNullableType, Line = 3, Column = 11 });
+        }
+
+        [Fact]
+        public void CS8105ERR_DefaultOperatorUsedWithPreservedTypeParameter()
+        {
+            var text = @"class A<T!?>
+{
+    T t = default(T);
+}
+";
+            var comp = DiagnosticsUtils.VerifyErrorsAndGetCompilationWithMscorlib(text,
+                new ErrorDescription { Code = (int)ErrorCode.ERR_DefaultOperatorUsedWithPreservedTypeParameter, Line = 3, Column = 11 });
+        }
+
+        [Fact]
+        public void CS8106ERR_NonNullableReferenceUsedInAsOrIsExpression()
+        {
+            var text = @"class A
+{
+    object! o = null as object!;
+}
+";
+            var comp = DiagnosticsUtils.VerifyErrorsAndGetCompilationWithMscorlib(text,
+                new ErrorDescription { Code = (int)ErrorCode.ERR_NonNullableReferenceUsedInAsOrIsExpression, Line = 3, Column = 17 });
+        }
+
         #endregion
 
         #region "Symbol Warning Tests"
