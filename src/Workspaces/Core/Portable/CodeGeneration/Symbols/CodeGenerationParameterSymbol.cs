@@ -2,9 +2,7 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Text;
 
 namespace Microsoft.CodeAnalysis.CodeGeneration
 {
@@ -21,7 +19,7 @@ namespace Microsoft.CodeAnalysis.CodeGeneration
 
         public CodeGenerationParameterSymbol(
             INamedTypeSymbol containingType,
-            IList<AttributeData> attributes,
+            ImmutableArray<AttributeData> attributes,
             RefKind refKind,
             bool isParams,
             ITypeSymbol type,
@@ -55,13 +53,7 @@ namespace Microsoft.CodeAnalysis.CodeGeneration
             }
         }
 
-        public override SymbolKind Kind
-        {
-            get
-            {
-                return SymbolKind.Parameter;
-            }
-        }
+        public override SymbolKind Kind => SymbolKind.Parameter;
 
         public override void Accept(SymbolVisitor visitor)
         {
@@ -73,11 +65,13 @@ namespace Microsoft.CodeAnalysis.CodeGeneration
             return visitor.VisitParameter(this);
         }
 
-        public bool IsThis
+        public bool IsThis => false;
+
+        public ImmutableArray<CustomModifier> RefCustomModifiers
         {
             get
             {
-                return false;
+                return ImmutableArray.Create<CustomModifier>();
             }
         }
 

@@ -75,13 +75,13 @@ namespace Microsoft.CodeAnalysis.UnitTests.CodeCleanup
         }
 
         [Fact]
-        public void CodeCleaners_Annotation()
+        public async Task CodeCleaners_Annotation()
         {
             var document = CreateDocument("class C { }", LanguageNames.CSharp);
             var annotation = new SyntaxAnnotation();
-            document = document.WithSyntaxRoot(document.GetSyntaxRootAsync().Result.WithAdditionalAnnotations(annotation));
+            document = document.WithSyntaxRoot((await document.GetSyntaxRootAsync()).WithAdditionalAnnotations(annotation));
 
-            var cleanDocument = CodeCleaner.CleanupAsync(document, annotation).Result;
+            var cleanDocument = await CodeCleaner.CleanupAsync(document, annotation);
 
             Assert.Equal(document, cleanDocument);
         }
@@ -218,7 +218,7 @@ Imports System.Diagnostics
         }
 
         [Fact]
-        [WorkItem(774295, "DevDiv")]
+        [WorkItem(774295, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/774295")]
         public async Task DontCrash_VB_2()
         {
             var code = @"
@@ -255,7 +255,7 @@ End Class
         }
 
         [Fact]
-        [WorkItem(547075, "DevDiv")]
+        [WorkItem(547075, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/547075")]
         public void TestCodeCleanupWithinNonStructuredTrivia()
         {
             var code = @"
@@ -304,10 +304,9 @@ End Module";
 
         private void VerifyRange(string codeWithMarker, string language = LanguageNames.CSharp)
         {
-            var codeWithoutMarker = default(string);
             var namedSpans = (IDictionary<string, IList<TextSpan>>)new Dictionary<string, IList<TextSpan>>();
 
-            MarkupTestFile.GetSpans(codeWithMarker, out codeWithoutMarker, out namedSpans);
+            MarkupTestFile.GetSpans(codeWithMarker, out var codeWithoutMarker, out namedSpans);
 
             var expectedResult = namedSpans.ContainsKey("r") ? namedSpans["r"] as IEnumerable<TextSpan> : SpecializedCollections.EmptyEnumerable<TextSpan>();
 
@@ -316,10 +315,9 @@ End Module";
 
         private void VerifyRange(string codeWithMarker, ICodeCleanupProvider transformer, ref IEnumerable<TextSpan> expectedResult, string language = LanguageNames.CSharp)
         {
-            var codeWithoutMarker = default(string);
             var namedSpans = (IDictionary<string, IList<TextSpan>>)new Dictionary<string, IList<TextSpan>>();
 
-            MarkupTestFile.GetSpans(codeWithMarker, out codeWithoutMarker, out namedSpans);
+            MarkupTestFile.GetSpans(codeWithMarker, out var codeWithoutMarker, out namedSpans);
 
             VerifyRange(codeWithoutMarker, SpecializedCollections.SingletonEnumerable(transformer), namedSpans["b"], ref expectedResult, language);
         }

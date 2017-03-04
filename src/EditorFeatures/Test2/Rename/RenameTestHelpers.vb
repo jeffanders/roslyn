@@ -102,12 +102,12 @@ Namespace Microsoft.CodeAnalysis.Editor.UnitTests.Rename
             Next
         End Function
 
-        Public Function CreateWorkspaceWithWaiter(workspace As XElement) As TestWorkspace
-            Dim testWorkspace = TestWorkspaceFactory.CreateWorkspace(
-                workspace,
+        Public Function CreateWorkspaceWithWaiter(element As XElement) As TestWorkspace
+            Dim workspace = TestWorkspace.CreateWorkspace(
+                element,
                 exportProvider:=ExportProvider)
-            testWorkspace.GetOpenDocumentIds().Select(Function(id) testWorkspace.GetTestDocument(id).GetTextView()).ToList()
-            Return testWorkspace
+            workspace.GetOpenDocumentIds().Select(Function(id) workspace.GetTestDocument(id).GetTextView()).ToList()
+            Return workspace
         End Function
 
         Public Async Function WaitForRename(workspace As TestWorkspace) As Task
@@ -121,7 +121,7 @@ Namespace Microsoft.CodeAnalysis.Editor.UnitTests.Rename
                 workspace.ExportProvider.GetExport(Of IWaitIndicator)().Value,
                 workspace.ExportProvider.GetExport(Of IInlineRenameService)().Value,
                 workspace.ExportProvider.GetExport(Of IDiagnosticAnalyzerService)().Value,
-                SpecializedCollections.SingletonEnumerable(New MockRefactorNotifyService()),
+                {New MockRefactorNotifyService()},
                 DirectCast(workspace.ExportProvider.GetExports(Of IAsynchronousOperationListener, FeatureMetadata), IEnumerable(Of Lazy(Of IAsynchronousOperationListener, FeatureMetadata))))
 
             Return tracker.CreateTagger(Of RenameTrackingTag)(document.GetTextBuffer())

@@ -1,9 +1,6 @@
 // Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using System;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -44,26 +41,22 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Diagnostics.MockDiagnos
             }
         }
 
-        internal override Tuple<DiagnosticAnalyzer, CodeFixProvider> CreateDiagnosticProviderAndFixer(Workspace workspace)
-        {
-            return Tuple.Create<DiagnosticAnalyzer, CodeFixProvider>(
-                    new MockDiagnosticAnalyzer(),
-                    null);
-        }
+        internal override (DiagnosticAnalyzer, CodeFixProvider) CreateDiagnosticProviderAndFixer(Workspace workspace)
+            => (new MockDiagnosticAnalyzer(), null);
 
         private async Task VerifyDiagnosticsAsync(
              string source,
              params DiagnosticDescription[] expectedDiagnostics)
         {
-            using (var workspace = await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(source))
+            using (var workspace = TestWorkspace.CreateCSharp(source))
             {
-                var actualDiagnostics = await this.GetDiagnosticsAsync(workspace);
+                var actualDiagnostics = await this.GetDiagnosticsAsync(workspace, new TestParameters());
                 actualDiagnostics.Verify(expectedDiagnostics);
             }
         }
 
-        [WorkItem(906919)]
-        [WpfFact]
+        [WorkItem(906919, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/906919")]
+        [Fact]
         public async Task Bug906919()
         {
             string source = "[|class C { }|]";

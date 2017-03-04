@@ -22,9 +22,9 @@ Imports Roslyn.Utilities
 
 Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
     Public Class DiagnosticTableDataSourceTests
-        <WpfFact>
-        Public Async Function TestCreation() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestCreation()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim provider = New TestDiagnosticService()
                 Dim tableManagerProvider = New TestTableManagerProvider()
 
@@ -37,7 +37,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                 Dim source = DirectCast(manager.Sources.First(), AbstractRoslynTableDataSource(Of DiagnosticData))
                 AssertEx.SetEqual(table.Columns, manager.GetColumnsForSources(SpecializedCollections.SingletonEnumerable(source)))
 
-                Assert.Equal(ServicesVSResources.DiagnosticsTableSourceName, source.DisplayName)
+                Assert.Equal(ServicesVSResources.CSharp_VB_Diagnostics_Table_Data_Source, source.DisplayName)
                 Assert.Equal(StandardTableDataSources.ErrorTableDataSource, source.SourceTypeIdentifier)
 
                 Assert.Equal(1, manager.Sinks_TestOnly.Count())
@@ -52,11 +52,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                 subscription.Dispose()
                 Assert.Equal(0, source.NumberOfSubscription_TestOnly)
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestInitialEntries() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestInitialEntries()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
                 Dim provider = New TestDiagnosticService(CreateItem(workspace, documentId))
                 Dim tableManagerProvider = New TestTableManagerProvider()
@@ -71,11 +71,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                 Dim sink = DirectCast(sinkAndSubscription.Key, TestTableManagerProvider.TestTableManager.TestSink)
                 Assert.Equal(1, sink.Entries.Count)
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestEntryChanged() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestEntryChanged()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
                 Dim provider = New TestDiagnosticService()
                 Dim tableManagerProvider = New TestTableManagerProvider()
@@ -96,11 +96,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                 provider.RaiseClearDiagnosticsUpdated(workspace, documentId.ProjectId, documentId)
                 Assert.Equal(0, sink.Entries.Count)
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestEntry() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestEntry()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
 
                 Dim item = CreateItem(workspace, documentId)
@@ -137,11 +137,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                 Assert.True(snapshot.TryGetValue(0, StandardTableKeyNames.Column, column))
                 Assert.Equal(If(item.DataLocation?.MappedStartColumn, 0), column)
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestSnapshotEntry() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestSnapshotEntry()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
 
                 Dim item = CreateItem(workspace, documentId)
@@ -185,11 +185,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                 Assert.True(snapshot1.TryGetValue(0, StandardTableKeyNames.Column, column))
                 Assert.Equal(If(item.DataLocation?.MappedStartColumn, 0), column)
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestInvalidEntry() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestInvalidEntry()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
 
                 Dim item = CreateItem(workspace, documentId)
@@ -215,11 +215,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                 Assert.False(snapshot.TryGetValue(1, StandardTableKeyNames.DocumentName, temp))
                 Assert.False(snapshot.TryGetValue(0, "Test", temp))
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestNoHiddenEntry() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestNoHiddenEntry()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
 
                 Dim item = CreateItem(workspace, documentId, DiagnosticSeverity.Error)
@@ -242,11 +242,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
 
                 Assert.Equal(1, snapshot.Count)
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestProjectEntry() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestProjectEntry()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim projectId = workspace.CurrentSolution.Projects.First().Id
 
                 Dim item = CreateItem(workspace, projectId, Nothing, DiagnosticSeverity.Error)
@@ -268,12 +268,12 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
 
                 Assert.Equal(1, snapshot.Count)
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestMultipleWorkspace() As Task
-            Using workspace1 = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
-                Using workspace2 = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestMultipleWorkspace()
+            Using workspace1 = TestWorkspace.CreateCSharp(String.Empty)
+                Using workspace2 = TestWorkspace.CreateCSharp(String.Empty)
                     Dim documentId = workspace1.CurrentSolution.Projects.First().DocumentIds.First()
                     Dim projectId = documentId.ProjectId
 
@@ -303,11 +303,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                     Assert.Equal(2, sink.Entries.Count)
                 End Using
             End Using
-        End Function
+        End Sub
 
         <WpfFact>
-        Public Async Function TestDetailExpander() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        Public Sub TestDetailExpander()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
                 Dim projectId = documentId.ProjectId
 
@@ -340,11 +340,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                 Assert.Equal(New Thickness(10, 6, 10, 8), textBlock.Padding)
                 Assert.Equal(Nothing, textBlock.Background)
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestHyperLink() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestHyperLink()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
                 Dim projectId = documentId.ProjectId
 
@@ -372,11 +372,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
 
                 Assert.Null(ui)
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestBingHyperLink() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestBingHyperLink()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
                 Dim projectId = documentId.ProjectId
 
@@ -404,11 +404,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
 
                 Assert.Null(ui)
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestHelpLink() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestHelpLink()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
                 Dim projectId = documentId.ProjectId
 
@@ -433,11 +433,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
 
                 Assert.Equal(item1.HelpLink, helpLink.ToString())
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestHelpKeyword() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestHelpKeyword()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
                 Dim projectId = documentId.ProjectId
 
@@ -462,11 +462,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
 
                 Assert.Equal(item1.Id, keyword.ToString())
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestBingHelpLink() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestBingHelpLink()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
                 Dim projectId = documentId.ProjectId
 
@@ -491,11 +491,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
 
                 Assert.True(helpLink.ToString().IndexOf("https://bingdev.cloudapp.net/BingUrl.svc/Get?selectedText=test%20format&mainLanguage=C%23&projectType=%7BFAE04EC0-301F-11D3-BF4B-00C04F79EFBC%7D") = 0)
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
+        <Fact>
         Public Async Function TestBingHelpLink_NoCustomType() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync("class A { int 111a; }")
+            Using workspace = TestWorkspace.CreateCSharp("class A { int 111a; }")
                 Dim diagnostic = (Await workspace.CurrentSolution.Projects.First().GetCompilationAsync()).GetDiagnostics().First(Function(d) d.Id = "CS1519")
 
                 Dim helpMessage = diagnostic.GetBingHelpMessage(workspace)
@@ -510,9 +510,9 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
             End Using
         End Function
 
-        <WpfFact>
-        Public Async Function TestErrorSource() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestErrorSource()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
                 Dim projectId = documentId.ProjectId
 
@@ -537,11 +537,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
 
                 Assert.Equal("BuildTool", buildTool.ToString())
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestWorkspaceDiagnostic() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestWorkspaceDiagnostic()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
                 Dim projectId = documentId.ProjectId
 
@@ -567,11 +567,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                 Dim projectname As Object = Nothing
                 Assert.False(snapshot.TryGetValue(0, StandardTableKeyNames.ProjectName, projectname))
             End Using
-        End Function
+        End Sub
 
-        <WpfFact>
-        Public Async Function TestProjectDiagnostic() As Task
-            Using workspace = Await CSharpWorkspaceFactory.CreateWorkspaceFromLinesAsync(String.Empty)
+        <Fact>
+        Public Sub TestProjectDiagnostic()
+            Using workspace = TestWorkspace.CreateCSharp(String.Empty)
                 Dim documentId = workspace.CurrentSolution.Projects.First().DocumentIds.First()
                 Dim projectId = documentId.ProjectId
 
@@ -599,7 +599,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
 
                 Assert.Equal("Test", projectname)
             End Using
-        End Function
+        End Sub
 
         <WpfFact>
         Public Async Function TestAggregatedDiagnostic() As Task
@@ -612,14 +612,19 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                              </Project>
                          </Workspace>
 
-            Using workspace = Await TestWorkspaceFactory.CreateWorkspaceAsync(markup)
+            Using workspace = TestWorkspace.Create(markup)
 
-                Dim service = New DiagnosticService(AggregateAsynchronousOperationListener.EmptyListeners)
+                Dim asyncListener = New AsynchronousOperationListener()
+                Dim listeners = AsynchronousOperationListener.CreateListeners(ValueTuple.Create(FeatureAttribute.DiagnosticService, asyncListener))
+
+                Dim service = New DiagnosticService(listeners)
 
                 Dim tableManagerProvider = New TestTableManagerProvider()
                 Dim table = New VisualStudioDiagnosticListTable(workspace, service, tableManagerProvider)
 
-                RunCompilerAnalyzer(workspace, service)
+                RunCompilerAnalyzer(workspace, service, New AggregateAsynchronousOperationListener(listeners, FeatureAttribute.DiagnosticService))
+
+                Await asyncListener.CreateWaitTask()
 
                 Dim manager = DirectCast(table.TableManager, TestTableManagerProvider.TestTableManager)
                 Dim source = DirectCast(manager.Sources.First(), AbstractRoslynTableDataSource(Of DiagnosticData))
@@ -646,13 +651,13 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
             End Using
         End Function
 
-        Private Sub RunCompilerAnalyzer(workspace As TestWorkspace, registrationService As IDiagnosticUpdateSourceRegistrationService)
+        Private Sub RunCompilerAnalyzer(workspace As TestWorkspace, registrationService As IDiagnosticUpdateSourceRegistrationService, listener As IAsynchronousOperationListener)
             Dim snapshot = workspace.CurrentSolution
 
             Dim notificationService = New TestForegroundNotificationService()
 
             Dim compilerAnalyzersMap = DiagnosticExtensions.GetCompilerDiagnosticAnalyzersMap()
-            Dim analyzerService = New TestDiagnosticAnalyzerService(compilerAnalyzersMap, registrationService:=registrationService)
+            Dim analyzerService = New MyDiagnosticAnalyzerService(compilerAnalyzersMap, registrationService, listener)
 
             Dim service = DirectCast(workspace.Services.GetService(Of ISolutionCrawlerRegistrationService)(), SolutionCrawlerRegistrationService)
             service.Register(workspace)
@@ -669,6 +674,20 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Diagnostics
                                       workspace, projectId, If(documentId Is Nothing, Nothing, New DiagnosticDataLocation(documentId, TextSpan.FromBounds(0, 10), "test", 20, 20, 20, 20)),
                                       title:="Title", description:="Description", helpLink:=link)
         End Function
+
+        Private Class MyDiagnosticAnalyzerService
+            Inherits DiagnosticAnalyzerService
+
+            Friend Sub New(
+                    analyzersMap As ImmutableDictionary(Of String, ImmutableArray(Of DiagnosticAnalyzer)),
+                    registrationService As IDiagnosticUpdateSourceRegistrationService,
+                    listener As IAsynchronousOperationListener)
+                MyBase.New(New HostAnalyzerManager(ImmutableArray.Create(Of AnalyzerReference)(New TestAnalyzerReferenceByLanguage(analyzersMap)), hostDiagnosticUpdateSource:=Nothing),
+                      hostDiagnosticUpdateSource:=Nothing,
+                      registrationService:=registrationService,
+                      listener:=listener)
+            End Sub
+        End Class
 
         Private Class TestDiagnosticService
             Implements IDiagnosticService

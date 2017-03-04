@@ -14,12 +14,11 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.TypeInferrer
     {
         private async Task TestDelegateAsync(string text, string expectedType)
         {
-            TextSpan textSpan;
-            MarkupTestFile.GetSpan(text, out text, out textSpan);
+            MarkupTestFile.GetSpan(text, out text, out var textSpan);
 
-            Document document = await fixture.UpdateDocumentAsync(text, SourceCodeKind.Regular);
+            Document document = fixture.UpdateDocument(text, SourceCodeKind.Regular);
 
-            var root = (await document.GetSyntaxTreeAsync()).GetRoot();
+            var root = await document.GetSyntaxRootAsync();
             var node = FindExpressionSyntaxFromSpan(root, textSpan);
 
             var typeInference = document.GetLanguageService<ITypeInferenceService>();
@@ -29,7 +28,7 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.TypeInferrer
             Assert.Equal(expectedType, delegateType.ToNameDisplayString());
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
+        [Fact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
         public async Task TestDeclaration1()
         {
             var text =
@@ -45,7 +44,7 @@ class C
             await TestDelegateAsync(text, "System.Func<int>");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
+        [Fact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
         public async Task TestAssignment1()
         {
             var text =
@@ -62,7 +61,7 @@ class C
             await TestDelegateAsync(text, "System.Func<int>");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
+        [Fact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
         public async Task TestArgument1()
         {
             var text =
@@ -80,7 +79,7 @@ class C
             await TestDelegateAsync(text, "System.Func<int>");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
+        [Fact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
         public async Task TestConstructor1()
         {
             var text =
@@ -98,7 +97,7 @@ class C
             await TestDelegateAsync(text, "System.Func<int>");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
+        [Fact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
         public async Task TestDelegateConstructor1()
         {
             var text =
@@ -114,7 +113,7 @@ class C
             await TestDelegateAsync(text, "System.Func<int>");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
+        [Fact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
         public async Task TestCastExpression1()
         {
             var text =
@@ -130,7 +129,7 @@ class C
             await TestDelegateAsync(text, "System.Func<int>");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
+        [Fact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
         public async Task TestCastExpression2()
         {
             var text =
@@ -146,7 +145,7 @@ class C
             await TestDelegateAsync(text, "System.Func<int>");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
+        [Fact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
         public async Task TestReturnFromMethod()
         {
             var text =
@@ -162,7 +161,7 @@ class C
             await TestDelegateAsync(text, "System.Func<int>");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
+        [Fact, Trait(Traits.Feature, Traits.Features.TypeInferenceService)]
         public async Task TestInsideLambda1()
         {
             var text =

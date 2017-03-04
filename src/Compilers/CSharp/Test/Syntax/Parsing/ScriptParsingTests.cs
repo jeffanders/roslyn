@@ -6,11 +6,14 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.Test.Utilities;
 using Roslyn.Test.Utilities;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.CodeAnalysis.CSharp.UnitTests
 {
     public class ScriptParsingTests : ParsingTests
     {
+        public ScriptParsingTests(ITestOutputHelper output) : base(output) { }
+
         #region Helpers
 
         protected override SyntaxTree ParseTree(string text, CSharpParseOptions options)
@@ -59,7 +62,7 @@ static partial class C { }
                            );
         }
 
-        [WorkItem(529472, "DevDiv")]
+        [WorkItem(529472, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529472")]
         [Fact(Skip = "529472")]
         public void CS1002ERR_SemicolonExpected()
         {
@@ -8299,7 +8302,6 @@ Console.Foo()
                 new ErrorDescription { Code = 1003, Line = 1, Column = 9 },
                 new ErrorDescription { Code = 1031, Line = 1, Column = 9 },
                 new ErrorDescription { Code = 1003, Line = 1, Column = 1 },
-                new ErrorDescription { Code = 1019, Line = 1, Column = 9 },
                 new ErrorDescription { Code = 1026, Line = 1, Column = 9 },
                 new ErrorDescription { Code = (int)ErrorCode.ERR_SemicolonExpected, Line = 1, Column = 9 });
         }
@@ -8312,7 +8314,6 @@ Console.Foo()
                 new ErrorDescription { Code = 1003, Line = 1, Column = 9 },
                 new ErrorDescription { Code = 1031, Line = 1, Column = 9 },
                 new ErrorDescription { Code = 1003, Line = 1, Column = 9 },
-                new ErrorDescription { Code = 1019, Line = 1, Column = 9 },
                 new ErrorDescription { Code = 1026, Line = 1, Column = 9 },
                 new ErrorDescription { Code = (int)ErrorCode.ERR_SemicolonExpected, Line = 1, Column = 9 });
         }
@@ -8325,7 +8326,6 @@ Console.Foo()
                 new ErrorDescription { Code = 1003, Line = 1, Column = 9 },
                 new ErrorDescription { Code = 1031, Line = 1, Column = 9 },
                 new ErrorDescription { Code = 1003, Line = 1, Column = 9 },
-                new ErrorDescription { Code = 1019, Line = 1, Column = 9 },
                 new ErrorDescription { Code = 1026, Line = 1, Column = 9 },
                 new ErrorDescription { Code = (int)ErrorCode.ERR_SemicolonExpected, Line = 1, Column = 9 });
         }
@@ -8404,7 +8404,7 @@ p class A
                 new ErrorDescription { Code = (int)ErrorCode.ERR_SemicolonExpected, Line = 2, Column = 3 });
         }
 
-        [WorkItem(528532, "DevDiv")]
+        [WorkItem(528532, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528532")]
         [Fact]
         public void ParseForwardSlash()
         {
@@ -8415,7 +8415,7 @@ p class A
             Assert.Equal(SyntaxKind.GlobalStatement, tree.GetCompilationUnitRoot().ChildNodes().ToList()[0].Kind());
         }
 
-        [WorkItem(541164, "DevDiv")]
+        [WorkItem(541164, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541164")]
         [Fact]
         public void CS1733ERR_ExpressionExpected()
         {

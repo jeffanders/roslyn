@@ -14,11 +14,11 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.MetadataAsSource
 {
     public abstract partial class AbstractMetadataAsSourceTests
     {
-        internal static async Task GenerateAndVerifySourceAsync(string metadataSource, string symbolName, string projectLanguage, string expected, bool compareTokens = true, bool includeXmlDocComments = false)
+        internal static async Task GenerateAndVerifySourceAsync(string metadataSource, string symbolName, string projectLanguage, string expected, bool ignoreTrivia = true, bool includeXmlDocComments = false)
         {
-            using (var context = await TestContext.CreateAsync(projectLanguage, SpecializedCollections.SingletonEnumerable(metadataSource), includeXmlDocComments))
+            using (var context = TestContext.Create(projectLanguage, SpecializedCollections.SingletonEnumerable(metadataSource), includeXmlDocComments))
             {
-                context.GenerateAndVerifySource(symbolName, expected, compareTokens);
+                await context.GenerateAndVerifySourceAsync(symbolName, expected, ignoreTrivia);
             }
         }
 
@@ -30,7 +30,7 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.MetadataAsSource
                 @"[assembly: System.Reflection.AssemblyVersion(""2.0.0.0"")] public class D {}"
             };
 
-            using (var context = await TestContext.CreateAsync(projectLanguage))
+            using (var context = TestContext.Create(projectLanguage))
             {
                 var projectId = ProjectId.CreateNewId();
                 var metadataProject = context.CurrentSolution
@@ -44,15 +44,15 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.MetadataAsSource
                 {
                     var newDoc = metadataProject.AddDocument("MetadataSource", source);
                     metadataProject = newDoc.Project;
-                    references.Add(MetadataReference.CreateFromImage(metadataProject.GetCompilationAsync().Result.EmitToArray()));
+                    references.Add(MetadataReference.CreateFromImage((await metadataProject.GetCompilationAsync()).EmitToArray()));
                     metadataProject = metadataProject.RemoveDocument(newDoc.Id);
                 }
 
                 var project = context.DefaultProject.AddMetadataReference(references[0]);
-                var a = context.GenerateSource("D", project);
+                var a = await context.GenerateSourceAsync("D", project);
 
                 project = project.RemoveMetadataReference(references[0]).AddMetadataReference(references[1]);
-                var b = context.GenerateSource("D", project);
+                var b = await context.GenerateSourceAsync("D", project);
 
                 context.VerifyDocumentNotReused(a, b);
             }
@@ -63,13 +63,13 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.MetadataAsSource
             var metadataSource = @"[assembly: System.Reflection.AssemblyVersion(""2.0.0.0"")] public class C { }";
             var symbolName = "C";
 
-            using (var context = await TestContext.CreateAsync(projectLanguage, SpecializedCollections.SingletonEnumerable(metadataSource)))
+            using (var context = TestContext.Create(projectLanguage, SpecializedCollections.SingletonEnumerable(metadataSource)))
             {
-                var metadataSymbol = context.ResolveSymbol(symbolName);
+                var metadataSymbol = await context.ResolveSymbolAsync(symbolName);
                 var metadataSymbolId = metadataSymbol.GetSymbolKey();
-                var generatedFile = context.GenerateSource(symbolName);
+                var generatedFile = await context.GenerateSourceAsync(symbolName);
                 var generatedDocument = context.GetDocument(generatedFile);
-                var generatedCompilation = generatedDocument.Project.GetCompilationAsync().Result;
+                var generatedCompilation = await generatedDocument.Project.GetCompilationAsync();
                 var generatedSymbol = generatedCompilation.Assembly.GetTypeByMetadataName(symbolName);
                 Assert.False(generatedSymbol.Locations.Where(loc => loc.IsInSource).IsEmpty());
                 Assert.True(SymbolKey.GetComparer(ignoreCase: true, ignoreAssemblyKeys: false).Equals(metadataSymbolId, generatedSymbol.GetSymbolKey()));

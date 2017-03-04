@@ -7,7 +7,6 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.Test.Utilities;
-using Microsoft.CodeAnalysis.Test.Utilities;
 using Xunit;
 using Roslyn.Test.Utilities;
 
@@ -15,7 +14,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
 {
     public partial class SyntaxBinderTests : CompilingTestBase
     {
-        [Fact, WorkItem(543895, "DevDiv")]
+        [Fact, WorkItem(543895, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543895")]
         public void TestBug11947()
         {
             // Due to a long-standing bug, the native compiler allows underlying-enum with the same
@@ -535,7 +534,7 @@ class C
             CompileAndVerify(source: source, expectedOutput: output);
         }
 
-        [Fact, WorkItem(657084, "DevDiv")]
+        [Fact, WorkItem(657084, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/657084")]
         public void DuplicateOperatorInSubclass()
         {
             string source = @"
@@ -562,7 +561,7 @@ public class Test
                 Diagnostic(ErrorCode.ERR_AmbigBinaryOps, "new C() + new B()").WithArguments("+", "C", "B"));
         }
 
-        [Fact, WorkItem(624274, "DevDiv")]
+        [Fact, WorkItem(624274, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/624274")]
         public void TestBinaryOperatorOverloading_Enums_Dynamic_Unambiguous()
         {
             string source = @"
@@ -621,7 +620,7 @@ class C<T>
             CreateCompilationWithMscorlibAndSystemCore(source).VerifyDiagnostics();
         }
 
-        [Fact, WorkItem(624274, "DevDiv")]
+        [Fact, WorkItem(624274, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/624274")]
         public void TestBinaryOperatorOverloading_Enums_Dynamic_Ambiguous()
         {
             string source = @"
@@ -649,7 +648,7 @@ class C<T>
         }
 
         [Fact]
-        [WorkItem(624270, "DevDiv"), WorkItem(624274, "DevDiv")]
+        [WorkItem(624270, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/624270"), WorkItem(624274, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/624274")]
         public void TestBinaryOperatorOverloading_Delegates_Dynamic_Unambiguous()
         {
             string source = @"
@@ -736,7 +735,7 @@ class X
         }
 
         [Fact]
-        [WorkItem(624270, "DevDiv"), WorkItem(624274, "DevDiv")]
+        [WorkItem(624270, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/624270"), WorkItem(624274, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/624274")]
         public void TestBinaryOperatorOverloading_Delegates_Dynamic_Ambiguous()
         {
             string source = @"
@@ -786,7 +785,7 @@ class C<T>
         }
 
         [Fact]
-        [WorkItem(624270, "DevDiv"), WorkItem(624274, "DevDiv")]
+        [WorkItem(624270, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/624270"), WorkItem(624274, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/624274")]
         public void TestBinaryOperatorOverloading_Delegates_Dynamic_Ambiguous_Inference()
         {
             string source = @"
@@ -2853,7 +2852,7 @@ OPERATOR ndec   //-LiftedDecimalKIND" + Postfix;
 
         #endregion
 
-        [Fact, WorkItem(527598, "DevDiv")]
+        [Fact, WorkItem(527598, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/527598")]
         public void UserDefinedOperatorOnPointerType()
         {
             CreateCompilationWithMscorlib(@"
@@ -2932,7 +2931,7 @@ public class C
             var compilation = CreateCompilationWithMscorlib(source).VerifyDiagnostics();
         }
 
-        [WorkItem(541147, "DevDiv")]
+        [WorkItem(541147, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541147")]
         [Fact]
         public void TestNullCoalesceWithMethodGroup()
         {
@@ -2951,7 +2950,7 @@ static class Program
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "Main ?? Main").WithArguments("??", "method group", "method group"));
         }
 
-        [WorkItem(541149, "DevDiv")]
+        [WorkItem(541149, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541149")]
         [Fact]
         public void TestNullCoalesceWithLambda()
         {
@@ -2971,7 +2970,7 @@ static class Program
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "a ?? (() => { })").WithArguments("??", "System.Action<int>", "lambda expression"));
         }
 
-        [WorkItem(541148, "DevDiv")]
+        [WorkItem(541148, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541148")]
         [Fact]
         public void TestNullCoalesceWithConstNonNullExpression()
         {
@@ -2992,7 +2991,7 @@ static class Program
             CompileAndVerify(source, expectedOutput: "A");
         }
 
-        [WorkItem(545631, "DevDiv")]
+        [WorkItem(545631, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545631")]
         [Fact]
         public void TestNullCoalesceWithInvalidUserDefinedConversions_01()
         {
@@ -3029,7 +3028,7 @@ class A
                 Diagnostic(ErrorCode.ERR_AmbigUDConv, "b").WithArguments("B.implicit operator A(B)", "A.implicit operator A(B)", "B", "A"));
         }
 
-        [WorkItem(545631, "DevDiv")]
+        [WorkItem(545631, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545631")]
         [Fact]
         public void TestNullCoalesceWithInvalidUserDefinedConversions_02()
         {
@@ -3066,7 +3065,7 @@ struct A
                 Diagnostic(ErrorCode.ERR_AmbigUDConv, "b").WithArguments("B.implicit operator A(B)", "A.implicit operator A(B)", "B", "A"));
         }
 
-        [WorkItem(545631, "DevDiv")]
+        [WorkItem(545631, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545631")]
         [Fact]
         public void TestNullCoalesceWithInvalidUserDefinedConversions_03()
         {
@@ -3100,7 +3099,7 @@ struct A
                 Diagnostic(ErrorCode.ERR_AmbigUDConv, "b2").WithArguments("B.implicit operator A(B)", "A.implicit operator A(B)", "B", "A"));
         }
 
-        [WorkItem(541343, "DevDiv")]
+        [WorkItem(541343, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541343")]
         [Fact]
         public void TestAsOperator_Bug8014()
         {
@@ -3118,7 +3117,7 @@ class Program
             CompileAndVerify(source, expectedOutput: string.Empty);
         }
 
-        [WorkItem(542090, "DevDiv")]
+        [WorkItem(542090, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542090")]
         [Fact]
         public void TestAsOperatorWithImplicitConversion()
         {
@@ -3217,7 +3216,7 @@ public class X
                 Diagnostic(ErrorCode.ERR_NoConversionForDefaultParam, "param").WithArguments("dynamic", "object"));
         }
 
-        [WorkItem(537876, "DevDiv")]
+        [WorkItem(537876, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537876")]
         [Fact]
         public void TestEnumOrAssign()
         {
@@ -3241,7 +3240,7 @@ class Program
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(542072, "DevDiv")]
+        [WorkItem(542072, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542072")]
         [Fact]
         public void TestEnumLogicalWithLiteralZero_9042()
         {
@@ -3265,7 +3264,7 @@ class Program
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(542073, "DevDiv")]
+        [WorkItem(542073, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542073")]
         [Fact]
         public void TestEnumCompoundAddition_9043()
         {
@@ -3284,7 +3283,7 @@ class Program
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(542086, "DevDiv")]
+        [WorkItem(542086, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542086")]
         [Fact]
         public void TestStringCompoundAddition_9146()
         {
@@ -3389,7 +3388,7 @@ class Program
                 );
         }
 
-        [WorkItem(543294, "DevDiv")]
+        [WorkItem(543294, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543294")]
         [Fact()]
         public void TestAsOperatorWithTypeParameter()
         {
@@ -3427,7 +3426,7 @@ class Program
                 Diagnostic(ErrorCode.ERR_NoExplicitBuiltinConv, "Main() as T").WithArguments("void", "T"));
         }
 
-        [WorkItem(543294, "DevDiv")]
+        [WorkItem(543294, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543294")]
         [Fact()]
         public void TestIsOperatorWithTypeParameter()
         {
@@ -3461,7 +3460,7 @@ class Program
                 Diagnostic(ErrorCode.WRN_IsAlwaysFalse, "Main() is T").WithArguments("T"));
         }
 
-        [WorkItem(844635, "DevDiv")]
+        [WorkItem(844635, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/844635")]
         [Fact()]
         public void TestIsOperatorWithGenericContainingType()
         {
@@ -3531,7 +3530,7 @@ class Outer<T>
                 Diagnostic(ErrorCode.WRN_IsAlwaysFalse, "e2 is Outer<long>.E").WithArguments("Outer<long>.E").WithLocation(32, 13));
         }
 
-        [WorkItem(844635, "DevDiv")]
+        [WorkItem(844635, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/844635")]
         [Fact()]
         public void TestIsOperatorWithTypesThatCannotUnify()
         {
@@ -3561,7 +3560,7 @@ class Outer<T>
                 Diagnostic(ErrorCode.WRN_IsAlwaysTrue, "s2 is Outer<T[]>.S").WithArguments("Outer<T[]>.S").WithLocation(11, 13));
         }
 
-        [WorkItem(844635, "DevDiv")]
+        [WorkItem(844635, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/844635")]
         [Fact()]
         public void TestIsOperatorWithSpecialTypes()
         {
@@ -3653,7 +3652,7 @@ class Outer<T>
                 Diagnostic(ErrorCode.WRN_IsAlwaysTrue, "ts is Object").WithArguments("object").WithLocation(33, 13));
         }
 
-        [WorkItem(543294, "DevDiv"), WorkItem(546655, "DevDiv")]
+        [WorkItem(543294, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543294"), WorkItem(546655, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546655")]
         [Fact()]
         public void TestAsOperator_SpecErrorCase()
         {
@@ -3693,7 +3692,7 @@ class Program
             CompileAndVerify(source, expectedOutput: "").VerifyDiagnostics();
         }
 
-        [WorkItem(546655, "DevDiv")]
+        [WorkItem(546655, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546655")]
         [Fact()]
         public void TestIsOperatorWithTypeParameter_Bug16461()
         {
@@ -3798,7 +3797,7 @@ class Test
                 Diagnostic(ErrorCode.WRN_IsAlwaysFalse, "numeral is Foo2").WithArguments("Foo2"));
         }
 
-        [WorkItem(543455, "DevDiv")]
+        [WorkItem(543455, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543455")]
         [Fact()]
         public void CS0184WRN_IsAlwaysFalse_Generic()
         {
@@ -3828,7 +3827,7 @@ public class C
                                 Diagnostic(ErrorCode.WRN_IsAlwaysFalse, "t is C").WithArguments("C"));
         }
 
-        [WorkItem(547011, "DevDiv")]
+        [WorkItem(547011, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/547011")]
         [Fact()]
         public void CS0184WRN_IsAlwaysFalse_IntPtr()
         {
@@ -3858,7 +3857,7 @@ public class Base
                 Diagnostic(ErrorCode.ERR_AsMustHaveReferenceType, "e as IntPtr").WithArguments("System.IntPtr"));
         }
 
-        [WorkItem(543443, "DevDiv")]
+        [WorkItem(543443, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543443")]
         [Fact]
         public void ParamsOperators()
         {
@@ -3884,7 +3883,7 @@ public class Base
                 );
         }
 
-        [WorkItem(543438, "DevDiv")]
+        [WorkItem(543438, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543438")]
         [Fact()]
         public void TestNullCoalesce_UserDefinedConversions()
         {
@@ -3909,7 +3908,7 @@ class A
             CompileAndVerify(text);
         }
 
-        [WorkItem(543503, "DevDiv")]
+        [WorkItem(543503, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543503")]
         [Fact()]
         public void TestAsOperator_UserDefinedConversions()
         {
@@ -3928,7 +3927,7 @@ class C<T>
             CompileAndVerify(text);
         }
 
-        [WorkItem(543503, "DevDiv")]
+        [WorkItem(543503, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543503")]
         [Fact()]
         public void TestIsOperator_UserDefinedConversions()
         {
@@ -3947,7 +3946,7 @@ class C<T>
             CompileAndVerify(text);
         }
 
-        [WorkItem(543483, "DevDiv")]
+        [WorkItem(543483, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543483")]
         [Fact]
         public void TestEqualityOperator_NullableStructs()
         {
@@ -4013,7 +4012,7 @@ struct S
 Diagnostic(ErrorCode.ERR_AmbigBinaryOps, "s == null").WithArguments("==", "S?", "<null>"));
         }
 
-        [WorkItem(543432, "DevDiv")]
+        [WorkItem(543432, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543432")]
         [Fact]
         public void NoNewForOperators()
         {
@@ -4036,7 +4035,7 @@ class D {}";
             CreateCompilationWithMscorlib(text).VerifyDiagnostics();
         }
 
-        [Fact(), WorkItem(543433, "DevDiv")]
+        [Fact(), WorkItem(543433, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543433")]
         public void ERR_NoImplicitConvCast_UserDefinedConversions()
         {
             var text =
@@ -4060,7 +4059,7 @@ class B : A
             CreateCompilationWithMscorlib(text).VerifyDiagnostics(Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "b++").WithArguments("A", "B"));
         }
 
-        [WorkItem(543431, "DevDiv")]
+        [WorkItem(543431, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543431")]
         [Fact]
         public void TestEqualityOperator_DelegateTypes_01()
         {
@@ -4095,7 +4094,7 @@ False";
             CompileAndVerify(source, expectedOutput: expectedOutput);
         }
 
-        [WorkItem(543431, "DevDiv")]
+        [WorkItem(543431, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543431")]
         [Fact]
         public void TestEqualityOperator_DelegateTypes_02()
         {
@@ -4135,7 +4134,7 @@ class D
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "(Func<int>)(C)null == (Action)(D)null").WithArguments("==", "System.Func<int>", "System.Action"));
         }
 
-        [WorkItem(543431, "DevDiv")]
+        [WorkItem(543431, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543431")]
         [Fact]
         public void TestEqualityOperator_DelegateTypes_03_Ambiguous()
         {
@@ -4180,7 +4179,7 @@ class D
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "(C)null != (D)null").WithArguments("!=", "C", "D"));
         }
 
-        [WorkItem(543431, "DevDiv")]
+        [WorkItem(543431, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543431")]
         [Fact]
         public void TestEqualityOperator_DelegateTypes_04_BaseTypes()
         {
@@ -4219,7 +4218,7 @@ False";
             CompileAndVerify(source, expectedOutput: expectedOutput);
         }
 
-        [WorkItem(543754, "DevDiv")]
+        [WorkItem(543754, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543754")]
         [Fact]
         public void TestEqualityOperator_NullableDecimal()
         {
@@ -4240,7 +4239,7 @@ public class Test
             CompileAndVerify(source, expectedOutput: "");
         }
 
-        [WorkItem(543910, "DevDiv")]
+        [WorkItem(543910, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543910")]
         [Fact]
         public void TypeParameterConstraintToGenericType()
         {
@@ -4273,7 +4272,7 @@ public class ConstrainedTestContext<T,U> where T : Gen<U>
             CreateCompilationWithMscorlib(source).VerifyDiagnostics();
         }
 
-        [WorkItem(544490, "DevDiv")]
+        [WorkItem(544490, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544490")]
         [Fact]
         public void LiftedUserDefinedUnaryOperator()
         {
@@ -4294,7 +4293,7 @@ struct S
             CompileAndVerify(source, expectedOutput: "1");
         }
 
-        [WorkItem(544490, "DevDiv")]
+        [WorkItem(544490, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544490")]
         [Fact]
         public void TestDefaultOperatorEnumConstantValue()
         {
@@ -4598,7 +4597,7 @@ class op_Implicit
                 Diagnostic(ErrorCode.ERR_MemberNameSameAsType, "op_Implicit").WithArguments("op_Implicit"));
         }
 
-        [Fact, WorkItem(546771, "DevDiv")]
+        [Fact, WorkItem(546771, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546771")]
         public void TestIsNullable_Bug16777()
         {
             string source = @"
@@ -4660,7 +4659,7 @@ public struct Value
             CompileAndVerify(source: source, expectedOutput: output);
         }
 
-        [WorkItem(631414, "DevDiv")]
+        [WorkItem(631414, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/631414")]
         [Fact]
         public void LiftedUserDefinedEquality1()
         {
@@ -4705,7 +4704,7 @@ class Program
             Assert.Equal(expectedOperator, info.Symbol);
         }
 
-        [WorkItem(631414, "DevDiv")]
+        [WorkItem(631414, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/631414")]
         [Fact]
         public void LiftedUserDefinedEquality2()
         {
@@ -4746,7 +4745,7 @@ class Program
                 Diagnostic(ErrorCode.WRN_DeprecatedSymbolStr, "s1 == null").WithArguments("S1.operator ==(S1, S1)", "A"));
         }
 
-        [WorkItem(631414, "DevDiv")]
+        [WorkItem(631414, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/631414")]
         [Fact]
         public void LiftedUserDefinedEquality3()
         {
@@ -4781,7 +4780,7 @@ class Program
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "s1 == s2").WithArguments("==", "S1?", "S2?"));
         }
 
-        [WorkItem(656739, "DevDiv")]
+        [WorkItem(656739, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/656739")]
         [Fact]
         public void AmbiguousLogicalOrConversion()
         {
@@ -4824,7 +4823,7 @@ class Program
             Assert.Equal(comp.GetSpecialType(SpecialType.System_Boolean), info.ConvertedType);
         }
 
-        [WorkItem(656739, "DevDiv")]
+        [WorkItem(656739, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/656739")]
         [Fact]
         public void AmbiguousOrConversion()
         {
@@ -4858,7 +4857,7 @@ class Program
                 Diagnostic(ErrorCode.ERR_AmbigBinaryOps, "i1 | i2").WithArguments("|", "InputParameter", "InputParameter"));
         }
 
-        [WorkItem(656739, "DevDiv")]
+        [WorkItem(656739, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/656739")]
         [Fact]
         public void DynamicAmbiguousLogicalOrConversion()
         {
@@ -4895,7 +4894,7 @@ class Program
 A");
         }
 
-        [WorkItem(656739, "DevDiv")]
+        [WorkItem(656739, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/656739")]
         [ClrOnlyFact]
         public void DynamicAmbiguousOrConversion()
         {
@@ -4942,7 +4941,7 @@ class Program
                 "Operator '|' is ambiguous on operands of type 'InputParameter' and 'InputParameter'");
         }
 
-        [WorkItem(656739, "DevDiv")]
+        [WorkItem(656739, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/656739")]
         [Fact]
         public void UnambiguousLogicalOrConversion1()
         {
@@ -4979,7 +4978,7 @@ class Program
             Assert.Equal(comp.GetSpecialType(SpecialType.System_Boolean), info.ConvertedType);
         }
 
-        [WorkItem(656739, "DevDiv")]
+        [WorkItem(656739, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/656739")]
         [Fact]
         public void UnambiguousLogicalOrConversion2()
         {
@@ -5008,7 +5007,7 @@ class Program
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "i1 || i2").WithArguments("||", "InputParameter", "InputParameter"));
         }
 
-        [WorkItem(665002, "DevDiv")]
+        [WorkItem(665002, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/665002")]
         [Fact]
         public void DedupingLiftedUserDefinedOperators()
         {
@@ -5808,7 +5807,7 @@ class Module1
                 }
                 else if ((op == BinaryOperatorKind.Equal || op == BinaryOperatorKind.NotEqual) &&
                     leftType.IsReferenceType && rightType.IsReferenceType &&
-                    (leftType == rightType || compilation.Conversions.ClassifyConversion(leftType, rightType, ref useSiteDiagnostics).IsReference))
+                    (leftType == rightType || compilation.Conversions.ClassifyConversionFromType(leftType, rightType, ref useSiteDiagnostics).IsReference))
                 {
                     if (leftType.IsDelegateType() && rightType.IsDelegateType())
                     {
@@ -5986,7 +5985,7 @@ class Module1
                  (leftType.SpecialType == SpecialType.System_Decimal && (rightType.SpecialType == SpecialType.System_Double || rightType.SpecialType == SpecialType.System_Single)) ||
                  (rightType.SpecialType == SpecialType.System_Decimal && (leftType.SpecialType == SpecialType.System_Double || leftType.SpecialType == SpecialType.System_Single))) &&
                 (!leftType.IsReferenceType || !rightType.IsReferenceType ||
-                 !compilation.Conversions.ClassifyConversion(leftType, rightType, ref useSiteDiagnostics).IsReference))
+                 !compilation.Conversions.ClassifyConversionFromType(leftType, rightType, ref useSiteDiagnostics).IsReference))
             {
                 Assert.Null(symbol1);
                 Assert.Null(symbol2);
@@ -6302,7 +6301,7 @@ class Module1
             }
         }
 
-        [Fact(), WorkItem(721565, "DevDiv")]
+        [Fact(), WorkItem(721565, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/721565")]
         public void Bug721565()
         {
             var source =
@@ -6405,7 +6404,7 @@ struct TestStr
             var model = (CSharpSemanticModel)compilation.GetSemanticModel(tree);
             var binder = model.GetEnclosingBinder(methodBody.SpanStart);
             var diagnostics = DiagnosticBag.GetInstance();
-            var block = binder.BindBlock(methodBody, diagnostics);
+            var block = binder.BindEmbeddedBlock(methodBody, diagnostics);
             diagnostics.Free();
 
             // Rewriter should use Equals.
@@ -6449,7 +6448,7 @@ public static class Program
         /// &amp; and | are defined on the same type or a derived type
         /// from operators true and false only. This matches Dev12.
         /// </summary>
-        [WorkItem(1079034)]
+        [WorkItem(1079034, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1079034")]
         [Fact]
         public void UserDefinedShortCircuitingOperators_TrueAndFalseOnBaseType()
         {
@@ -6582,7 +6581,7 @@ class P
             }
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_0()
         {
             string source = @"
@@ -6601,7 +6600,7 @@ enum E : short { }
             CompileAndVerify(source: source);
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_1()
         {
             string source = @"
@@ -6633,7 +6632,7 @@ class Test
             CompileAndVerify(source: source, expectedOutput: "implicit operator E");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_2()
         {
             string source = @"
@@ -6665,7 +6664,7 @@ class Test
             CompileAndVerify(source: source, expectedOutput: "implicit operator E");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_3()
         {
             string source = @"
@@ -6688,7 +6687,7 @@ enum E : short { }";
             CompileAndVerify(source: source, expectedOutput: "System.Int16");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_4()
         {
             string source = @"
@@ -6720,7 +6719,7 @@ struct Test
             CompileAndVerify(source: source, expectedOutput: "implicit operator E");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_5()
         {
             string source = @"
@@ -6753,7 +6752,7 @@ struct Test
             CompileAndVerify(source: source, expectedOutput: "implicit operator E");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_6()
         {
             string source = @"
@@ -6776,7 +6775,7 @@ enum E : short { }";
             CompileAndVerify(source: source, expectedOutput: "System.Nullable`1[System.Int16]");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_7()
         {
             string source = @"
@@ -6798,7 +6797,7 @@ class Program
             CompileAndVerify(source: source, expectedOutput: "System.Nullable`1[System.Base64FormattingOptions]");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_8()
         {
             string source = @"
@@ -6820,7 +6819,7 @@ class Program
             CompileAndVerify(source: source, expectedOutput: "System.Nullable`1[System.Int32]");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_9()
         {
             string source = @"
@@ -6861,7 +6860,7 @@ System.Int32
 System.Int32");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_10()
         {
             string source = @"
@@ -7177,7 +7176,7 @@ System.Nullable`1[System.Int16]
 ");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_11()
         {
             string source = @"
@@ -7428,7 +7427,7 @@ class Program
                 );
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_12()
         {
             string source = @"
@@ -7708,7 +7707,7 @@ System.Nullable`1[System.Int32]
 ");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_13()
         {
             string source = @"
@@ -7887,7 +7886,7 @@ class Program
                 );
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_14()
         {
             string source = @"
@@ -8225,7 +8224,7 @@ System.Nullable`1[System.Int64]
 ");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_15()
         {
             string source = @"
@@ -8286,7 +8285,7 @@ System.Nullable`1[System.Int64]
 ");
         }
 
-        [Fact, WorkItem(1036392, "DevDiv")]
+        [Fact, WorkItem(1036392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036392")]
         public void Bug1036392_16()
         {
             string source = @"
@@ -8347,7 +8346,7 @@ System.Nullable`1[System.Int64]
 ");
         }
 
-        [Fact, WorkItem(1090786, "DevDiv")]
+        [Fact, WorkItem(1090786, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1090786")]
         public void Bug1090786_01()
         {
             string source = @"
@@ -8534,7 +8533,7 @@ False
                 );
         }
 
-        [Fact, WorkItem(1090786, "DevDiv")]
+        [Fact, WorkItem(1090786, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1090786")]
         public void Bug1090786_02()
         {
             string source = @"
@@ -8558,7 +8557,7 @@ False
 ");
         }
 
-        [Fact, WorkItem(1090786, "DevDiv")]
+        [Fact, WorkItem(1090786, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1090786")]
         public void Bug1090786_03()
         {
             string source = @"
@@ -8613,61 +8612,6 @@ False
   IL_0019:  call       ""void Test.Print<S>(S)""
   IL_001e:  ret
 }");
-        }
-
-        [Fact(Skip = "This test can cause other tests running in parallel to fail because they might not have enough memory to succeed."), WorkItem(529600, "DevDiv")]
-        public void Bug529600()
-        {
-            string source = $@"
-class M
-{{
-    static void Main()
-    {{}}
-
-    const string C0 = ""{new string('0', 65000)}"";
-
-    const string C1 = C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 + C0 +
-                      C0;
-
-     const string C2 = C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 + C1 +
-                      C1;
-
-}}
-";
-            var compilation = CreateCompilationWithMscorlib(source);
-
-            var err = compilation.GetDiagnostics().Single();
-
-            Assert.Equal((int)ErrorCode.ERR_ConstantStringTooLong, err.Code);
-            Assert.Equal("Length of String constant exceeds current memory limit.  Try splitting the string into multiple constants.", err.GetMessage(EnsureEnglishUICulture.PreferredOrNull));
         }
 
         [Fact, WorkItem(2075, "https://github.com/dotnet/roslyn/issues/2075")]
@@ -8745,6 +8689,107 @@ operator IntHolder(int i)
 'y' is 5");
         }
 
+        [Fact, WorkItem(8190, "https://github.com/dotnet/roslyn/issues/8190")]
+        public void Issue8190_1()
+        {
+            string source = @"
+using System;
+
+namespace RoslynNullableStringRepro
+{
+  public class Program
+  {
+    public static void Main(string[] args)
+    {
+      NonNullableString? irony = ""abc"";
+      irony += ""def"";
+      string ynori = ""abc"";
+      ynori += (NonNullableString?)""def"";
+
+      Console.WriteLine(irony);
+      Console.WriteLine(ynori);
+
+      ynori += (NonNullableString?) null;
+      Console.WriteLine(ynori);
+    }
+  }
+
+  struct NonNullableString
+  {
+    NonNullableString(string value)
+    {
+      if (value == null)
+      {
+        throw new ArgumentNullException(nameof(value));
+      }
+
+      this.value = value;
+    }
+
+    readonly string value;
+
+    public override string ToString() => value;
+
+    public static implicit operator string(NonNullableString self) => self.value;
+
+    public static implicit operator NonNullableString(string value) => new NonNullableString(value);
+
+    public static string operator +(NonNullableString lhs, NonNullableString rhs) => lhs.value + rhs.value;
+  }
+}";
+            CompileAndVerify(source: source, expectedOutput: "abcdef" + Environment.NewLine + "abcdef" + Environment.NewLine + "abcdef");
+        }
+
+        [Fact, WorkItem(8190, "https://github.com/dotnet/roslyn/issues/8190")]
+        public void Issue8190_2()
+        {
+            string source = @"
+using System;
+
+namespace RoslynNullableIntRepro
+{
+  public class Program
+  {
+    public static void Main(string[] args)
+    {
+      NonNullableInt? irony = 1;
+      irony += 2;
+      int? ynori = 1;
+      ynori += (NonNullableInt?) 2;
+
+      Console.WriteLine(irony);
+      Console.WriteLine(ynori);
+
+      ynori += (NonNullableInt?) null;
+      Console.WriteLine(ynori);
+    }
+  }
+
+  struct NonNullableInt
+  {
+    NonNullableInt(int? value)
+    {
+      if (value == null)
+      {
+        throw new ArgumentNullException();
+      }
+
+      this.value = value;
+    }
+
+    readonly int? value;
+
+    public override string ToString() {return value.ToString();}
+
+    public static implicit operator int? (NonNullableInt self) {return self.value;}
+
+    public static implicit operator NonNullableInt(int? value) {return new NonNullableInt(value);}
+
+    public static int? operator +(NonNullableInt lhs, NonNullableInt rhs) { return lhs.value + rhs.value; }
+  }
+}";
+            CompileAndVerify(source: source, expectedOutput: "3" + Environment.NewLine + "3" + Environment.NewLine);
+        }
         [Fact, WorkItem(4027, "https://github.com/dotnet/roslyn/issues/4027")]
         public void NotSignExtendedOperand()
         {
@@ -8764,6 +8809,49 @@ class MainClass
             var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.DebugDll);
 
             compilation.VerifyDiagnostics();
+        }
+
+        [Fact]
+        [WorkItem(12345, "https://github.com/dotnet/roslyn/issues/12345")]
+        public void Bug12345()
+        {
+            string source = @"
+class EnumRepro
+{
+    public static void Main()
+    {
+        EnumWrapper<FlagsEnum> wrappedEnum = FlagsEnum.Foo;
+        wrappedEnum |= FlagsEnum.Bar;
+        System.Console.Write(wrappedEnum.Enum);
+    }
+}
+
+public struct EnumWrapper<T>
+    where T : struct
+{
+    public T? Enum { get; private set; }
+
+    public static implicit operator T? (EnumWrapper<T> safeEnum)
+    {
+        return safeEnum.Enum;
+    }
+
+    public static implicit operator EnumWrapper<T>(T source)
+    {
+        return new EnumWrapper<T> { Enum = source };
+    }
+}
+
+[System.Flags]
+public enum FlagsEnum
+{
+    None = 0,
+    Foo = 1,
+    Bar = 2,
+}
+";
+            var verifier = CompileAndVerify(source, expectedOutput: "Foo, Bar");
+            verifier.VerifyDiagnostics();
         }
     }
 }

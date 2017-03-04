@@ -41,7 +41,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
         Public Shared Function CreateBinderForSourceFileImports(moduleSymbol As SourceModuleSymbol,
                                                                 tree As SyntaxTree) As Binder
             Dim sourceModuleBinder As Binder = CreateSourceModuleBinder(moduleSymbol)
-            Dim sourceFileBinder As Binder = New SourceFileBinder(sourceModuleBinder, moduleSymbol.GetSourceFile(tree), tree)
+            Dim sourceFileBinder As Binder = New SourceFileBinder(sourceModuleBinder, moduleSymbol.TryGetSourceFile(tree), tree)
             Dim namespaceBinder As Binder = New NamespaceBinder(sourceFileBinder, moduleSymbol.ContainingSourceAssembly.DeclaringCompilation.GlobalNamespace)
             Dim ignoreBasesBinder As Binder = New IgnoreBaseClassesBinder(namespaceBinder)
 
@@ -101,24 +101,29 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
                 moduleBinder = New XmlNamespaceImportsBinder(moduleBinder, projectXmlNamespaces)
             End If
 
-            Dim sourceFile = moduleSymbol.GetSourceFile(tree)
+            Dim sourceFile = moduleSymbol.TryGetSourceFile(tree)
+
+            If sourceFile Is Nothing Then
+                Return moduleBinder
+            End If
+
             Dim sourceFileBinder As Binder = New SourceFileBinder(moduleBinder, sourceFile, tree)
 
             ' Add file-level member imports.
             Dim memberImports = sourceFile.MemberImports
-            If memberImports.Length > 0 Then
+            If Not memberImports.IsEmpty Then
                 sourceFileBinder = New TypesOfImportedNamespacesMembersBinder(sourceFileBinder, memberImports)
                 sourceFileBinder = New ImportedTypesAndNamespacesMembersBinder(sourceFileBinder, memberImports)
             End If
 
             'Add file-level alias imports.
-            Dim aliasImports = sourceFile.AliasImports
+            Dim aliasImports = sourceFile.AliasImportsOpt
             If aliasImports IsNot Nothing Then
                 sourceFileBinder = New ImportAliasesBinder(sourceFileBinder, aliasImports)
             End If
 
             ' Add file-level xmlns imports.
-            Dim xmlNamespaces = sourceFile.XmlNamespaces
+            Dim xmlNamespaces = sourceFile.XmlNamespacesOpt
             If xmlNamespaces IsNot Nothing Then
                 sourceFileBinder = New XmlNamespaceImportsBinder(sourceFileBinder, xmlNamespaces)
             End If
@@ -388,7 +393,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
         ' before it. Method type parameters and parameters are in scope.
         ' If Option Explicit Off is in effect, an ImplicitVariableBinder
         ' is created also.
-        Public Shared Function CreateBinderForMethodBody(methodSymbol As MethodSymbol, root As VisualBasicSyntaxNode, containingBinder As Binder) As Binder
+        Public Shared Function CreateBinderForMethodBody(methodSymbol As MethodSymbol, root As SyntaxNode, containingBinder As Binder) As Binder
             Debug.Assert(TypeOf VBSemanticModel.StripSemanticModelBinder(containingBinder) Is NamedTypeBinder)
 
             Dim methodDeclBinder As Binder = CreateBinderForMethodDeclaration(methodSymbol, containingBinder)

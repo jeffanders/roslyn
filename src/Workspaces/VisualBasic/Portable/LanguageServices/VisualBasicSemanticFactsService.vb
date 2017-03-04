@@ -4,7 +4,6 @@ Imports System.Collections.Immutable
 Imports System.Composition
 Imports System.Runtime.InteropServices
 Imports System.Threading
-Imports Microsoft.CodeAnalysis.Host
 Imports Microsoft.CodeAnalysis.Host.Mef
 Imports Microsoft.CodeAnalysis.LanguageServices
 Imports Microsoft.CodeAnalysis.VisualBasic.Extensions.ContextQuery
@@ -32,6 +31,10 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
                                             cancellationToken As CancellationToken) As Boolean Implements ISemanticFactsService.IsExpressionContext
             Dim token = semanticModel.SyntaxTree.GetTargetToken(position, cancellationToken)
             Return semanticModel.SyntaxTree.IsExpressionContext(position, token, cancellationToken, semanticModel)
+        End Function
+
+        Public Function IsInExpressionTree(semanticModel As SemanticModel, node As SyntaxNode, expressionTypeOpt As INamedTypeSymbol, cancellationToken As CancellationToken) As Boolean Implements ISemanticFactsService.IsInExpressionTree
+            Return node.IsInExpressionTree(semanticModel, expressionTypeOpt, cancellationToken)
         End Function
 
         Public Function IsMemberDeclarationContext(semanticModel As SemanticModel, position As Integer, cancellationToken As CancellationToken) As Boolean Implements ISemanticFactsService.IsMemberDeclarationContext
@@ -146,12 +149,6 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
             End Get
         End Property
 
-        Public ReadOnly Property SupportsParameterizedEvents As Boolean Implements ISemanticFactsService.SupportsParameterizedEvents
-            Get
-                Return False
-            End Get
-        End Property
-
         Public Function TryGetSpeculativeSemanticModel(oldSemanticModel As SemanticModel, oldNode As SyntaxNode, newNode As SyntaxNode, <Out> ByRef speculativeModel As SemanticModel) As Boolean Implements ISemanticFactsService.TryGetSpeculativeSemanticModel
             Contract.Requires(oldNode.Kind = newNode.Kind)
 
@@ -242,6 +239,28 @@ Namespace Microsoft.CodeAnalysis.VisualBasic
 
         Public Function IsNameOfContext(semanticModel As SemanticModel, position As Integer, cancellationToken As CancellationToken) As Boolean Implements ISemanticFactsService.IsNameOfContext
             Return semanticModel.SyntaxTree.IsNameOfContext(position, cancellationToken)
+        End Function
+
+        Public Function IsNamespaceDeclarationNameContext(semanticModel As SemanticModel, position As Integer, cancellationToken As CancellationToken) As Boolean Implements ISemanticFactsService.IsNamespaceDeclarationNameContext
+            Return semanticModel.SyntaxTree.IsNamespaceDeclarationNameContext(position, cancellationToken)
+        End Function
+
+        Public Function IsPartial(typeSymbol As ITypeSymbol, cancellationToken As CancellationToken) As Boolean Implements ISemanticFactsService.IsPartial
+            Dim syntaxRefs = typeSymbol.DeclaringSyntaxReferences
+            Return syntaxRefs.Any(
+                Function(n As SyntaxReference)
+                    Return DirectCast(n.GetSyntax(cancellationToken), TypeStatementSyntax).Modifiers.Any(SyntaxKind.PartialKeyword)
+                End Function)
+        End Function
+
+        Public Function GetDeclaredSymbols(semanticModel As SemanticModel, memberDeclaration As SyntaxNode, cancellationToken As CancellationToken) As IEnumerable(Of ISymbol) Implements ISemanticFactsService.GetDeclaredSymbols
+            If TypeOf memberDeclaration Is FieldDeclarationSyntax Then
+                Return DirectCast(memberDeclaration, FieldDeclarationSyntax).Declarators.
+                    SelectMany(Function(d) d.Names.AsEnumerable()).
+                    Select(Function(n) semanticModel.GetDeclaredSymbol(n, cancellationToken))
+            End If
+
+            Return {semanticModel.GetDeclaredSymbol(memberDeclaration, cancellationToken)}
         End Function
     End Class
 End Namespace

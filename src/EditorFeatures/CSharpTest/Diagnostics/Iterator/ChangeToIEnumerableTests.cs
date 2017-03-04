@@ -1,6 +1,5 @@
 // Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.CodeFixes.Iterator;
@@ -12,12 +11,10 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Diagnostics.Iterator
 {
     public class ChangeToIEnumerableTests : AbstractCSharpDiagnosticProviderBasedUserDiagnosticTest
     {
-        internal override Tuple<DiagnosticAnalyzer, CodeFixProvider> CreateDiagnosticProviderAndFixer(Workspace workspace)
-        {
-            return new Tuple<DiagnosticAnalyzer, CodeFixProvider>(null, new CSharpChangeToIEnumerableCodeFixProvider());
-        }
+        internal override (DiagnosticAnalyzer, CodeFixProvider) CreateDiagnosticProviderAndFixer(Workspace workspace)
+            => (null, new CSharpChangeToIEnumerableCodeFixProvider());
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
         public async Task TestChangeToIEnumerableObjectMethod()
         {
             var initial =
@@ -43,10 +40,10 @@ class Program
         yield return 0;
     }
 }";
-            await TestAsync(initial, expected);
+            await TestInRegularAndScriptAsync(initial, expected);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
         public async Task TestChangeToIEnumerableTupleMethod()
         {
             var initial =
@@ -72,10 +69,10 @@ class Program
         yield return 0;
     }
 }";
-            await TestAsync(initial, expected);
+            await TestInRegularAndScriptAsync(initial, expected);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
         public async Task TestChangeToIEnumerableListMethod()
         {
             var initial =
@@ -96,15 +93,15 @@ using System.Collections.Generic;
 
 class Program
 {
-    static IEnumerable<IList<int>> M()
+    static IEnumerable<int> M()
     {
         yield return 0;
     }
 }";
-            await TestAsync(initial, expected);
+            await TestInRegularAndScriptAsync(initial, expected);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
         public async Task TestChangeToIEnumerableGenericIEnumerableMethod()
         {
             var initial =
@@ -118,10 +115,10 @@ class Program
         yield return 0;
     }
 }";
-            await TestMissingAsync(initial);
+            await TestMissingInRegularAndScriptAsync(initial);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
         public async Task TestChangeToIEnumerableGenericIEnumeratorMethod()
         {
             var initial =
@@ -135,10 +132,10 @@ class Program
         yield return 0;
     }
 }";
-            await TestMissingAsync(initial);
+            await TestMissingInRegularAndScriptAsync(initial);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
         public async Task TestChangeToIEnumerableIEnumeratorMethod()
         {
             var initial =
@@ -152,10 +149,10 @@ class Program
         yield return 0;
     }
 }";
-            await TestMissingAsync(initial);
+            await TestMissingInRegularAndScriptAsync(initial);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
         public async Task TestChangeToIEnumerableIEnumerableMethod()
         {
             var initial =
@@ -169,10 +166,10 @@ class Program
         yield return 0;
     }
 }";
-            await TestMissingAsync(initial);
+            await TestMissingInRegularAndScriptAsync(initial);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
         public async Task TestChangeToIEnumerableVoidMethod()
         {
             var initial =
@@ -186,7 +183,158 @@ class Program
         yield return 0;
     }
 }";
-            await TestMissingAsync(initial);
+            await TestMissingInRegularAndScriptAsync(initial);
+        }
+
+        [WorkItem(7087, @"https://github.com/dotnet/roslyn/issues/7087")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
+        public async Task TestChangeToIEnumerableProperty()
+        {
+            await TestInRegularAndScriptAsync(
+@"using System;
+using System.Collections.Generic;
+
+namespace Asdf
+{
+    public class Test
+    {
+        public ISet<IMyInterface> Test
+        {
+            [|get|]
+            {
+                yield return TestFactory.Create<float>(""yada yada yada"");
+            } ;
+        }
+    }
+
+    public static class TestFactory
+    {
+        public static IMyInterface Create<T>(string someIdentifier)
+        {
+            return new MyClass<T>();
+        }
+    }
+
+    public interface IMyInterface : IEquatable<IMyInterface>
+    {
+    }
+
+    public class MyClass<T> : IMyInterface
+    {
+        public bool Equals(IMyInterface other)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}",
+@"using System;
+using System.Collections.Generic;
+
+namespace Asdf
+{
+    public class Test
+    {
+        public IEnumerable<IMyInterface> Test
+        {
+            get
+            {
+                yield return TestFactory.Create<float>(""yada yada yada"");
+            } ;
+        }
+    }
+
+    public static class TestFactory
+    {
+        public static IMyInterface Create<T>(string someIdentifier)
+        {
+            return new MyClass<T>();
+        }
+    }
+
+    public interface IMyInterface : IEquatable<IMyInterface>
+    {
+    }
+
+    public class MyClass<T> : IMyInterface
+    {
+        public bool Equals(IMyInterface other)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}");
+        }
+
+        [WorkItem(7087, @"https://github.com/dotnet/roslyn/issues/7087")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
+        public async Task TestChangeToIEnumerableOperator()
+        {
+            await TestInRegularAndScriptAsync(
+@"using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace Asdf
+{
+    public class T
+    {
+        public static ISet<int> operator [|=|] (T left, T right)
+        {
+            yield return 0;
+        }
+    }
+}",
+@"using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace Asdf
+{
+    public class T
+    {
+        public static IEnumerable<int> operator = (T left, T right)
+        {
+            yield return 0;
+        }
+    }
+}");
+        }
+
+        [WorkItem(7087, @"https://github.com/dotnet/roslyn/issues/7087")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsChangeToIEnumerable)]
+        public async Task TestChangeToIEnumerableIndexer()
+        {
+            await TestInRegularAndScriptAsync(
+@"using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+class T
+{
+    public T[] this[int i]
+    {
+        [|get|]
+        {
+            yield return new T();
+        }
+    }
+}",
+@"using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+class T
+{
+    public IEnumerable<T> this[int i]
+    {
+        get
+        {
+            yield return new T();
+        }
+    }
+}");
         }
     }
 }

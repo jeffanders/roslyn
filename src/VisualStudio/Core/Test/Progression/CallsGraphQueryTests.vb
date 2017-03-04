@@ -7,9 +7,9 @@ Imports Roslyn.Test.Utilities
 
 Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Progression
     Public Class CallsGraphQueryTests
-        <WpfFact, Trait(Traits.Feature, Traits.Features.Progression)>
+        <Fact, Trait(Traits.Feature, Traits.Features.Progression)>
         Public Async Function CallsSimpleTests() As Task
-            Using testState = Await ProgressionTestState.CreateAsync(
+            Using testState = ProgressionTestState.Create(
                     <Workspace>
                         <Project Language="C#" CommonReferences="true" FilePath="Z:\Project.csproj">
                             <Document FilePath="Z:\Project.cs">
@@ -46,9 +46,9 @@ Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Progression
             End Using
         End Function
 
-        <WpfFact, Trait(Traits.Feature, Traits.Features.Progression)>
+        <Fact, Trait(Traits.Feature, Traits.Features.Progression)>
         Public Async Function CallsLambdaTests() As Task
-            Using testState = Await ProgressionTestState.CreateAsync(
+            Using testState = ProgressionTestState.Create(
                     <Workspace>
                         <Project Language="C#" CommonReferences="true" FilePath="Z:\Project.csproj">
                             <Document FilePath="Z:\Project.cs">
@@ -90,9 +90,9 @@ class A
             End Using
         End Function
 
-        <WpfFact, Trait(Traits.Feature, Traits.Features.Progression)>
+        <Fact, Trait(Traits.Feature, Traits.Features.Progression)>
         Public Async Function CallsPropertiesTests() As Task
-            Using testState = Await ProgressionTestState.CreateAsync(
+            Using testState = ProgressionTestState.Create(
                     <Workspace>
                         <Project Language="C#" CommonReferences="true" FilePath="Z:\Project.csproj">
                             <Document FilePath="Z:\Project.cs">
@@ -125,9 +125,9 @@ class A
             End Using
         End Function
 
-        <WpfFact, Trait(Traits.Feature, Traits.Features.Progression)>
+        <Fact, Trait(Traits.Feature, Traits.Features.Progression)>
         Public Async Function CallsDelegatesTests() As Task
-            Using testState = Await ProgressionTestState.CreateAsync(
+            Using testState = ProgressionTestState.Create(
                     <Workspace>
                         <Project Language="C#" CommonReferences="true" FilePath="Z:\Project.csproj">
                             <Document FilePath="Z:\Project.cs">
@@ -179,9 +179,9 @@ class C
             End Using
         End Function
 
-        <WpfFact, Trait(Traits.Feature, Traits.Features.Progression)>
+        <Fact, Trait(Traits.Feature, Traits.Features.Progression)>
         Public Async Function CallsDelegateCreationExpressionTests() As Task
-            Using testState = Await ProgressionTestState.CreateAsync(
+            Using testState = ProgressionTestState.Create(
                     <Workspace>
                         <Project Language="C#" CommonReferences="true" FilePath="Z:\Project.csproj">
                             <Document FilePath="Z:\Project.cs">

@@ -545,12 +545,12 @@ abstract class MyClass$$
             var expectedInterfaceCode = @"interface IMyClass
 {
     int ExtractableProp { get; set; }
-    int ExtractableProp_GetInternal { set; }
     int ExtractableProp_GetOnly { get; }
-    int ExtractableProp_GetPrivate { set; }
-    int ExtractableProp_SetInternal { get; }
     int ExtractableProp_SetOnly { set; }
     int ExtractableProp_SetPrivate { get; }
+    int ExtractableProp_GetPrivate { set; }
+    int ExtractableProp_SetInternal { get; }
+    int ExtractableProp_GetInternal { set; }
     int NotActuallyUnsafeProp { get; set; }
     unsafe int* UnsafeProp { get; set; }
 }";
@@ -574,9 +574,9 @@ abstract class MyClass$$
 
             var expectedInterfaceCode = @"interface IMyClass
 {
-    int this[double x] { get; set; }
-    int this[string x] { get; }
     int this[int x] { set; }
+    int this[string x] { get; }
+    int this[double x] { get; set; }
     int this[int? x, string y = ""42""] { get; set; }
 }";
 
@@ -645,7 +645,7 @@ public class Class<A, B, C, D, E, F, G, H, NO1> where E : F
             await TestExtractInterfaceCommandCSharpAsync(markup, expectedSuccess: true, expectedInterfaceCode: expectedInterfaceCode);
         }
 
-        [WorkItem(706894)]
+        [WorkItem(706894, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/706894")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.ExtractInterface)]
         public async Task ExtractInterface_CodeGen_TypeParameters2()
         {
@@ -690,7 +690,7 @@ class $$Class1<A, B>
             await TestExtractInterfaceCommandCSharpAsync(markup, expectedSuccess: true, expectedInterfaceCode: expectedInterfaceCode);
         }
 
-        [WorkItem(706894)]
+        [WorkItem(706894, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/706894")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.ExtractInterface)]
         public async Task ExtractInterface_CodeGen_TypeParameters4()
         {
@@ -1008,7 +1008,7 @@ class Program $$: ISomeInterface<object>
             TypeDiscoveryRule typeDiscoveryRule,
             bool expectedExtractable)
         {
-            using (var testState = await ExtractInterfaceTestState.CreateAsync(markup, LanguageNames.CSharp, compilationOptions: null))
+            using (var testState = ExtractInterfaceTestState.Create(markup, LanguageNames.CSharp, compilationOptions: null))
             {
                 var result = await testState.GetTypeAnalysisResultAsync(typeDiscoveryRule);
                 Assert.Equal(expectedExtractable, result.CanExtractInterface);
@@ -1057,12 +1057,12 @@ class $$Test<T, U>
         [WpfFact]
         [Trait(Traits.Feature, Traits.Features.ExtractInterface)]
         [Trait(Traits.Feature, Traits.Features.Interactive)]
-        public async Task ExtractInterfaceCommandDisabledInSubmission()
+        public void ExtractInterfaceCommandDisabledInSubmission()
         {
             var exportProvider = MinimalTestExportProvider.CreateExportProvider(
                 TestExportProvider.EntireAssemblyCatalogWithCSharpAndVisualBasic.WithParts(typeof(InteractiveDocumentSupportsFeatureService)));
 
-            using (var workspace = await TestWorkspaceFactory.CreateWorkspaceAsync(XElement.Parse(@"
+            using (var workspace = TestWorkspace.Create(XElement.Parse(@"
                 <Workspace>
                     <Submission Language=""C#"" CommonReferences=""true"">  
                         public class $$C

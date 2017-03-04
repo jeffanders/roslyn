@@ -56,9 +56,7 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel.Inter
 
         internal bool IsValidNode()
         {
-            var node = LookupNode();
-
-            if (node == null)
+            if (!TryLookupNode(out var node))
             {
                 return false;
             }
@@ -72,7 +70,17 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel.Inter
             return true;
         }
 
-        internal abstract SyntaxNode LookupNode();
+        internal virtual SyntaxNode LookupNode()
+        {
+            if (!TryLookupNode(out var node))
+            {
+                throw Exceptions.ThrowEFail();
+            }
+
+            return node;
+        }
+
+        internal abstract bool TryLookupNode(out SyntaxNode node);
 
         internal virtual ISymbol LookupSymbol()
         {

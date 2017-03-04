@@ -39,28 +39,23 @@ namespace Microsoft.CodeAnalysis.CodeRefactorings
 
         private IEnumerable<Lazy<CodeRefactoringProvider, OrderableLanguageMetadata>> DistributeLanguages(IEnumerable<Lazy<CodeRefactoringProvider, CodeChangeProviderMetadata>> providers)
         {
-            foreach (Lazy<CodeRefactoringProvider, CodeChangeProviderMetadata> provider in providers)
+            foreach (var provider in providers)
             {
-                foreach (string language in provider.Metadata.Languages)
+                foreach (var language in provider.Metadata.Languages)
                 {
-                    OrderableLanguageMetadata orderable = new OrderableLanguageMetadata(null, language);
+                    var orderable = new OrderableLanguageMetadata(
+                        provider.Metadata.Name, language, provider.Metadata.AfterTyped, provider.Metadata.BeforeTyped);
                     yield return new Lazy<CodeRefactoringProvider, OrderableLanguageMetadata>(() => provider.Value, orderable);
                 }
             }
         }
 
         private ImmutableDictionary<string, Lazy<IEnumerable<CodeRefactoringProvider>>> LanguageToProvidersMap
-        {
-            get
-            {
-                return _lazyLanguageToProvidersMap.Value;
-            }
-        }
+            => _lazyLanguageToProvidersMap.Value;
 
         private IEnumerable<CodeRefactoringProvider> GetProviders(Document document)
         {
-            Lazy<IEnumerable<CodeRefactoringProvider>> lazyProviders;
-            if (this.LanguageToProvidersMap.TryGetValue(document.Project.Language, out lazyProviders))
+            if (this.LanguageToProvidersMap.TryGetValue(document.Project.Language, out var lazyProviders))
             {
                 return lazyProviders.Value;
             }
@@ -93,7 +88,7 @@ namespace Microsoft.CodeAnalysis.CodeRefactorings
             return false;
         }
 
-        public async Task<IEnumerable<CodeRefactoring>> GetRefactoringsAsync(
+        public async Task<ImmutableArray<CodeRefactoring>> GetRefactoringsAsync(
             Document document,
             TextSpan state,
             CancellationToken cancellationToken)
@@ -106,11 +101,11 @@ namespace Microsoft.CodeAnalysis.CodeRefactorings
                 foreach (var provider in this.GetProviders(document))
                 {
                     tasks.Add(Task.Run(
-                        async () => await GetRefactoringFromProviderAsync(document, state, provider, extensionManager, cancellationToken).ConfigureAwait(false), cancellationToken));
+                        () => GetRefactoringFromProviderAsync(document, state, provider, extensionManager, cancellationToken), cancellationToken));
                 }
 
                 var results = await Task.WhenAll(tasks).ConfigureAwait(false);
-                return results.WhereNotNull();
+                return results.WhereNotNull().ToImmutableArray();
             }
         }
 
@@ -133,7 +128,7 @@ namespace Microsoft.CodeAnalysis.CodeRefactorings
                 var context = new CodeRefactoringContext(document, state,
 
                     // TODO: Can we share code between similar lambdas that we pass to this API in BatchFixAllProvider.cs, CodeFixService.cs and CodeRefactoringService.cs?
-                    (a) =>
+                    a =>
                     {
                         // Serialize access for thread safety - we don't know what thread the refactoring provider will call this delegate from.
                         lock (actions)

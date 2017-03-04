@@ -11,7 +11,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests.PDB
 {
     public class PDBIteratorTests : CSharpPDBTestBase
     {
-        [WorkItem(543376, "DevDiv")]
+        [WorkItem(543376, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543376")]
         [Fact]
         public void SimpleIterator1()
         {
@@ -52,7 +52,7 @@ class Program
 </symbols>");
         }
 
-        [WorkItem(543376, "DevDiv")]
+        [WorkItem(543376, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543376")]
         [Fact]
         public void SimpleIterator2()
         {
@@ -94,7 +94,7 @@ class Program
 </symbols>");
         }
 
-        [WorkItem(543490, "DevDiv")]
+        [WorkItem(543490, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543490")]
         [Fact]
         public void SimpleIterator3()
         {
@@ -173,8 +173,8 @@ class Program
           <namespace usingCount=""0"" />
         </using>
         <hoistedLocalScopes>
-          <slot startOffset=""0x2a"" endOffset=""0xb3"" />
-          <slot startOffset=""0x6e"" endOffset=""0xb1"" />
+          <slot startOffset=""0x2a"" endOffset=""0xb4"" />
+          <slot startOffset=""0x6e"" endOffset=""0xb2"" />
         </hoistedLocalScopes>
       </customDebugInfo>
       <sequencePoints>
@@ -235,8 +235,8 @@ class Program
           <namespace usingCount=""0"" />
         </using>
         <hoistedLocalScopes>
-          <slot startOffset=""0x39"" endOffset=""0xc5"" />
-          <slot startOffset=""0x7e"" endOffset=""0xc3"" />
+          <slot startOffset=""0x39"" endOffset=""0xc6"" />
+          <slot startOffset=""0x7e"" endOffset=""0xc4"" />
         </hoistedLocalScopes>
         <encLocalSlotMap>
           <slot kind=""27"" offset=""0"" />
@@ -306,9 +306,9 @@ class Test<T>
           <namespace usingCount=""2"" />
         </using>
         <hoistedLocalScopes>
-          <slot startOffset=""0x32"" endOffset=""0xe1"" />
-          <slot startOffset=""0x0"" endOffset=""0x0"" />
-          <slot startOffset=""0x5b"" endOffset=""0xa4"" />
+          <slot startOffset=""0x32"" endOffset=""0xe2"" />
+          <slot />
+          <slot startOffset=""0x5b"" endOffset=""0xa5"" />
         </hoistedLocalScopes>
         <encLocalSlotMap>
           <slot kind=""temp"" />
@@ -343,7 +343,7 @@ class Test<T>
 </symbols>");
         }
 
-        [WorkItem(542705, "DevDiv"), WorkItem(528790, "DevDiv"), WorkItem(543490, "DevDiv")]
+        [WorkItem(542705, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542705"), WorkItem(528790, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528790"), WorkItem(543490, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543490")]
         [Fact()]
         public void IteratorBackToNextStatementAfterYieldReturn()
         {
@@ -434,7 +434,7 @@ class C
             }
         }
 
-        [WorkItem(543490, "DevDiv")]
+        [WorkItem(543490, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543490")]
         [Fact()]
         public void IteratorMultipleEnumerables()
         {
@@ -563,10 +563,10 @@ public class Test
       <customDebugInfo>
         <forward declaringType=""Test`1"" methodName=""System.Collections.IEnumerable.GetEnumerator"" />
         <hoistedLocalScopes>
-          <slot startOffset=""0x0"" endOffset=""0x0"" />
-          <slot startOffset=""0x54"" endOffset=""0x94"" />
-          <slot startOffset=""0x0"" endOffset=""0x0"" />
-          <slot startOffset=""0xd1"" endOffset=""0x10e"" />
+          <slot />
+          <slot startOffset=""0x54"" endOffset=""0x95"" />
+          <slot />
+          <slot startOffset=""0xd1"" endOffset=""0x10f"" />
         </hoistedLocalScopes>
         <encLocalSlotMap>
           <slot kind=""temp"" />
@@ -675,8 +675,8 @@ class C
           <namespace usingCount=""1"" />
         </using>
         <hoistedLocalScopes>
-          <slot startOffset=""0x2a"" endOffset=""0x82"" />
-          <slot startOffset=""0x2a"" endOffset=""0x82"" />
+          <slot startOffset=""0x2a"" endOffset=""0x83"" />
+          <slot startOffset=""0x2a"" endOffset=""0x83"" />
         </hoistedLocalScopes>
         <encLocalSlotMap>
           <slot kind=""27"" offset=""0"" />
@@ -902,8 +902,8 @@ class C
 </symbols>");
         }
 
-        [WorkItem(836491, "DevDiv")]
-        [WorkItem(827337, "DevDiv")]
+        [WorkItem(836491, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/836491")]
+        [WorkItem(827337, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/827337")]
         [Fact]
         public void DisplayClass_AcrossSuspensionPoints_Debug()
         {
@@ -945,7 +945,7 @@ class C
       <customDebugInfo>
         <forward declaringType=""C+&lt;&gt;c__DisplayClass0_0"" methodName=""&lt;M&gt;b__0"" />
         <hoistedLocalScopes>
-          <slot startOffset=""0x30"" endOffset=""0xea"" />
+          <slot startOffset=""0x30"" endOffset=""0xeb"" />
         </hoistedLocalScopes>
         <encLocalSlotMap>
           <slot kind=""27"" offset=""0"" />
@@ -970,8 +970,8 @@ class C
 </symbols>");
         }
 
-        [WorkItem(836491, "DevDiv")]
-        [WorkItem(827337, "DevDiv")]
+        [WorkItem(836491, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/836491")]
+        [WorkItem(827337, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/827337")]
         [Fact]
         public void DisplayClass_InBetweenSuspensionPoints_Release()
         {
@@ -1082,11 +1082,6 @@ class C
     <method containingType=""C"" name=""M"">
       <customDebugInfo>
         <forwardIterator name=""&lt;M&gt;d__0"" />
-        <encLambdaMap>
-          <methodOrdinal>0</methodOrdinal>
-          <closure offset=""0"" />
-          <lambda offset=""95"" closure=""0"" />
-        </encLambdaMap>
       </customDebugInfo>
     </method>
   </methods>
@@ -1198,7 +1193,7 @@ class C
       <customDebugInfo>
         <forward declaringType=""C+&lt;&gt;c__DisplayClass0_0"" methodName=""&lt;M&gt;b__0"" />
         <hoistedLocalScopes>
-          <slot startOffset=""0x1f"" endOffset=""0x7e"" />
+          <slot startOffset=""0x1f"" endOffset=""0x7f"" />
         </hoistedLocalScopes>
         <encLocalSlotMap>
           <slot kind=""27"" offset=""0"" />
@@ -1240,8 +1235,8 @@ class C
 </symbols>");
         }
 
-        [WorkItem(836491, "DevDiv")]
-        [WorkItem(827337, "DevDiv")]
+        [WorkItem(836491, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/836491")]
+        [WorkItem(827337, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/827337")]
         [Fact]
         public void DynamicLocal_AcrossSuspensionPoints_Debug()
         {
@@ -1280,7 +1275,7 @@ class C
           <namespace usingCount=""1"" />
         </using>
         <hoistedLocalScopes>
-          <slot startOffset=""0x1f"" endOffset=""0xe2"" />
+          <slot startOffset=""0x1f"" endOffset=""0xe3"" />
         </hoistedLocalScopes>
         <encLocalSlotMap>
           <slot kind=""27"" offset=""0"" />
@@ -1318,9 +1313,9 @@ class C
 ");
         }
 
-        [WorkItem(836491, "DevDiv")]
-        [WorkItem(827337, "DevDiv")]
-        [WorkItem(1070519, "DevDiv")]
+        [WorkItem(836491, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/836491")]
+        [WorkItem(827337, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/827337")]
+        [WorkItem(1070519, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1070519")]
         [Fact]
         public void DynamicLocal_InBetweenSuspensionPoints_Release()
         {
@@ -1376,7 +1371,7 @@ class C
 </symbols>");
         }
 
-        [WorkItem(1070519, "DevDiv")]
+        [WorkItem(1070519, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1070519")]
         [Fact]
         public void DynamicLocal_InBetweenSuspensionPoints_Debug()
         {
@@ -1415,7 +1410,7 @@ class C
           <namespace usingCount=""1"" />
         </using>
         <hoistedLocalScopes>
-          <slot startOffset=""0x1f"" endOffset=""0x8a"" />
+          <slot startOffset=""0x1f"" endOffset=""0x8b"" />
         </hoistedLocalScopes>
         <encLocalSlotMap>
           <slot kind=""27"" offset=""0"" />
@@ -1437,7 +1432,7 @@ class C
 </symbols>");
         }
 
-        [Fact, WorkItem(667579, "DevDiv")]
+        [Fact, WorkItem(667579, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/667579")]
         public void DebuggerHiddenIterator()
         {
             var text = @"

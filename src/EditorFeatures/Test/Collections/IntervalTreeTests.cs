@@ -36,161 +36,161 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Collections
             yield return SimpleIntervalTree.Create(new TupleIntrospector<string>(), values);
         }
 
-        [WpfFact]
+        [Fact]
         public void TestEmpty()
         {
             foreach (var tree in CreateTrees())
             {
-                var spans = tree.GetOverlappingIntervals(0, 1);
+                var spans = tree.GetIntervalsThatOverlapWith(0, 1);
 
                 Assert.Empty(spans);
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestBeforeSpan()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A")))
             {
-                var spans = tree.GetOverlappingIntervals(0, 1);
+                var spans = tree.GetIntervalsThatOverlapWith(0, 1);
 
                 Assert.Empty(spans);
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestAbuttingBeforeSpan()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A")))
             {
-                var spans = tree.GetOverlappingIntervals(0, 5);
+                var spans = tree.GetIntervalsThatOverlapWith(0, 5);
 
                 Assert.Empty(spans);
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestAfterSpan()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A")))
             {
-                var spans = tree.GetOverlappingIntervals(15, 5);
+                var spans = tree.GetIntervalsThatOverlapWith(15, 5);
 
                 Assert.Empty(spans);
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestAbuttingAfterSpan()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A")))
             {
-                var spans = tree.GetOverlappingIntervals(10, 5);
+                var spans = tree.GetIntervalsThatOverlapWith(10, 5);
 
                 Assert.Empty(spans);
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestMatchingSpan()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A")))
             {
-                var spans = tree.GetOverlappingIntervals(5, 5).Select(t => t.Item3);
+                var spans = tree.GetIntervalsThatOverlapWith(5, 5).Select(t => t.Item3);
 
                 Assert.True(Set("A").SetEquals(spans));
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestContainedAbuttingStart()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A")))
             {
-                var spans = tree.GetOverlappingIntervals(5, 2).Select(i => i.Item3);
+                var spans = tree.GetIntervalsThatOverlapWith(5, 2).Select(i => i.Item3);
 
                 Assert.True(Set("A").SetEquals(spans));
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestContainedAbuttingEnd()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A")))
             {
-                var spans = tree.GetOverlappingIntervals(8, 2).Select(i => i.Item3);
+                var spans = tree.GetIntervalsThatOverlapWith(8, 2).Select(i => i.Item3);
 
                 Assert.True(Set("A").SetEquals(spans));
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestCompletedContained()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A")))
             {
-                var spans = tree.GetOverlappingIntervals(7, 2).Select(i => i.Item3);
+                var spans = tree.GetIntervalsThatOverlapWith(7, 2).Select(i => i.Item3);
 
                 Assert.True(Set("A").SetEquals(spans));
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestOverlappingStart()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A")))
             {
-                var spans = tree.GetOverlappingIntervals(4, 2).Select(i => i.Item3);
+                var spans = tree.GetIntervalsThatOverlapWith(4, 2).Select(i => i.Item3);
 
                 Assert.True(Set("A").SetEquals(spans));
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestOverlappingEnd()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A")))
             {
-                var spans = tree.GetOverlappingIntervals(9, 2).Select(i => i.Item3);
+                var spans = tree.GetIntervalsThatOverlapWith(9, 2).Select(i => i.Item3);
 
                 Assert.True(Set("A").SetEquals(spans));
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestOverlappingAll()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A")))
             {
-                var spans = tree.GetOverlappingIntervals(4, 7).Select(i => i.Item3);
+                var spans = tree.GetIntervalsThatOverlapWith(4, 7).Select(i => i.Item3);
 
                 Assert.True(Set("A").SetEquals(spans));
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestNonOverlappingSpans()
         {
             foreach (var tree in CreateTrees(Tuple.Create(5, 5, "A"), Tuple.Create(15, 5, "B")))
             {
                 // Test between the spans
-                Assert.Empty(tree.GetOverlappingIntervals(2, 2));
-                Assert.Empty(tree.GetOverlappingIntervals(11, 2));
-                Assert.Empty(tree.GetOverlappingIntervals(22, 2));
+                Assert.Empty(tree.GetIntervalsThatOverlapWith(2, 2));
+                Assert.Empty(tree.GetIntervalsThatOverlapWith(11, 2));
+                Assert.Empty(tree.GetIntervalsThatOverlapWith(22, 2));
 
                 // Test in the spans
-                Assert.True(Set("A").SetEquals(tree.GetOverlappingIntervals(6, 2).Select(i => i.Item3)));
-                Assert.True(Set("B").SetEquals(tree.GetOverlappingIntervals(16, 2).Select(i => i.Item3)));
+                Assert.True(Set("A").SetEquals(tree.GetIntervalsThatOverlapWith(6, 2).Select(i => i.Item3)));
+                Assert.True(Set("B").SetEquals(tree.GetIntervalsThatOverlapWith(16, 2).Select(i => i.Item3)));
 
                 // Test covering both spans
-                Assert.True(Set("A", "B").SetEquals(tree.GetOverlappingIntervals(2, 20).Select(i => i.Item3)));
-                Assert.True(Set("A", "B").SetEquals(tree.GetOverlappingIntervals(2, 14).Select(i => i.Item3)));
-                Assert.True(Set("A", "B").SetEquals(tree.GetOverlappingIntervals(6, 10).Select(i => i.Item3)));
-                Assert.True(Set("A", "B").SetEquals(tree.GetOverlappingIntervals(6, 20).Select(i => i.Item3)));
+                Assert.True(Set("A", "B").SetEquals(tree.GetIntervalsThatOverlapWith(2, 20).Select(i => i.Item3)));
+                Assert.True(Set("A", "B").SetEquals(tree.GetIntervalsThatOverlapWith(2, 14).Select(i => i.Item3)));
+                Assert.True(Set("A", "B").SetEquals(tree.GetIntervalsThatOverlapWith(6, 10).Select(i => i.Item3)));
+                Assert.True(Set("A", "B").SetEquals(tree.GetIntervalsThatOverlapWith(6, 20).Select(i => i.Item3)));
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestSubsumedSpans()
         {
             var spans = List(
@@ -201,7 +201,7 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Collections
             TestOverlapsAndIntersects(spans);
         }
 
-        [WpfFact]
+        [Fact]
         public void TestOverlappingSpans()
         {
             var spans = List(
@@ -212,7 +212,7 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Collections
             TestOverlapsAndIntersects(spans);
         }
 
-        [WpfFact]
+        [Fact]
         public void TestIntersectsWith()
         {
             var spans = List(
@@ -220,15 +220,15 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Collections
 
             foreach (var tree in CreateTrees(spans))
             {
-                Assert.False(tree.IntersectsWith(-1));
-                Assert.True(tree.IntersectsWith(0));
-                Assert.True(tree.IntersectsWith(1));
-                Assert.True(tree.IntersectsWith(2));
-                Assert.False(tree.IntersectsWith(3));
+                Assert.False(tree.HasIntervalThatIntersectsWith(-1));
+                Assert.True(tree.HasIntervalThatIntersectsWith(0));
+                Assert.True(tree.HasIntervalThatIntersectsWith(1));
+                Assert.True(tree.HasIntervalThatIntersectsWith(2));
+                Assert.False(tree.HasIntervalThatIntersectsWith(3));
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void LargeTest()
         {
             var spans = List(
@@ -245,7 +245,7 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Collections
             TestOverlapsAndIntersects(spans);
         }
 
-        [WpfFact]
+        [Fact]
         public void TestCrash1()
         {
             foreach (var tree in CreateTrees(Tuple.Create(8, 1, "A"), Tuple.Create(59, 1, "B"), Tuple.Create(52, 1, "C")))
@@ -253,7 +253,7 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Collections
             }
         }
 
-        [WpfFact]
+        [Fact]
         public void TestEmptySpanAtStart()
         {
             // Make sure creating empty spans works (there was a bug here)
@@ -282,7 +282,7 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Collections
             return new IntervalTree<int>(Int32Introspector.Instance, values);
         }
 
-        [WpfFact]
+        [Fact]
         public void TestSortedEnumerable1()
         {
             var tree = new IntervalTree<int>(Int32Introspector.Instance, new[] { 0, 0, 0 });
@@ -318,7 +318,7 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Collections
             Assert.Equal(CreateIntTree(2, 2, 2), new[] { 2, 2, 2 });
         }
 
-        [WpfFact]
+        [Fact]
         public void TestSortedEnumerable2()
         {
             var tree = new IntervalTree<int>(Int32Introspector.Instance, new[] { 1, 0 });
@@ -337,14 +337,14 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Collections
                     {
                         var span = new Span(start, length);
 
-                        var set1 = new HashSet<string>(tree.GetOverlappingIntervals(start, length).Select(i => i.Item3));
+                        var set1 = new HashSet<string>(tree.GetIntervalsThatOverlapWith(start, length).Select(i => i.Item3));
                         var set2 = new HashSet<string>(spans.Where(t =>
                         {
                             return span.OverlapsWith(new Span(t.Item1, t.Item2));
                         }).Select(t => t.Item3));
                         Assert.True(set1.SetEquals(set2));
 
-                        var set3 = new HashSet<string>(tree.GetIntersectingIntervals(start, length).Select(i => i.Item3));
+                        var set3 = new HashSet<string>(tree.GetIntervalsThatIntersectWith(start, length).Select(i => i.Item3));
                         var set4 = new HashSet<string>(spans.Where(t =>
                         {
                             return span.IntersectsWith(new Span(t.Item1, t.Item2));

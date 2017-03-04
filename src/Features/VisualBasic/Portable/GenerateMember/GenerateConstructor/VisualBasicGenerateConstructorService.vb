@@ -1,10 +1,11 @@
 ' Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+Imports System.Collections.Immutable
 Imports System.Composition
 Imports System.Threading
 Imports Microsoft.CodeAnalysis.GenerateMember.GenerateConstructor
 Imports Microsoft.CodeAnalysis.Host.Mef
-Imports Microsoft.CodeAnalysis.LanguageServices
+Imports Microsoft.CodeAnalysis.Utilities
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports Microsoft.CodeAnalysis.VisualBasic.Utilities
 
@@ -17,11 +18,17 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.GenerateMember.GenerateConstructor
             Return semanticModel.GenerateNameForArgument(argument)
         End Function
 
-        Protected Overrides Function GenerateParameterNames(semanticModel As SemanticModel, arguments As IEnumerable(Of ArgumentSyntax), Optional reservedNames As IList(Of String) = Nothing) As IList(Of String)
+        Protected Overrides Function GenerateParameterNames(
+                semanticModel As SemanticModel,
+                arguments As IEnumerable(Of ArgumentSyntax),
+                Optional reservedNames As IList(Of String) = Nothing) As ImmutableArray(Of ParameterName)
             Return semanticModel.GenerateParameterNames(arguments?.ToList(), reservedNames)
         End Function
 
-        Protected Overrides Function GetArgumentType(semanticModel As SemanticModel, argument As ArgumentSyntax, cancellationToken As CancellationToken) As Microsoft.CodeAnalysis.ITypeSymbol
+        Protected Overrides Function GetArgumentType(
+                semanticModel As SemanticModel,
+                argument As ArgumentSyntax,
+                cancellationToken As CancellationToken) As ITypeSymbol
             Return argument.DetermineType(semanticModel, cancellationToken)
         End Function
 
@@ -42,7 +49,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.GenerateMember.GenerateConstructor
 
         Protected Overrides Function TryInitializeConstructorInitializerGeneration(
                 document As SemanticDocument, node As SyntaxNode, cancellationToken As CancellationToken,
-                ByRef token As SyntaxToken, ByRef arguments As IList(Of ArgumentSyntax), ByRef typeToGenerateIn As INamedTypeSymbol) As Boolean
+                ByRef token As SyntaxToken, ByRef arguments As ImmutableArray(Of ArgumentSyntax), ByRef typeToGenerateIn As INamedTypeSymbol) As Boolean
             Dim simpleName = DirectCast(node, SimpleNameSyntax)
             Dim memberAccess = DirectCast(simpleName.Parent, MemberAccessExpressionSyntax)
             Dim invocation = DirectCast(memberAccess.Parent, InvocationExpressionSyntax)
@@ -52,7 +59,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.GenerateMember.GenerateConstructor
 
                 If containingType IsNot Nothing Then
                     token = simpleName.Identifier
-                    arguments = invocation.ArgumentList.Arguments.ToList()
+                    arguments = invocation.ArgumentList.Arguments.ToImmutableArray()
                     typeToGenerateIn = If(memberAccess.Expression.IsKind(SyntaxKind.MyBaseExpression),
                                           containingType.BaseType,
                                           containingType)
@@ -76,7 +83,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.GenerateMember.GenerateConstructor
                 node As SyntaxNode,
                 cancellationToken As CancellationToken,
                 ByRef token As SyntaxToken,
-                ByRef arguments As IList(Of ArgumentSyntax),
+                ByRef arguments As ImmutableArray(Of ArgumentSyntax),
                 ByRef typeToGenerateIn As INamedTypeSymbol) As Boolean
 
             Dim simpleName = DirectCast(node, SimpleNameSyntax)
@@ -91,7 +98,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.GenerateMember.GenerateConstructor
                     Dim semanticModel = document.SemanticModel
 
                     token = simpleName.Identifier
-                    arguments = objectCreationExpression.ArgumentList.Arguments.ToList()
+                    arguments = objectCreationExpression.ArgumentList.Arguments.ToImmutableArray()
 
                     Dim symbolInfo = semanticModel.GetSymbolInfo(objectCreationExpression.Type, cancellationToken)
                     typeToGenerateIn = TryCast(symbolInfo.GetAnySymbol(), INamedTypeSymbol)
@@ -111,8 +118,8 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.GenerateMember.GenerateConstructor
                 node As SyntaxNode,
                 cancellationToken As CancellationToken,
                 ByRef token As SyntaxToken,
-                ByRef arguments As IList(Of ArgumentSyntax),
-                ByRef attributeArguments As IList(Of AttributeSyntax),
+                ByRef arguments As ImmutableArray(Of ArgumentSyntax),
+                ByRef attributeArguments As ImmutableArray(Of AttributeSyntax),
                 ByRef typeToGenerateIn As INamedTypeSymbol) As Boolean
 
             Dim simpleName = DirectCast(node, SimpleNameSyntax)
@@ -127,7 +134,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.GenerateMember.GenerateConstructor
                     Dim symbolInfo = document.SemanticModel.GetSymbolInfo(attribute, cancellationToken)
                     If symbolInfo.CandidateReason = CandidateReason.OverloadResolutionFailure AndAlso Not symbolInfo.CandidateSymbols.IsEmpty Then
                         token = simpleName.Identifier
-                        arguments = attribute.ArgumentList.Arguments.ToList()
+                        arguments = attribute.ArgumentList.Arguments.ToImmutableArray()
                         attributeArguments = Nothing
                         typeToGenerateIn = TryCast(symbolInfo.CandidateSymbols.FirstOrDefault().ContainingSymbol, INamedTypeSymbol)
 

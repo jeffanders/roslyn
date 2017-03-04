@@ -1,10 +1,9 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Classification;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Editor.UnitTests.Workspaces;
@@ -22,7 +21,7 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
         internal override async Task<IEnumerable<ClassifiedSpan>> GetClassificationSpansAsync(
             string code, TextSpan textSpan, CSharpParseOptions options)
         {
-            using (var workspace = await CSharpWorkspaceFactory.CreateWorkspaceFromFileAsync(code, options))
+            using (var workspace = TestWorkspace.CreateCSharp(code, options))
             {
                 var document = workspace.CurrentSolution.GetDocument(workspace.Documents.First().Id);
 
@@ -34,10 +33,10 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
 
                 var semanticClassifications = new List<ClassifiedSpan>();
                 var syntacticClassifications = new List<ClassifiedSpan>();
-                service.AddSemanticClassificationsAsync(document, textSpan,
+                await service.AddSemanticClassificationsAsync(document, textSpan,
                     extensionManager.CreateNodeExtensionGetter(classifiers, c => c.SyntaxNodeTypes),
                     extensionManager.CreateTokenExtensionGetter(classifiers, c => c.SyntaxTokenKinds),
-                    semanticClassifications, CancellationToken.None).Wait();
+                    semanticClassifications, CancellationToken.None);
                 service.AddSyntacticClassifications(syntaxTree, textSpan, syntacticClassifications, CancellationToken.None);
 
                 var classificationsSpans = new HashSet<TextSpan>();
@@ -57,10 +56,11 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
             }
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task VarAsUsingAliasForNamespace()
         {
-            await TestAsync(@"using var = System;",
+            await TestAsync(
+@"using var = System;",
                 Keyword("using"),
                 Identifier("var"),
                 Operators.Equals,
@@ -68,10 +68,13 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.Semicolon);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification), WorkItem(547068)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification), WorkItem(547068, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/547068")]
         public async Task Bug17819()
         {
-            await TestAsync(@"_ _(){}
+            await TestAsync(
+@"_ _()
+{
+}
 ///<param name='_
 }",
                 Identifier("_"),
@@ -91,10 +94,11 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task VarAsUsingAliasForClass()
         {
-            await TestAsync(@"using var = System.Math;",
+            await TestAsync(
+@"using var = System.Math;",
                 Keyword("using"),
                 Class("var"),
                 Operators.Equals,
@@ -104,10 +108,11 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.Semicolon);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task VarAsUsingAliasForDelegate()
         {
-            await TestAsync(@"using var = System.Action;",
+            await TestAsync(
+@"using var = System.Action;",
                 Keyword("using"),
                 Delegate("var"),
                 Operators.Equals,
@@ -117,10 +122,11 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.Semicolon);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task VarAsUsingAliasForStruct()
         {
-            await TestAsync(@"using var = System.DateTime;",
+            await TestAsync(
+@"using var = System.DateTime;",
                 Keyword("using"),
                 Struct("var"),
                 Operators.Equals,
@@ -130,10 +136,11 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.Semicolon);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task VarAsUsingAliasForEnum()
         {
-            await TestAsync(@"using var = System.DayOfWeek;",
+            await TestAsync(
+@"using var = System.DayOfWeek;",
                 Keyword("using"),
                 Enum("var"),
                 Operators.Equals,
@@ -143,10 +150,11 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.Semicolon);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task VarAsUsingAliasForInterface()
         {
-            await TestAsync(@"using var = System.IDisposable;",
+            await TestAsync(
+@"using var = System.IDisposable;",
                 Keyword("using"),
                 Interface("var"),
                 Operators.Equals,
@@ -156,10 +164,16 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.Semicolon);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task VarAsConstructorName()
         {
-            await TestAsync(@"class var { var() { } }",
+            await TestAsync(
+@"class var
+{
+    var()
+    {
+    }
+}",
                 Keyword("class"),
                 Class("var"),
                 Punctuation.OpenCurly,
@@ -171,10 +185,11 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task UsingAliasGlobalNamespace()
         {
-            await TestAsync(@"using IO = global::System.IO;",
+            await TestAsync(
+@"using IO = global::System.IO;",
                 Keyword("using"),
                 Identifier("IO"),
                 Operators.Equals,
@@ -186,7 +201,7 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.Semicolon);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task PartialDynamicWhere()
         {
             var code = @"partial class partial<where> where where : partial<where>
@@ -233,8 +248,8 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
-        [WorkItem(543123)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [WorkItem(543123, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543123")]
         public async Task VarInForeach()
         {
             await TestInMethodAsync(@"foreach (var v in args) { }",
@@ -249,10 +264,20 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task ValueInSetterAndAnonymousTypePropertyName()
         {
-            await TestAsync(@"class C { int P { set { var t = new { value = value }; } } }",
+            await TestAsync(
+@"class C
+{
+    int P
+    {
+        set
+        {
+            var t = new { value = value };
+        }
+    }
+}",
                 Keyword("class"),
                 Class("C"),
                 Punctuation.OpenCurly,
@@ -276,17 +301,21 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task TestValueInEvent()
         {
             await TestInClassAsync(
-@"event int Bar {
-   add {
-     this.value = value;
-   }
-   remove {
-     this.value = value;
-   }
+@"event int Bar
+{
+    add
+    {
+        this.value = value;
+    }
+
+    remove
+    {
+        this.value = value;
+    }
 }",
 
                 Keyword("event"),
@@ -315,17 +344,21 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task TestValueInProperty()
         {
             await TestInClassAsync(
-@"int Foo {
-   get {
-     this.value = value;
-   }
-   set {
-     this.value = value;
-   }
+@"int Foo
+{
+    get
+    {
+        this.value = value;
+    }
+
+    set
+    {
+        this.value = value;
+    }
 }",
                 Keyword("int"),
                 Identifier("Foo"),
@@ -352,10 +385,17 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task ValueFieldInSetterAccessedThroughThis()
         {
-            await TestInClassAsync(@"int P { set { this.value = value; } }",
+            await TestInClassAsync(
+@"int P
+{
+    set
+    {
+        this.value = value;
+    }
+}",
                 Keyword("int"),
                 Identifier("P"),
                 Punctuation.OpenCurly,
@@ -371,10 +411,11 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task NewOfInterface()
         {
-            await TestInMethodAsync(@"object o = new System.IDisposable();",
+            await TestInMethodAsync(
+@"object o = new System.IDisposable();",
                 Keyword("object"),
                 Identifier("o"),
                 Operators.Equals,
@@ -387,18 +428,18 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.Semicolon);
         }
 
-        [WorkItem(545611)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [WorkItem(545611, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545611")]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task TestVarConstructor()
         {
-            await TestAsync(@"class var
+            await TestAsync(
+@"class var
 {
     void Main()
     {
         new var();
     }
-}
-",
+}",
                 Keyword("class"),
                 Class("var"),
                 Punctuation.OpenCurly,
@@ -416,18 +457,18 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.CloseCurly);
         }
 
-        [WorkItem(545609)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [WorkItem(545609, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545609")]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task TestVarTypeParameter()
         {
-            await TestAsync(@"class X
+            await TestAsync(
+@"class X
 {
     void Foo<var>()
     {
         var x;
     }
-}
-",
+}",
                 Keyword("class"),
                 Class("X"),
                 Punctuation.OpenCurly,
@@ -446,15 +487,17 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Classification
                 Punctuation.CloseCurly);
         }
 
-        [WorkItem(545610)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [WorkItem(545610, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545610")]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task TestVarAttribute1()
         {
-            await TestAsync(@"using System;
- 
+            await TestAsync(
+@"using System;
+
 [var]
-class var : Attribute { }
-",
+class var : Attribute
+{
+}",
                 Keyword("using"),
                 Identifier("System"),
                 Punctuation.Semicolon,
@@ -469,15 +512,17 @@ class var : Attribute { }
                 Punctuation.CloseCurly);
         }
 
-        [WorkItem(545610)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [WorkItem(545610, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545610")]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task TestVarAttribute2()
         {
-            await TestAsync(@"using System;
- 
+            await TestAsync(
+@"using System;
+
 [var]
-class varAttribute : Attribute { }
-",
+class varAttribute : Attribute
+{
+}",
                 Keyword("using"),
                 Identifier("System"),
                 Punctuation.Semicolon,
@@ -492,11 +537,13 @@ class varAttribute : Attribute { }
                 Punctuation.CloseCurly);
         }
 
-        [WorkItem(546170)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [WorkItem(546170, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546170")]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task TestStandaloneTypeName()
         {
-            await TestAsync(@"using System;
+            await TestAsync(
+@"using System;
+
 class C
 {
     static void Main()
@@ -524,18 +571,18 @@ class C
                 Punctuation.CloseCurly);
         }
 
-        [WorkItem(546403)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [WorkItem(546403, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546403")]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task TestNamespaceClassAmbiguities()
         {
-            await TestAsync(@"class C
+            await TestAsync(
+@"class C
 {
 }
- 
+
 namespace C
 {
-}
-",
+}",
                 Keyword("class"),
                 Class("C"),
                 Punctuation.OpenCurly,
@@ -546,14 +593,16 @@ namespace C
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task NameAttributeValue()
         {
-            await TestAsync(@"
-class Program<T>
+            await TestAsync(
+@"class Program<T>
 {
     /// <param name=""x""/>
-    void Foo(int x) { }
+    void Foo(int x)
+    {
+    }
 }",
                 Keyword("class"),
                 Class("Program"),
@@ -583,13 +632,16 @@ class Program<T>
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task Cref1()
         {
-            await TestAsync(@"/// <see cref=""Program{T}""/>
+            await TestAsync(
+@"/// <see cref=""Program{T}""/>
 class Program<T>
 {
-    void Foo() { }
+    void Foo()
+    {
+    }
 }",
                 XmlDoc.Delimiter("///"),
                 XmlDoc.Text(" "),
@@ -620,10 +672,11 @@ class Program<T>
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task CrefNamespaceIsNotClass()
         {
-            await TestAsync(@"///  <see cref=""N""/>
+            await TestAsync(
+@"///  <see cref=""N""/>
 namespace N
 {
     class Program
@@ -651,12 +704,14 @@ namespace N
                 Punctuation.CloseCurly);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Classification)]
         public async Task InterfacePropertyWithSameNameShouldBePreferredToType()
         {
-            await TestAsync(@"interface IFoo
+            await TestAsync(
+@"interface IFoo
 {
     int IFoo { get; set; }
+
     void Bar(int x = IFoo);
 }",
                 Keyword("interface"),
@@ -680,6 +735,62 @@ namespace N
                 Punctuation.CloseParen,
                 Punctuation.Semicolon,
                 Punctuation.CloseCurly);
+        }
+
+        [WorkItem(633, "https://github.com/dotnet/roslyn/issues/633")]
+        [WpfFact, Trait(Traits.Feature, Traits.Features.Classification)]
+        public async Task XmlDocCref()
+        {
+            await TestAsync(
+@"/// <summary>
+/// <see cref=""MyClass.MyClass(int)""/>
+/// </summary>
+class MyClass
+{
+    public MyClass(int x)
+    {
+    }
+}",
+                XmlDoc.Delimiter("///"),
+                XmlDoc.Text(" "),
+                XmlDoc.Delimiter("<"),
+                XmlDoc.Name("summary"),
+                XmlDoc.Delimiter(">"),
+                XmlDoc.Delimiter("///"),
+                XmlDoc.Text(" "),
+                XmlDoc.Delimiter("<"),
+                XmlDoc.Name("see"),
+                XmlDoc.AttributeName(" "),
+                XmlDoc.AttributeName("cref"),
+                XmlDoc.Delimiter("="),
+                XmlDoc.AttributeQuotes("\""),
+                Class("MyClass"),
+                Operators.Dot,
+                Identifier("MyClass"),
+                Punctuation.OpenParen,
+                Keyword("int"),
+                Punctuation.CloseParen,
+                XmlDoc.AttributeQuotes("\""),
+                XmlDoc.Delimiter("/>"),
+                XmlDoc.Delimiter("///"),
+                XmlDoc.Text(" "),
+                XmlDoc.Delimiter("</"),
+                XmlDoc.Name("summary"),
+                XmlDoc.Delimiter(">"),
+                Keyword("class"),
+                Class("MyClass"),
+                Punctuation.OpenCurly,
+                Keyword("public"),
+                Identifier("MyClass"),
+                Punctuation.OpenParen,
+                Keyword("int"),
+                Identifier("x"),
+                Punctuation.CloseParen,
+                Punctuation.OpenCurly,
+                Punctuation.CloseCurly,
+                Punctuation.CloseCurly
+
+                );
         }
     }
 }

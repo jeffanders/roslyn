@@ -384,7 +384,7 @@ namespace name1
             CreateCompilationWithMscorlib(source).VerifyDiagnostics();
         }
 
-        [WorkItem(542039, "DevDiv")]
+        [WorkItem(542039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542039")]
         [Fact]
         public void TestCollisionOfDelegateWithConst()
         {
@@ -828,31 +828,31 @@ class Class
     }
 }";
             CreateCompilationWithMscorlib(source).VerifyDiagnostics(
-    // (7,22): error CS0136: A local or parameter named 'name1' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
-    //         foreach (var name1 in "string")            // 0136
-    Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name1").WithArguments("name1").WithLocation(7, 22),
-    // (9,26): error CS0136: A local or parameter named 'name2' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
-    //             foreach (var name2 in "string")        // 0136
-    Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name2").WithArguments("name2").WithLocation(9, 26),
-    // (11,21): error CS0136: A local or parameter named 'name1' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
-    //                 int name1 = name2.GetHashCode();     // 0136
-    Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name1").WithArguments("name1").WithLocation(11, 21),
-    // (17,17): error CS0136: A local or parameter named 'name1' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
-    //             int name1 = 1;                           // 0136
-    Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name1").WithArguments("name1").WithLocation(17, 17),
-    // (24,21): error CS0136: A local or parameter named 'name2' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
-    //                 int name2 = 3;                       // 0136
-    Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name2").WithArguments("name2").WithLocation(24, 21),
-    // (27,25): error CS0412: 'name3': a parameter or local variable cannot have the same name as a method type parameter
-    //                     int name3 = 2;                   // 0136
-    Diagnostic(ErrorCode.ERR_LocalSameNameAsTypeParam, "name3").WithArguments("name3").WithLocation(27, 25),
-    // (32,17): error CS0136: A local or parameter named 'name1' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
-    //         return (name1, name2) => name1;              // 0136 on both name1 and name2
-    Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name1").WithArguments("name1").WithLocation(32, 17),
-    // (32,24): error CS0136: A local or parameter named 'name2' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
-    //         return (name1, name2) => name1;              // 0136 on both name1 and name2
-    Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name2").WithArguments("name2").WithLocation(32, 24)
-);
+                // (7,22): error CS0136: A local or parameter named 'name1' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
+                //         foreach (var name1 in "string")            // 0136
+                Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name1").WithArguments("name1").WithLocation(7, 22),
+                // (9,26): error CS0136: A local or parameter named 'name2' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
+                //             foreach (var name2 in "string")        // 0136
+                Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name2").WithArguments("name2").WithLocation(9, 26),
+                // (11,21): error CS0136: A local or parameter named 'name1' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
+                //                 int name1 = name2.GetHashCode();     // 0136
+                Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name1").WithArguments("name1").WithLocation(11, 21),
+                // (17,17): error CS0136: A local or parameter named 'name1' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
+                //             int name1 = 1;                           // 0136
+                Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name1").WithArguments("name1").WithLocation(17, 17),
+                // (24,21): error CS0136: A local or parameter named 'name2' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
+                //                 int name2 = 3;                       // 0136
+                Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name2").WithArguments("name2").WithLocation(24, 21),
+                // (27,25): error CS0136: A local or parameter named 'name3' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
+                //                     int name3 = 2;                   // 0136
+                Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name3").WithArguments("name3").WithLocation(27, 25),
+                // (32,17): error CS0136: A local or parameter named 'name1' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
+                //         return (name1, name2) => name1;              // 0136 on both name1 and name2
+                Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name1").WithArguments("name1").WithLocation(32, 17),
+                // (32,24): error CS0136: A local or parameter named 'name2' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
+                //         return (name1, name2) => name1;              // 0136 on both name1 and name2
+                Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name2").WithArguments("name2").WithLocation(32, 24)
+                );
         }
 
         [Fact]
@@ -873,22 +873,22 @@ class Class
     }
 }";
             CreateCompilationWithMscorlib(source).VerifyDiagnostics(
-    // (5,57): error CS0100: The parameter name 'name2' is a duplicate
-    //     public static void Method(int name1, int name2, int name2) // 0100 on name2
-    Diagnostic(ErrorCode.ERR_DuplicateParamName, "name2").WithArguments("name2").WithLocation(5, 57),
-    // (9,56): error CS0136: A local or parameter named 'name1' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
-    //             Action<int, int, int, int> nestedLambda = (name1, name4, name4, name3) => // 0100 on name4, 0136 on name1 and name3
-    Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name1").WithArguments("name1").WithLocation(9, 56),
-    // (9,70): error CS0100: The parameter name 'name4' is a duplicate
-    //             Action<int, int, int, int> nestedLambda = (name1, name4, name4, name3) => // 0100 on name4, 0136 on name1 and name3
-    Diagnostic(ErrorCode.ERR_DuplicateParamName, "name4").WithArguments("name4").WithLocation(9, 70),
-    // (9,77): error CS0412: 'name3': a parameter or local variable cannot have the same name as a method type parameter
-    //             Action<int, int, int, int> nestedLambda = (name1, name4, name4, name3) => // 0100 on name4, 0136 on name1 and name3
-    Diagnostic(ErrorCode.ERR_LocalSameNameAsTypeParam, "name3").WithArguments("name3").WithLocation(9, 77)
-    );
+                // (5,57): error CS0100: The parameter name 'name2' is a duplicate
+                //     public static void Method(int name1, int name2, int name2) // 0100 on name2
+                Diagnostic(ErrorCode.ERR_DuplicateParamName, "name2").WithArguments("name2").WithLocation(5, 57),
+                // (9,56): error CS0136: A local or parameter named 'name1' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
+                //             Action<int, int, int, int> nestedLambda = (name1, name4, name4, name3) => // 0100 on name4, 0136 on name1 and name3
+                Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name1").WithArguments("name1").WithLocation(9, 56),
+                // (9,70): error CS0100: The parameter name 'name4' is a duplicate
+                //             Action<int, int, int, int> nestedLambda = (name1, name4, name4, name3) => // 0100 on name4, 0136 on name1 and name3
+                Diagnostic(ErrorCode.ERR_DuplicateParamName, "name4").WithArguments("name4").WithLocation(9, 70),
+                // (9,77): error CS0136: A local or parameter named 'name3' cannot be declared in this scope because that name is used in an enclosing local scope to define a local or parameter
+                //             Action<int, int, int, int> nestedLambda = (name1, name4, name4, name3) => // 0100 on name4, 0136 on name1 and name3
+                Diagnostic(ErrorCode.ERR_LocalIllegallyOverrides, "name3").WithArguments("name3").WithLocation(9, 77)
+                );
         }
 
-        [WorkItem(930252)]
+        [WorkItem(930252, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/930252")]
         [Fact]
         public void TestCollisionOfParamWithParam1()
         {
@@ -1237,7 +1237,7 @@ partial class Class
                 Diagnostic(ErrorCode.ERR_QueryRangeVariableOverrides, "name").WithArguments("name"));
         }
 
-        [WorkItem(792744, "DevDiv")]
+        [WorkItem(792744, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/792744")]
         [Fact]
         public void TestCollisionInsideForeach()
         {
@@ -1600,7 +1600,7 @@ partial class Class
             CompileAndVerify(source, new[] { LinqAssemblyRef }).VerifyDiagnostics();
         }
 
-        [WorkItem(543045, "DevDiv")]
+        [WorkItem(543045, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543045")]
         [Fact]
         public void TestCollisionInsideQuery()
         {
@@ -1683,7 +1683,7 @@ public class Class
                 Diagnostic(ErrorCode.ERR_QueryRangeVariableSameAsTypeParam, "U").WithArguments("U"));
         }
 
-        [WorkItem(542088, "DevDiv")]
+        [WorkItem(542088, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542088")]
         [Fact]
         public void LocalCollidesWithGenericType()
         {
@@ -1703,7 +1703,7 @@ public class C
             CompileAndVerify(source).VerifyDiagnostics();
         }
 
-        [WorkItem(542039, "DevDiv")]
+        [WorkItem(542039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542039")]
         [Fact]
         public void BindingOrderCollisions01()
         {
@@ -1751,7 +1751,7 @@ class A
                 );
         }
 
-        [WorkItem(542039, "DevDiv")]
+        [WorkItem(542039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542039")]
         [Fact]
         public void BindingOrderCollisions02()
         {
@@ -1799,7 +1799,7 @@ class A
                 );
         }
 
-        [WorkItem(542039, "DevDiv")]
+        [WorkItem(542039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542039")]
         [Fact]
         public void BindingOrderCollisions03()
         {
@@ -1845,7 +1845,7 @@ class Outer
             CreateCompilationWithMscorlib(source).VerifyDiagnostics();
         }
 
-        [WorkItem(835569, "DevDiv")]
+        [WorkItem(835569, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/835569")]
         [Fact]
         public void CollisionWithSameWhenError()
         {
@@ -1867,7 +1867,7 @@ class Program
         }
 
         [Fact(Skip = "https://roslyn.codeplex.com/workitem/450")]
-        [WorkItem(879811, "DevDiv")]
+        [WorkItem(879811, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/879811")]
         public void Bug879811_1()
         {
             const string source = @"
@@ -1897,7 +1897,7 @@ class D
         }
 
         [Fact]
-        [WorkItem(879811, "DevDiv")]
+        [WorkItem(879811, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/879811")]
         public void Bug879811_2()
         {
             const string source = @"
@@ -1929,7 +1929,7 @@ class D
         }
 
         [Fact]
-        [WorkItem(879811, "DevDiv")]
+        [WorkItem(879811, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/879811")]
         public void Bug879811_3()
         {
             const string source = @"

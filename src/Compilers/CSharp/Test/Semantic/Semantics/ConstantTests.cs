@@ -176,7 +176,7 @@ class Program
     }
 }
 ";
-            var comp = CreateExperimentalCompilationWithMscorlib45(source);
+            var comp = CreateCompilationWithMscorlib45(source);
             comp.VerifyDiagnostics(
     // (10,12): error CS0568: Structs cannot contain explicit parameterless constructors
     //     public S2()
@@ -361,7 +361,7 @@ class Program
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
+        [Fact(Skip = "https://github.com/dotnet/roslyn/issues/7803")]
         public void TestConstantDecimalComparisons02()
         {
             var source =
@@ -895,7 +895,7 @@ class C
                 Diagnostic(ErrorCode.ERR_CheckedOverflow, "U64.Min - 2").WithLocation(89, 11));
         }
 
-        [Fact, WorkItem(528727, "DevDiv")]
+        [Fact, WorkItem(528727, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528727")]
         public void TestConstantNumericConversionsNotOverflow()
         {
             var source = @"
@@ -1470,7 +1470,7 @@ ulong.MinValue --> 0";
         /// Breaking change from the native compiler for
         /// certain constant expressions involving +0m and -0m.
         /// </summary>
-        [WorkItem(529730, "DevDiv")]
+        [WorkItem(529730, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529730")]
         [WorkItem(1043494, "DevDiv")]
         [Fact(Skip = "1043494")]
         public void TestConstantFoldingDecimalOperations01()
@@ -1530,7 +1530,7 @@ class C
         /// Breaking change from the native compiler for
         /// certain constant expressions involving +0m and -0m.
         /// </summary>
-        [WorkItem(529730, "DevDiv")]
+        [WorkItem(529730, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529730")]
         [Fact]
         public void TestConstantFoldingDecimalOperations02()
         {
@@ -1656,7 +1656,7 @@ class C
             Assert.Equal(expected, actual);
         }
 
-        [WorkItem(538179, "DevDiv")]
+        [WorkItem(538179, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538179")]
         [Fact]
         public void TestConstantErrors()
         {
@@ -2483,7 +2483,7 @@ class c1
             Assert.Equal(constantValue.Value, 6);
         }
 
-        [WorkItem(544620, "DevDiv")]
+        [WorkItem(544620, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544620")]
         [Fact]
         public void NoConstantValueForOverflows()
         {
@@ -2511,7 +2511,7 @@ class c1
             Assert.False(((FieldSymbol)symbol).HasConstantValue);
         }
 
-        [WorkItem(545965, "DevDiv")]
+        [WorkItem(545965, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545965")]
         [Fact]
         public void CircularConstantReportingRace()
         {
@@ -2541,7 +2541,7 @@ class C{0}
                 Diagnostic(ErrorCode.ERR_CircConstValue, "X").WithArguments("C0.X"));
         }
 
-        [WorkItem(545965, "DevDiv")]
+        [WorkItem(545965, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545965")]
         [Fact]
         public void MultiCircularConstantReportingRace()
         {
@@ -2598,7 +2598,7 @@ class C{0}
                 Diagnostic(ErrorCode.ERR_CircConstValue, "X").WithArguments("C8.X"));
         }
 
-        [WorkItem(545965, "DevDiv")]
+        [WorkItem(545965, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545965")]
         [Fact]
         public void CircularEnumReportingRace()
         {
@@ -2628,7 +2628,7 @@ enum E{0}
                 Diagnostic(ErrorCode.ERR_CircConstValue, "X").WithArguments("E0.X"));
         }
 
-        [WorkItem(545965, "DevDiv")]
+        [WorkItem(545965, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545965")]
         [Fact]
         public void MultiCircularEnumReportingRace()
         {
@@ -2685,7 +2685,7 @@ enum E{0}
                 Diagnostic(ErrorCode.ERR_CircConstValue, "X").WithArguments("E8.X").WithLocation(44, 5));
         }
 
-        [WorkItem(545965, "DevDiv")]
+        [WorkItem(545965, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545965")]
         [Fact]
         public void CircularImplicitEnumReportingRace()
         {
@@ -2718,7 +2718,7 @@ enum E{0}
                 Diagnostic(ErrorCode.ERR_CircConstValue, "A").WithArguments("E0.A"));
         }
 
-        [WorkItem(545965, "DevDiv")]
+        [WorkItem(545965, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545965")]
         [Fact]
         public void MultiCircularImplicitEnumReportingRace()
         {
@@ -2778,7 +2778,7 @@ enum E{0}
                 Diagnostic(ErrorCode.ERR_CircConstValue, "A").WithArguments("E8.A"));
         }
 
-        [Fact, WorkItem(544941, "DevDiv")]
+        [Fact, WorkItem(544941, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544941")]
         public static void ConstantNullNotObject()
         {
             var source =
@@ -2804,7 +2804,7 @@ class MyClass
         // would resulted from a runtime conversion with normal CLR overflow behavior.
         // To avoid breaking programs that might accidentally rely on that unspecified behavior
         // we now match the native compiler behavior, and we are going to keep this behavior for compatibility.
-        [Fact, WorkItem(1020273, "DevDiv")]
+        [Fact, WorkItem(1020273, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1020273")]
         public void Bug1020273()
         {
             string source = @"
@@ -2825,8 +2825,8 @@ Inline  : -1";
             CompileAndVerify(source, expectedOutput: expectedOutput);
         }
 
-        [Fact, WorkItem(1098197, "DevDiv")]
-        public static void Bug1098197_01()
+        [Fact, WorkItem(1098197, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1098197")]
+        public static void Bug1098197_01_WithCSharp6()
         {
             var source =
 @"
@@ -2838,34 +2838,22 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
-    // (6,9): error CS1547: Keyword 'void' cannot be used in this context
-    //         void f() { if () const int i = 0; }
-    Diagnostic(ErrorCode.ERR_NoVoidHere, "void").WithLocation(6, 9),
-    // (6,15): error CS1528: Expected ; or = (cannot specify constructor arguments in declaration)
-    //         void f() { if () const int i = 0; }
-    Diagnostic(ErrorCode.ERR_BadVarDecl, "() ").WithLocation(6, 15),
-    // (6,15): error CS1003: Syntax error, '[' expected
-    //         void f() { if () const int i = 0; }
-    Diagnostic(ErrorCode.ERR_SyntaxError, "(").WithArguments("[", "(").WithLocation(6, 15),
-    // (6,16): error CS1525: Invalid expression term ')'
-    //         void f() { if () const int i = 0; }
-    Diagnostic(ErrorCode.ERR_InvalidExprTerm, ")").WithArguments(")").WithLocation(6, 16),
-    // (6,18): error CS1003: Syntax error, ']' expected
-    //         void f() { if () const int i = 0; }
-    Diagnostic(ErrorCode.ERR_SyntaxError, "{").WithArguments("]", "{").WithLocation(6, 18),
-    // (6,18): error CS1002: ; expected
-    //         void f() { if () const int i = 0; }
-    Diagnostic(ErrorCode.ERR_SemicolonExpected, "{").WithLocation(6, 18),
-    // (6,24): error CS1525: Invalid expression term ')'
-    //         void f() { if () const int i = 0; }
-    Diagnostic(ErrorCode.ERR_InvalidExprTerm, ")").WithArguments(")").WithLocation(6, 24),
-    // (6,26): error CS1023: Embedded statement cannot be a declaration or labeled statement
-    //         void f() { if () const int i = 0; }
-    Diagnostic(ErrorCode.ERR_BadEmbeddedStmt, "const int i = 0;").WithLocation(6, 26),
-    // (6,14): warning CS0168: The variable 'f' is declared but never used
-    //         void f() { if () const int i = 0; }
-    Diagnostic(ErrorCode.WRN_UnreferencedVar, "f").WithArguments("f").WithLocation(6, 14)
+            CreateCompilationWithMscorlib(source, parseOptions: TestOptions.Regular.WithLanguageVersion(LanguageVersion.CSharp6)).VerifyDiagnostics(
+                // (6,14): error CS8059: Feature 'local functions' is not available in C# 6.  Please use language version 7 or greater.
+                //         void f() { if () const int i = 0; }
+                Diagnostic(ErrorCode.ERR_FeatureNotAvailableInVersion6, "f").WithArguments("local functions", "7").WithLocation(6, 14),
+                // (6,24): error CS1525: Invalid expression term ')'
+                //         void f() { if () const int i = 0; }
+                Diagnostic(ErrorCode.ERR_InvalidExprTerm, ")").WithArguments(")").WithLocation(6, 24),
+                // (6,26): error CS1023: Embedded statement cannot be a declaration or labeled statement
+                //         void f() { if () const int i = 0; }
+                Diagnostic(ErrorCode.ERR_BadEmbeddedStmt, "const int i = 0;").WithLocation(6, 26),
+                // (6,36): warning CS0219: The variable 'i' is assigned but its value is never used
+                //         void f() { if () const int i = 0; }
+                Diagnostic(ErrorCode.WRN_UnreferencedVarAssg, "i").WithArguments("i").WithLocation(6, 36),
+                // (6,14): warning CS0168: The variable 'f' is declared but never used
+                //         void f() { if () const int i = 0; }
+                Diagnostic(ErrorCode.WRN_UnreferencedVar, "f").WithArguments("f").WithLocation(6, 14)
                 );
         }
 
@@ -2882,9 +2870,9 @@ class C
     }
 }";
             CreateCompilationWithMscorlib(source).VerifyDiagnostics(
-                // (6,51): error CS0133: The expression being assigned to 'b' must be constant
-                //         const Func<int> a = () => { const int b = a(); return 1; };
-                Diagnostic(ErrorCode.ERR_NotConstantExpression, "a()").WithArguments("b").WithLocation(6, 51)
+    // (6,51): error CS0133: The expression being assigned to 'b' must be constant
+    //         const Func<int> a = () => { const int b = a(); return 1; };
+    Diagnostic(ErrorCode.ERR_NotConstantExpression, "a()").WithArguments("b").WithLocation(6, 51)
                 );
         }
 
@@ -2906,7 +2894,7 @@ class C
                 );
         }
 
-        [Fact, WorkItem(1098197, "DevDiv")]
+        [Fact, WorkItem(1098197, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1098197")]
         public static void Bug1098197_02()
         {
             var source =
@@ -2919,11 +2907,14 @@ void f() { if () const int i = 0; }
     Diagnostic(ErrorCode.ERR_InvalidExprTerm, ")").WithArguments(")").WithLocation(2, 16),
     // (2,18): error CS1023: Embedded statement cannot be a declaration or labeled statement
     // void f() { if () const int i = 0; }
-    Diagnostic(ErrorCode.ERR_BadEmbeddedStmt, "const int i = 0;").WithLocation(2, 18)
+    Diagnostic(ErrorCode.ERR_BadEmbeddedStmt, "const int i = 0;").WithLocation(2, 18),
+    // (2,28): warning CS0219: The variable 'i' is assigned but its value is never used
+    // void f() { if () const int i = 0; }
+    Diagnostic(ErrorCode.WRN_UnreferencedVarAssg, "i").WithArguments("i").WithLocation(2, 28)
                 );
         }
 
-        [Fact, WorkItem(1098605, "DevDiv")]
+        [Fact, WorkItem(1098605, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1098605")]
         public static void Bug1098605_01()
         {
             var source =
@@ -2958,28 +2949,27 @@ void f() { if () const int i = 0; }
     }
 ";
             CreateCompilationWithMscorlib(source).VerifyDiagnostics(
-    // (7,27): error CS0133: The expression being assigned to 'y1' must be constant
-    //         const string y1 = (string)(object)"y";
-    Diagnostic(ErrorCode.ERR_NotConstantExpression, @"(string)(object)""y""").WithArguments("y1").WithLocation(7, 27),
-    // (9,27): error CS0266: Cannot implicitly convert type 'object' to 'string'. An explicit conversion exists (are you missing a cast?)
-    //         const string x2 = (object)null;
-    Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "(object)null").WithArguments("object", "string").WithLocation(9, 27),
-    // (10,27): error CS0266: Cannot implicitly convert type 'object' to 'string'. An explicit conversion exists (are you missing a cast?)
-    //         const string y2 = (object)"y";
-    Diagnostic(ErrorCode.ERR_NoImplicitConvCast, @"(object)""y""").WithArguments("object", "string").WithLocation(10, 27),
-    // (13,27): error CS0134: 'y3' is of type 'object'. A const field of a reference type other than string can only be initialized with null.
-    //         const object y3 = "y";
-    Diagnostic(ErrorCode.ERR_NotNullConstRefField, @"""y""").WithArguments("y3", "object").WithLocation(13, 27),
-    // (19,13): error CS0150: A constant value is expected
-    //             case (string)(object)"b":
-    Diagnostic(ErrorCode.ERR_ConstantExpected, @"case (string)(object)""b"":").WithLocation(19, 13),
-    // (21,18): error CS0266: Cannot implicitly convert type 'object' to 'string'. An explicit conversion exists (are you missing a cast?)
-    //             case (object)null:
-    Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "(object)null").WithArguments("object", "string").WithLocation(21, 18),
-    // (23,18): error CS0266: Cannot implicitly convert type 'object' to 'string'. An explicit conversion exists (are you missing a cast?)
-    //             case (object)"b":
-    Diagnostic(ErrorCode.ERR_NoImplicitConvCast, @"(object)""b""").WithArguments("object", "string").WithLocation(23, 18)
-                );
+                // (7,27): error CS0133: The expression being assigned to 'y1' must be constant
+                //         const string y1 = (string)(object)"y";
+                Diagnostic(ErrorCode.ERR_NotConstantExpression, @"(string)(object)""y""").WithArguments("y1").WithLocation(7, 27),
+                // (9,27): error CS0266: Cannot implicitly convert type 'object' to 'string'. An explicit conversion exists (are you missing a cast?)
+                //         const string x2 = (object)null;
+                Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "(object)null").WithArguments("object", "string").WithLocation(9, 27),
+                // (10,27): error CS0266: Cannot implicitly convert type 'object' to 'string'. An explicit conversion exists (are you missing a cast?)
+                //         const string y2 = (object)"y";
+                Diagnostic(ErrorCode.ERR_NoImplicitConvCast, @"(object)""y""").WithArguments("object", "string").WithLocation(10, 27),
+                // (13,27): error CS0134: 'y3' is of type 'object'. A const field of a reference type other than string can only be initialized with null.
+                //         const object y3 = "y";
+                Diagnostic(ErrorCode.ERR_NotNullConstRefField, @"""y""").WithArguments("y3", "object").WithLocation(13, 27),
+                // (19,18): error CS0150: A constant value is expected
+                //             case (string)(object)"b":
+                Diagnostic(ErrorCode.ERR_ConstantExpected, @"(string)(object)""b""").WithLocation(19, 18),
+                // (21,18): error CS0266: Cannot implicitly convert type 'object' to 'string'. An explicit conversion exists (are you missing a cast?)
+                //             case (object)null:
+                Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "(object)null").WithArguments("object", "string").WithLocation(21, 18),
+                // (23,18): error CS0266: Cannot implicitly convert type 'object' to 'string'. An explicit conversion exists (are you missing a cast?)
+                //             case (object)"b":
+                Diagnostic(ErrorCode.ERR_NoImplicitConvCast, @"(object)""b""").WithArguments("object", "string").WithLocation(23, 18));
         }
     }
 

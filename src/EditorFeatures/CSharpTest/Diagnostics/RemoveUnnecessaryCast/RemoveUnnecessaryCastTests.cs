@@ -1,10 +1,10 @@
 // Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.CodeFixes.RemoveUnnecessaryCast;
 using Microsoft.CodeAnalysis.CSharp.Diagnostics.RemoveUnnecessaryCast;
+using Microsoft.CodeAnalysis.CSharp.Test.Utilities;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Roslyn.Test.Utilities;
 using Xunit;
@@ -13,34 +13,31 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Diagnostics.RemoveUnnec
 {
     public partial class RemoveUnnecessaryCastTests : AbstractCSharpDiagnosticProviderBasedUserDiagnosticTest
     {
-        internal override Tuple<DiagnosticAnalyzer, CodeFixProvider> CreateDiagnosticProviderAndFixer(Workspace workspace)
-        {
-            return new Tuple<DiagnosticAnalyzer, CodeFixProvider>(
-                new CSharpRemoveUnnecessaryCastDiagnosticAnalyzer(), new RemoveUnnecessaryCastCodeFixProvider());
-        }
+        internal override (DiagnosticAnalyzer, CodeFixProvider) CreateDiagnosticProviderAndFixer(Workspace workspace)
+            => (new CSharpRemoveUnnecessaryCastDiagnosticAnalyzer(), new RemoveUnnecessaryCastCodeFixProvider());
 
-        [WorkItem(545979)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545979, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545979")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToErrorType()
         {
-            await TestMissingAsync(
-            @"
-class Program
+            await TestMissingInRegularAndScriptAsync(
+@"class Program
 {
     static void Main()
     {
         object s = "";
-        foreach (object x in [|(ErrorType)s|]) { }
+        foreach (object x in [|(ErrorType)s|])
+        {
+        }
     }
-}
-");
+}");
         }
 
-        [WorkItem(545137), WorkItem(870550)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545137, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545137"), WorkItem(870550, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/870550")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task ParenthesizeToKeepParseTheSame1()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class Program
 {
@@ -66,16 +63,14 @@ class Program
  
     static void Foo(bool a, bool b) { }
 }",
-
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545146)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545146, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545146")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task ParenthesizeToKeepParseTheSame2()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
  
@@ -99,16 +94,14 @@ class C
         a();
     }
 }",
-
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545160)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545160, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545160")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task ParenthesizeToKeepParseTheSame3()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
  
@@ -130,96 +123,86 @@ class Program
         var x = (Decimal)(-1);
     }
 }",
-
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545138)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545138, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545138")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveTypeParameterCastToObject()
         {
-            await TestMissingAsync(
-            @"
-class Ð¡
+            await TestMissingInRegularAndScriptAsync(
+@"class Ð¡
 {
     void Foo<T>(T obj)
-    {
-        int x = (int)[|(object)obj|];
-    }
+{
+    int x = (int)[|(object)obj|];
 }
-");
+}");
         }
 
-        [WorkItem(545139)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545139, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545139")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastInIsTest()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class Ð¡
 {
     static void Main()
-    {
-        DayOfWeek[] a = { };
-        Console.WriteLine([|(object)a|] is int[]);
-    }
+{
+    DayOfWeek[] a = {
+    };
+    Console.WriteLine([|(object)a|] is int[]);
 }
-");
+}");
         }
 
-        [WorkItem(545142)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545142, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545142")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastNeedForUserDefinedOperator()
         {
-            await TestMissingAsync(
-            @"
-class A
+            await TestMissingInRegularAndScriptAsync(
+@"class A
 {
     public static implicit operator A(string x)
     {
         return new A();
     }
 }
- 
+
 class Program
 {
     static void Main()
     {
         A x = [|(string)null|];
     }
-}
-");
+}");
         }
 
-        [WorkItem(545143)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545143, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545143")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemovePointerCast1()
         {
-            await TestMissingAsync(
-            @"
-unsafe class C
+            await TestMissingInRegularAndScriptAsync(
+@"unsafe class C
 {
     static unsafe void Main()
     {
         var x = (int)[|(int*)null|];
     }
-}
-");
+}");
         }
 
-        [WorkItem(545144)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545144, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545144")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToObjectFromDelegateComparison()
         {
             // The cast below can't be removed because it would result in the Delegate
             // op_Equality operator overload being used over reference equality.
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class Program
 {
@@ -229,74 +212,74 @@ class Program
         Action b = Console.WriteLine;
         Console.WriteLine(a == [|(object)b|]);
     }
-}
-");
+}");
         }
 
-        [WorkItem(545145)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545145, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545145")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToAnonymousMethodWhenOnLeftOfAsCast()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class C
 {
     static void Main()
     {
-        var x = [|(Action)delegate { }|] as Action;
+        var x = [|(Action)delegate {
+        }|]
+
+        as Action;
     }
-}
-");
+}");
         }
 
-        [WorkItem(545147)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545147, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545147")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastInFloatingPointOperation()
         {
-            await TestMissingAsync(
-            @"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     static void Main()
     {
         int x = 1;
         double y = [|(double)x|] / 2;
     }
-}
-");
+}");
         }
 
-        [WorkItem(545157)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545157, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545157")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveIdentityCastWhichAffectsOverloadResolution1()
         {
-            await TestMissingAsync(
-            @"
-using System;
- 
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
+
 class Program
 {
     static void Main()
     {
         Foo(x => [|(int)x|]);
     }
- 
-    static void Foo(Func<int, object> x) { }
-    static void Foo(Func<string, object> x) { }
-}
-");
+
+    static void Foo(Func<int, object> x)
+    {
+    }
+
+    static void Foo(Func<string, object> x)
+    {
+    }
+}");
         }
 
-        [WorkItem(545158)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545158, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545158")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveIdentityCastWhichAffectsOverloadResolution2()
         {
-            await TestMissingAsync(
-            @"
-using System;
- 
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
+
 class Program
 {
     static void Main()
@@ -304,21 +287,24 @@ class Program
         var x = [|(IComparable<int>)1|];
         Foo(x);
     }
- 
-    static void Foo(IComparable<int> x) { }
-    static void Foo(int x) {}
-}
-");
+
+    static void Foo(IComparable<int> x)
+    {
+    }
+
+    static void Foo(int x)
+    {
+    }
+}");
         }
 
-        [WorkItem(545158)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545158, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545158")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveIdentityCastWhichAffectsOverloadResolution3()
         {
-            await TestMissingAsync(
-            @"
-using System;
- 
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
+
 class Program
 {
     static void Main()
@@ -327,61 +313,62 @@ class Program
         var y = x;
         Foo(y);
     }
- 
-    static void Foo(IComparable<int> x) { }
-    static void Foo(int x) {}
-}
-");
+
+    static void Foo(IComparable<int> x)
+    {
+    }
+
+    static void Foo(int x)
+    {
+    }
+}");
         }
 
-        [WorkItem(545747)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545747, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545747")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastWhichChangesTypeOfInferredLocal()
         {
-            await TestMissingAsync(
-            @"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     static void Main()
     {
         var x = [|(long)1|];
         x = long.MaxValue;
     }
-}
-");
+}");
         }
 
-        [WorkItem(545159)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545159, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545159")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNeededCastToIListOfObject()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 using System.Collections.Generic;
- 
+
 class C
 {
     static void Main()
     {
-        Action<object>[] x = { };
+        Action<object>[] x = {
+        };
         Foo(x);
     }
- 
+
     static void Foo<T>(Action<T>[] x)
     {
         var y = (IList<Action<object>>)[|(IList<object>)x|];
         Console.WriteLine(y.Count);
     }
-}
-");
+}");
         }
 
-        [WorkItem(545287), WorkItem(880752)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545287, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545287"), WorkItem(880752, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/880752")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInParameterDefaultValue()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class Program
 {
@@ -397,15 +384,14 @@ class Program
     {
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545289)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545289, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545289")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInReturnStatement()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class Program
 {
@@ -423,15 +409,14 @@ class Program
         return 5;
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545288)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545288, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545288")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInLambda1()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 class Program
@@ -451,15 +436,14 @@ class Program
         Func<long> f1 = () => 5;
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545288)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545288, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545288")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInLambda2()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 class Program
@@ -479,15 +463,14 @@ class Program
         Func<long> f1 = () => { return 5; };
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545288)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545288, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545288")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInLambda3()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 class Program
@@ -507,15 +490,14 @@ class Program
         Func<long> f1 = _ => { return 5; };
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545288)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545288, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545288")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInLambda4()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 class Program
@@ -535,15 +517,14 @@ class Program
         Func<long> f1 = _ => 5;
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545291)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545291, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545291")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInConditionalExpression1()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class Test
 {
@@ -565,15 +546,14 @@ class Test
         long f1 = (b == 5) ? 4 : (long)5;
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545291)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545291, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545291")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInConditionalExpression2()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class Test
 {
@@ -595,15 +575,14 @@ class Test
         long f1 = (b == 5) ? (long)4 : 5;
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545291)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545291, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545291")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInConditionalExpression3()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class Test
 {
@@ -625,32 +604,29 @@ class Test
         long f1 = (b == 5) ? 4 : 5;
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545291)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545291, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545291")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNeededCastInConditionalExpression()
         {
-            await TestMissingAsync(
-            @"
-class Test
+            await TestMissingInRegularAndScriptAsync(
+@"class Test
 {
     public static void Main()
     {
         int b = 5;
-
         var f1 = (b == 5) ? 4 : [|(long)5|];
     }
 }");
         }
 
-        [WorkItem(545291)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545291, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545291")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInConditionalExpression4()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class Test
 {
@@ -672,15 +648,14 @@ class Test
         var f1 = (b == 5) ? (long)4 : 5;
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545459)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545459, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545459")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInsideADelegateConstructor()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 class Test
@@ -708,15 +683,14 @@ class Test
 
     public static void M1(int i) { }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545419)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545419, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545419")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveTriviaWhenRemovingCast()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 class Test
@@ -742,15 +716,14 @@ class Test
         };
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545422)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545422, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545422")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInsideCaseLabel()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class Test
 {
@@ -776,15 +749,14 @@ class Test
         }
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545578)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545578, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545578")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInsideGotoCaseStatement()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class Test
 {
@@ -812,15 +784,14 @@ class Test
         }
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545595)]
+        [WorkItem(545595, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545595")]
         [WpfFact(Skip = "529787"), Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInCollectionInitializer()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System.Collections.Generic;
 
@@ -842,59 +813,68 @@ class Program
         var z = new List<long> { 0 };
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(529787)]
+        [WorkItem(529787, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529787")]
         [WpfFact(Skip = "529787"), Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastWhichInCollectionInitializer1()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 using System.Collections.Generic;
 
 class X : List<int>
 {
-    void Add(object x) { Console.WriteLine(1); }
-    void Add(string x) { Console.WriteLine(2); }
- 
+    void Add(object x)
+    {
+        Console.WriteLine(1);
+    }
+
+    void Add(string x)
+    {
+        Console.WriteLine(2);
+    }
+
     static void Main()
     {
         var z = new X { [|(object)""""|] };
     }
-}
-");
+}");
         }
 
-        [WorkItem(529787)]
+        [WorkItem(529787, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529787")]
         [WpfFact(Skip = "529787"), Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastWhichInCollectionInitializer2()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 using System.Collections.Generic;
 
 class X : List<int>
 {
-    void Add(object x) { Console.WriteLine(1); }
-    void Add(string x) { Console.WriteLine(2); }
+    void Add(object x)
+    {
+        Console.WriteLine(1);
+    }
+
+    void Add(string x)
+    {
+        Console.WriteLine(2);
+    }
 
     static void Main()
     {
         X z = new X { [|(object)""""|] };
     }
-}
-");
+}");
         }
 
-        [WorkItem(545607)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545607, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545607")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastInArrayInitializer()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class X
 {
@@ -914,15 +894,14 @@ class X
         var s = new object[] { x };
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545616)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545616, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545616")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnneededCastWithOverloadedBinaryOperator()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 class MyAction
@@ -954,15 +933,14 @@ class MyAction
         throw new NotImplementedException();
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545822)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545822, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545822")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnnecessaryCastShouldInsertWhitespaceWhereNeededToKeepCorrectParsing()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
  
@@ -986,25 +964,24 @@ class Program
         var x = (Foo<Guid>) == a;
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545560)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545560, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545560")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastWithExplicitUserDefinedConversion()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
+
 class A
 {
-    public static explicit operator long (A x)
+    public static explicit operator long(A x)
     {
         return 1;
     }
 
-    public static implicit operator int (A x)
+    public static implicit operator int(A x)
     {
         return 2;
     }
@@ -1012,48 +989,44 @@ class A
     static void Main()
     {
         var a = new A();
-
         long x = [|(long)a|];
         long y = a;
-
         Console.WriteLine(x); // 1
         Console.WriteLine(y); // 2
     }
 }");
         }
 
-        [WorkItem(545608)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545608, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545608")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastWithImplicitUserDefinedConversion()
         {
-            await TestMissingAsync(
-            @"
-class X
+            await TestMissingInRegularAndScriptAsync(
+@"class X
 {
     static void Foo()
     {
         X x = null;
         object y = [|(string)x|];
     }
- 
-    public static implicit operator string (X x)
+
+    public static implicit operator string(X x)
     {
         return "";
     }
 }");
         }
 
-        [WorkItem(545941)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545941, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545941")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastWithImplicitConversionInThrow()
         {
             // The cast below can't be removed because the throw statement expects
             // an expression of type Exception -- not an expression convertible to
             // Exception.
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class E
 {
@@ -1066,21 +1039,19 @@ class E
     {
         throw [|(Exception)new E()|];
     }
-}
-");
+}");
         }
 
-        [WorkItem(545981)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545981, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545981")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInThrow()
         {
             // The cast below can't be removed because the throw statement expects
             // an expression of type Exception -- not an expression convertible to
             // Exception.
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class C
 {
@@ -1089,15 +1060,14 @@ class C
         object ex = new Exception();
         throw [|(Exception)ex|];
     }
-}
-");
+}");
         }
 
-        [WorkItem(545941)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545941, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545941")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnnecessaryCastInThrow()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 
@@ -1121,87 +1091,96 @@ class E
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545945)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545945, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545945")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryDowncast()
         {
-            await TestMissingAsync(
-            @"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     void Foo(object y)
     {
         int x = [|(int)y|];
     }
-}
-");
+}");
         }
 
-        [WorkItem(545591)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545591, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545591")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastWithinLambda()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
+
 class Program
 {
     static void Main()
     {
-        Boo(x => Foo(x, y => [|(int)x|]), null); 
+        Boo(x => Foo(x, y => [|(int)x|]), null);
     }
-    static void Boo(Action<int> x, object y) { Console.WriteLine(1); }
-    static void Boo(Action<string> x, string y) { Console.WriteLine(2); }
-    static void Foo(int x, Func<int, int> y) { }
-    static void Foo(string x, Func<string, string> y) { }
-    static void Foo(string x, Func<int, int> y) { }
-}
-");
+
+    static void Boo(Action<int> x, object y)
+    {
+        Console.WriteLine(1);
+    }
+
+    static void Boo(Action<string> x, string y)
+    {
+        Console.WriteLine(2);
+    }
+
+    static void Foo(int x, Func<int, int> y)
+    {
+    }
+
+    static void Foo(string x, Func<string, string> y)
+    {
+    }
+
+    static void Foo(string x, Func<int, int> y)
+    {
+    }
+}");
         }
 
-        [WorkItem(545606)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545606, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545606")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastFromNullToTypeParameter()
         {
-            await TestMissingAsync(
-            @"
-class X
+            await TestMissingInRegularAndScriptAsync(
+@"class X
 {
     static void Foo<T, S>() where T : class, S
     {
-        S y = [|(T) null|];
+        S y = [|(T)null|];
     }
-}
-");
+}");
         }
 
-        [WorkItem(545744)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545744, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545744")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInImplicitlyTypedArray()
         {
-            await TestMissingAsync(
-            @"
-class X
+            await TestMissingInRegularAndScriptAsync(
+@"class X
 {
     static void Foo()
     {
         string x = "";
-        var s = new [] { [|(object)x|] };
+        var s = new[] { [|(object)x|] };
         s[0] = 1;
     }
-}
-");
+}");
         }
 
-        [WorkItem(545750)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545750, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545750")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnnecessaryCastToBaseType()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class X
 {
@@ -1229,12 +1208,11 @@ class X
         return "";
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545855)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545855, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545855")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnnecessaryLambdaToDelegateCast()
         {
             await TestAsync(
@@ -1288,15 +1266,14 @@ static class Program
 }
 ",
     parseOptions: null,
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(529816)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529816, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529816")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnnecessaryCastInQueryExpression()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 
@@ -1322,78 +1299,106 @@ class A
         Console.WriteLine(from y in new A() select 0);
     }
 }",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(529816)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529816, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529816")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInQueryExpression()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class A
 {
-    int Select(Func<int, long> x) { return 1; }
-    int Select(Func<int, int> x) { return 2; }
+    int Select(Func<int, long> x)
+    {
+        return 1;
+    }
+
+    int Select(Func<int, int> x)
+    {
+        return 2;
+    }
 
     static void Main()
     {
-        Console.WriteLine(from y in new A() select [|(long)0|]);
+        Console.WriteLine(from y in new A()
+                          select [|(long)0|]);
     }
-}
-");
+}");
         }
 
-        [WorkItem(545848)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545848, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545848")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInConstructorInitializer()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class C
 {
-    static void Foo(int x, Func<int, int> y) { }
-    static void Foo(string x, Func<string, string> y) { }
+    static void Foo(int x, Func<int, int> y)
+    {
+    }
 
-    C(Action<int> x, object y) { Console.WriteLine(1); }
-    C(Action<string> x, string y) { Console.WriteLine(2); }
+    static void Foo(string x, Func<string, string> y)
+    {
+    }
 
-    C() : this(x => Foo(x, y => [|(int)x|]), null) { }
+    C(Action<int> x, object y)
+    {
+        Console.WriteLine(1);
+    }
 
-    static void Main() { new C(); }
-}
-");
+    C(Action<string> x, string y)
+    {
+        Console.WriteLine(2);
+    }
+
+    C() : this(x => Foo(x, y => [|(int)x|]), null)
+    {
+    }
+
+    static void Main()
+    {
+        new C();
+    }
+}");
         }
 
-        [WorkItem(529831)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529831, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529831")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastFromTypeParameterToInterface()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 interface IIncrementable
 {
     int Value { get; }
+
     void Increment();
 }
 
 struct S : IIncrementable
 {
     public int Value { get; private set; }
-    public void Increment() { Value++; }
+
+    public void Increment()
+    {
+        Value++;
+    }
 }
 
-class C: IIncrementable
+class C : IIncrementable
 {
     public int Value { get; private set; }
-    public void Increment() { Value++; }
+
+    public void Increment()
+    {
+        Value++;
+    }
 }
 
 static class Program
@@ -1403,7 +1408,7 @@ static class Program
         Foo(new S(), new C());
     }
 
-    static void Foo<TAny, TClass>(TAny x, TClass y) 
+    static void Foo<TAny, TClass>(TAny x, TClass y)
         where TAny : IIncrementable
         where TClass : class, IIncrementable
     {
@@ -1413,15 +1418,14 @@ static class Program
         Console.WriteLine(x.Value);
         Console.WriteLine(y.Value);
     }
-}
-");
+}");
         }
 
-        [WorkItem(529831)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529831, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529831")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnnecessaryCastFromTypeParameterToInterface()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 
@@ -1502,17 +1506,15 @@ static class Program
     }
 }
 ",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545877)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545877, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545877")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontCrashOnIncompleteMethodDeclaration()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class A
 {
@@ -1522,16 +1524,17 @@ class A
         Foo(x => 1, [|(byte)1|]);
     }
 
-    static void Foo<T, S>(T x, ) { }
-}
-");
+    static void Foo<T, S>(T x, )
+    {
+    }
+}");
         }
 
-        [WorkItem(545777)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545777, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545777")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveImportantTrailingTrivia()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class Program
 {
@@ -1559,15 +1562,14 @@ class Program
     }
 }
 ",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(529791)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529791, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529791")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnnecessaryCastToNullable1()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class X
 {
@@ -1589,15 +1591,14 @@ class X
     }
 }
 ",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545842)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545842, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545842")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnnecessaryCastToNullable2()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 static class C
 {
@@ -1621,15 +1622,14 @@ static class C
     }
 }
 ",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545850)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545850, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545850")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveSurroundingParentheses()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class Program
 {
@@ -1651,33 +1651,31 @@ class Program
     }
 }
 ",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(529846)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529846, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529846")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastFromTypeParameterToObject()
         {
-            await TestMissingAsync(
-            @"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     static void Foo<T>(T x, object y)
     {
-        if ([|(object)x|] == y) { }
+        if ([|(object)x|] == y)
+        {
+        }
     }
-}
-");
+}");
         }
 
-        [WorkItem(545858)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545858, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545858")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastFromDelegateTypeToMulticastDelegate()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class C
 {
@@ -1687,20 +1685,18 @@ class C
         Action y = Console.WriteLine;
         Console.WriteLine([|(MulticastDelegate)x|] == y);
     }
-}
-");
+}");
         }
 
-        [WorkItem(545857)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545857, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545857")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInSizeOfArrayCreationExpression1()
         {
             // The cast below can't be removed because it would result in the implicit
             // conversion to int being called instead.
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class C
 {
@@ -1709,48 +1705,44 @@ class C
         Console.WriteLine(new int[[|(long)default(C)|]].Length);
     }
 
-    public static implicit operator long (C x)
+    public static implicit operator long(C x)
     {
         return 1;
     }
 
-    public static implicit operator int (C x)
+    public static implicit operator int(C x)
     {
         return 2;
     }
-}
-");
+}");
         }
 
-        [WorkItem(545980)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545980, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545980")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInSizeOfArrayCreationExpression2()
         {
             // Array bounds must be an int, so the cast below can't be removed.
 
-            await TestMissingAsync(
-            @"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     static void Main()
     {
         var a = new int[[|(int)decimal.Zero|]];
     }
-}
-");
+}");
         }
 
-        [WorkItem(529842)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529842, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529842")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInTernaryExpression()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class X
 {
-    public static implicit operator string (X x)
+    public static implicit operator string(X x)
     {
         return x.ToString();
     }
@@ -1761,15 +1753,14 @@ class X
         X x = new X();
         Console.WriteLine(b ? [|(string)null|] : x);
     }
-}
-");
+}");
         }
 
-        [WorkItem(545882), WorkItem(880752)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545882, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545882"), WorkItem(880752, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/880752")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastInConstructorInitializer1()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
 @"
 class C
 {
@@ -1785,15 +1776,14 @@ class C
     C() : this(1) { }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545958), WorkItem(880752)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545958, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545958"), WorkItem(880752, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/880752")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastInConstructorInitializer2()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
 @"
 using System.Collections;
 
@@ -1815,29 +1805,31 @@ class C
     C() : this("""") { }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545957)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545957, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545957")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastInConstructorInitializer3()
         {
-            await TestMissingAsync(
-@"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
-    C(int x) { }
-    C() : this([|(long)1|]) { }
-}
-");
+    C(int x)
+    {
+    }
+
+    C() : this([|(long)1|])
+    {
+    }
+}");
         }
 
-        [WorkItem(545842)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545842, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545842")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToNullableInArithmeticExpression()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
 @"
 static class C
 {
@@ -1861,20 +1853,18 @@ static class C
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545942)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545942, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545942")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastFromValueTypeToObjectInReferenceEquality()
         {
             // Note: The cast below can't be removed because it would result in an
             // illegal reference equality test between object and a value type.
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class Program
 {
@@ -1883,98 +1873,87 @@ class Program
         object x = 1;
         Console.WriteLine(x == [|(object)1|]);
     }
-}
-");
+}");
         }
 
-        [WorkItem(545962)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545962, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545962")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastWhenExpressionDoesntBind()
         {
             // Note: The cast below can't be removed because its expression doesn't bind.
 
-            await TestMissingAsync(
-            @"
-using System;
- 
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
+
 class Program
 {
     static void Main()
     {
         ([|(IDisposable)x|]).Dispose();
     }
-}
-
-");
+}");
         }
 
-        [WorkItem(545944)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545944, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545944")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastBeforePointerDereference1()
         {
             // Note: The cast below can't be removed because it would result in *null,
             // which is illegal.
 
-            await TestMissingAsync(
-            @"
-unsafe class C
+            await TestMissingInRegularAndScriptAsync(
+@"unsafe class C
 {
     int x = *[|(int*)null|];
-}
-");
+}");
         }
 
-        [WorkItem(545978)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545978, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545978")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastBeforePointerDereference2()
         {
             // Note: The cast below can't be removed because it would result in dereferencing
             // void*, which is illegal.
 
-            await TestMissingAsync(
-            @"
-unsafe class C
+            await TestMissingInRegularAndScriptAsync(
+@"unsafe class C
 {
     static void Main()
     {
         void* p = null;
         int x = *[|(int*)p|];
     }
-}
-");
+}");
         }
 
         [WorkItem(2691, "https://github.com/dotnet/roslyn/issues/2691")]
         [WorkItem(2987, "https://github.com/dotnet/roslyn/issues/2987")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastBeforePointerDereference3()
         {
             // Conservatively disable cast simplifications for casts involving pointer conversions.
             // https://github.com/dotnet/roslyn/issues/2987 tracks improving cast simplification for this scenario.
 
-            await TestMissingAsync(
-            @"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     public unsafe float ReadSingle(byte* ptr)
     {
         return *[|(float*)ptr|];
     }
-}
-");
+}");
         }
 
         [WorkItem(2691, "https://github.com/dotnet/roslyn/issues/2691")]
         [WorkItem(2987, "https://github.com/dotnet/roslyn/issues/2987")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNumericCastInUncheckedExpression()
         {
             // Conservatively disable cast simplifications within explicit checked/unchecked expressions.
             // https://github.com/dotnet/roslyn/issues/2987 tracks improving cast simplification for this scenario.
 
-            await TestMissingAsync(
-            @"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     private unsafe readonly byte* _endPointer;
     private unsafe byte* _currentPointer;
@@ -1985,21 +1964,19 @@ class C
         {
         }
     }
-}
-");
+}");
         }
 
         [WorkItem(2691, "https://github.com/dotnet/roslyn/issues/2691")]
         [WorkItem(2987, "https://github.com/dotnet/roslyn/issues/2987")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNumericCastInUncheckedStatement()
         {
             // Conservatively disable cast simplifications within explicit checked/unchecked statements.
             // https://github.com/dotnet/roslyn/issues/2987 tracks improving cast simplification for this scenario.
 
-            await TestMissingAsync(
-            @"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     private unsafe readonly byte* _endPointer;
     private unsafe byte* _currentPointer;
@@ -2013,21 +1990,19 @@ class C
             }
         }
     }
-}
-");
+}");
         }
 
         [WorkItem(2691, "https://github.com/dotnet/roslyn/issues/2691")]
         [WorkItem(2987, "https://github.com/dotnet/roslyn/issues/2987")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNumericCastInCheckedExpression()
         {
             // Conservatively disable cast simplifications within explicit checked/unchecked expressions.
             // https://github.com/dotnet/roslyn/issues/2987 tracks improving cast simplification for this scenario.
 
-            await TestMissingAsync(
-            @"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     private unsafe readonly byte* _endPointer;
     private unsafe byte* _currentPointer;
@@ -2038,21 +2013,19 @@ class C
         {
         }
     }
-}
-");
+}");
         }
 
         [WorkItem(2691, "https://github.com/dotnet/roslyn/issues/2691")]
         [WorkItem(2987, "https://github.com/dotnet/roslyn/issues/2987")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNumericCastInCheckedStatement()
         {
             // Conservatively disable cast simplifications within explicit checked/unchecked statements.
             // https://github.com/dotnet/roslyn/issues/2987 tracks improving cast simplification for this scenario.
 
-            await TestMissingAsync(
-            @"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     private unsafe readonly byte* _endPointer;
     private unsafe byte* _currentPointer;
@@ -2066,37 +2039,35 @@ class C
             }
         }
     }
-}
-");
+}");
         }
 
-        [WorkItem(545894)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545894, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545894")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInAttribute()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 [A([|(byte)0)|]]
 class A : Attribute
 {
-    public A(object x) {  }
-}
-");
+    public A(object x)
+    {
+    }
+}");
         }
 
         #region Interface Casts
 
-        [WorkItem(545889)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545889, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545889")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToInterfaceForUnsealedType()
         {
             // Note: The cast below can't be removed because X is not sealed.
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class X : IDisposable
 {
@@ -2105,6 +2076,7 @@ class X : IDisposable
         X x = new Y();
         ([|(IDisposable)x|]).Dispose();
     }
+
     public void Dispose()
     {
         Console.WriteLine(""X.Dispose"");
@@ -2117,19 +2089,18 @@ class Y : X, IDisposable
     {
         Console.WriteLine(""Y.Dispose"");
     }
-}
-");
+}");
         }
 
-        [WorkItem(545890)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545890, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545890")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToInterfaceForSealedType1()
         {
             // Note: The cast below can be removed because C is sealed and the
             // unspecified optional parameters of I.Foo() and C.Foo() have the
             // same default values.
 
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
 @"
 using System;
 
@@ -2173,18 +2144,17 @@ sealed class C : I
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545890)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545890, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545890")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToInterfaceForSealedType2()
         {
             // Note: The cast below can be removed because C is sealed and the
             // interface member has no parameters.
 
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
 @"
 using System;
 
@@ -2234,18 +2204,17 @@ sealed class C : I
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545890)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545890, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545890")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToInterfaceForSealedType3()
         {
             // Note: The cast below can be removed because C is sealed and the
             // interface member has no parameters.
 
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
 @"
 using System;
 
@@ -2299,20 +2268,18 @@ sealed class C : I
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545890)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545890, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545890")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToInterfaceForSealedType4()
         {
             // Note: The cast below can't be removed (even though C is sealed)
             // because the unspecified optional parameter default values differ.
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 interface I
 {
@@ -2330,19 +2297,18 @@ sealed class C : I
     {
         ([|(I)new C()|]).Foo();
     }
-}
-");
+}");
         }
 
-        [WorkItem(545890)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545890, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545890")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToInterfaceForSealedType5()
         {
             // Note: The cast below can be removed (even though C is sealed)
             // because the optional parameters whose default values differ are
             // specified.
 
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
 @"
 using System;
 
@@ -2386,21 +2352,19 @@ sealed class C : I
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545888)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545888, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545888")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToInterfaceForSealedType6()
         {
             // Note: The cast below can't be removed (even though C is sealed)
             // because the specified named arguments refer to parameters that
             // appear at different positions in the member signatures.
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 interface I
 {
@@ -2418,15 +2382,14 @@ sealed class C : I
     {
         ([|(I)new C()|]).Foo(x: 1);
     }
-}
-");
+}");
         }
 
-        [WorkItem(545888)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545888, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545888")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToInterfaceForSealedType7()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
 @"
 using System;
 
@@ -2476,21 +2439,19 @@ sealed class C : I
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(545888)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545888, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545888")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToInterfaceForSealedType8()
         {
             // Note: The cast below can't be removed (even though C is sealed)
             // because the specified named arguments refer to parameters that
             // appear at different positions in the member signatures.
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 interface I
 {
@@ -2511,21 +2472,19 @@ sealed class C : I
     {
         Console.WriteLine(([|(I)new C()|])[x: 1]);
     }
-}
-");
+}");
         }
 
-        [WorkItem(545883)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545883, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545883")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToInterfaceForSealedType9()
         {
             // Note: The cast below can't be removed (even though C is sealed)
             // because it would result in binding to a Dispose method that doesn't
             // implement IDisposable.Dispose().
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 using System.IO;
 
 sealed class C : MemoryStream
@@ -2540,31 +2499,34 @@ sealed class C : MemoryStream
     {
         Console.WriteLine(""new Dispose()"");
     }
-}
-");
+}");
         }
 
-        [WorkItem(545887)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545887, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545887")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToInterfaceForStruct1()
         {
             // Note: The cast below can't be removed because the cast boxes 's' and
             // unboxing would change program behavior.
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 interface IIncrementable
 {
     int Value { get; }
+
     void Increment();
 }
 
 struct S : IIncrementable
 {
     public int Value { get; private set; }
-    public void Increment() { Value++; }
+
+    public void Increment()
+    {
+        Value++;
+    }
 
     static void Main()
     {
@@ -2572,18 +2534,17 @@ struct S : IIncrementable
         ([|(IIncrementable)s|]).Increment();
         Console.WriteLine(s.Value);
     }
-}
-");
+}");
         }
 
-        [WorkItem(545834)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545834, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545834")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToInterfaceForStruct2()
         {
             // Note: The cast below can be removed because we are sure to have
             // a fresh copy of the struct from the GetEnumerator() method.
 
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 using System.Collections.Generic;
@@ -2621,18 +2582,17 @@ class Program
     }
 }
 ",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(544655)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(544655, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544655")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToICloneableForDelegate()
         {
             // Note: The cast below can be removed because delegates are implicitly
             // sealed.
 
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 
@@ -2658,18 +2618,17 @@ class C
     }
 }
 ",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(545926)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545926, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545926")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToICloneableForArray()
         {
             // Note: The cast below can be removed because arrays are implicitly
             // sealed.
 
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 
@@ -2695,18 +2654,17 @@ class C
     }
 }
 ",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
-        [WorkItem(529897)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529897, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529897")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToIConvertibleForEnum()
         {
             // Note: The cast below can be removed because enums are implicitly
             // sealed.
 
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 using System;
 
@@ -2732,21 +2690,19 @@ class Program
     }
 }
 ",
-    index: 0,
-    compareTokens: false);
+    ignoreTrivia: false);
         }
 
         #endregion
 
         #region ParamArray Parameter Casts
 
-        [WorkItem(545141)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545141, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545141")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToObjectInParamArrayArg1()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class C
 {
@@ -2759,17 +2715,15 @@ class C
     {
         Console.WriteLine(x.Length);
     }
-}
-");
+}");
         }
 
-        [WorkItem(529911)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529911, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529911")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToIntArrayInParamArrayArg2()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class C
 {
@@ -2782,17 +2736,15 @@ class C
     {
         Console.WriteLine(x.Length);
     }
-}
-");
+}");
         }
 
-        [WorkItem(529911)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529911, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529911")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToObjectArrayInParamArrayArg3()
         {
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class C
 {
@@ -2805,15 +2757,14 @@ class C
     {
         Console.WriteLine(x.Length);
     }
-}
-");
+}");
         }
 
-        [WorkItem(529911)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529911, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529911")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToObjectArrayInParamArrayArg1()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class C
 {
@@ -2837,15 +2788,14 @@ class C
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(529911)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529911, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529911")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToStringArrayInParamArrayArg2()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class C
 {
@@ -2869,15 +2819,14 @@ class C
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(529911)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529911, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529911")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToIntArrayInParamArrayArg3()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class C
 {
@@ -2901,15 +2850,14 @@ class C
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(529911)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529911, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529911")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToObjectArrayInParamArrayArg4()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class C
 {
@@ -2933,15 +2881,14 @@ class C
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(529911)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529911, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529911")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToObjectInParamArrayArg5()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
             @"
 class C
 {
@@ -2965,14 +2912,13 @@ class C
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastToObjectArrayInParamArrayWithNamedArgument()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
                 @"
 class C
 {
@@ -2995,69 +2941,67 @@ class C
     static void Foo(params object[] x) { }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
         #endregion
 
         #region ForEach Statements
 
-        [WorkItem(545961)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545961, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545961")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInForEach1()
         {
             // The cast below can't be removed because it would result an error
             // in the foreach statement.
 
-            await TestMissingAsync(
-            @"
-using System.Collections;
+            await TestMissingInRegularAndScriptAsync(
+@"using System.Collections;
 
 class Program
 {
     static void Main()
     {
         object s = "";
-        foreach (object x in [|(IEnumerable)s|]) { }
+        foreach (object x in [|(IEnumerable)s|])
+        {
+        }
     }
-}
-");
+}");
         }
 
-        [WorkItem(545961)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545961, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545961")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInForEach2()
         {
             // The cast below can't be removed because it would result an error
             // in the foreach statement.
 
-            await TestMissingAsync(
-            @"
-using System.Collections.Generic;
+            await TestMissingInRegularAndScriptAsync(
+@"using System.Collections.Generic;
 
 class Program
 {
     static void Main()
     {
         object s = "";
-        foreach (object x in [|(IEnumerable<char>)s|]) { }
+        foreach (object x in [|(IEnumerable<char>)s|])
+        {
+        }
     }
-}
-");
+}");
         }
 
-        [WorkItem(545961)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545961, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545961")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInForEach3()
         {
             // The cast below can't be removed because it would result an error
             // in the foreach statement since C doesn't contain a GetEnumerator()
             // method.
 
-            await TestMissingAsync(
-            @"
-using System.Collections;
+            await TestMissingInRegularAndScriptAsync(
+@"using System.Collections;
 
 class D
 {
@@ -3077,21 +3021,22 @@ class C
     static void Main()
     {
         object s = "";
-        foreach (object x in [|(D)new C()|]) { }
+        foreach (object x in [|(D)new C()|])
+        {
+        }
     }
 }");
         }
 
-        [WorkItem(545961)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545961, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545961")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInForEach4()
         {
             // The cast below can't be removed because it would result in
             // C.GetEnumerator() being called rather than D.GetEnumerator().
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 using System.Collections;
 
 class D
@@ -3125,44 +3070,43 @@ class C
 }");
         }
 
-        [WorkItem(545961)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545961, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545961")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInForEach5()
         {
             // The cast below can't be removed because it would change the
             // type of 'x'.
 
-            await TestMissingAsync(
-            @"
-using System;
- 
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
+
 class Program
 {
     static void Main()
     {
-        string[] s = { ""A"" };
+        string[] s = {
+            ""A""
+        };
         foreach (var x in [|(Array)s|])
         {
             var y = x;
             y = 1;
         }
     }
-}
-");
+}");
         }
 
         #endregion
 
-        [WorkItem(545925)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545925, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545925")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastIfOverriddenMethodHasIncompatibleParameterList()
         {
             // Note: The cast below can't be removed because the parameter list
             // of Foo and its override have different default values.
 
-            await TestMissingAsync(
-            @"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 abstract class Y
 {
@@ -3180,18 +3124,17 @@ class X : Y
     {
         Console.WriteLine(x);
     }
-}
-");
+}");
         }
 
-        [WorkItem(545925)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545925, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545925")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastIfOverriddenMethodHaveCompatibleParameterList()
         {
             // Note: The cast below can be removed because the parameter list
             // of Foo and its override have the same default values.
 
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
 @"
 using System;
 
@@ -3235,18 +3178,17 @@ class X : Y
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(529916)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529916, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529916")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveCastInReceiverForMethodGroup()
         {
             // Note: The cast below can be removed because the it results in
             // the same method group.
 
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
 @"
 using System;
 
@@ -3274,46 +3216,41 @@ static class Program
     static void Foo(this string x) { }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(609497)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(609497, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/609497")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task Bugfix_609497()
         {
-            await TestMissingAsync(
-@"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 using System.Threading.Tasks;
- 
+
 class Program
 {
     static void Main()
     {
         Foo().Wait();
     }
- 
+
     static async Task Foo()
     {
         Task task = Task.FromResult(0);
         Console.WriteLine(await [|(dynamic)task|]);
     }
-}
-
-");
+}");
         }
 
-        [WorkItem(545995)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545995, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545995")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToDifferentTypeWithSameName()
         {
             // Note: The cast below cannot be removed because the it results in
             // a different overload being picked.
 
-            await TestMissingAsync(
-@"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 using MyInt = System.Int32;
 
 namespace System
@@ -3329,26 +3266,32 @@ namespace System
 
 class A
 {
-    static void Foo(int x) { Console.WriteLine(""int""); }
-    static void Foo(MyInt x) { Console.WriteLine(""MyInt""); }
+    static void Foo(int x)
+    {
+        Console.WriteLine(""int"");
+    }
+
+    static void Foo(MyInt x)
+    {
+        Console.WriteLine(""MyInt"");
+    }
+
     static void Main()
     {
         Foo([|(MyInt)0|]);
     }
-}
-");
+}");
         }
 
-        [WorkItem(545921)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545921, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545921")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastWhichWouldChangeAttributeOverloadResolution1()
         {
             // Note: The cast below cannot be removed because it would result in
             // a different attribute constructor being picked
 
-            await TestMissingAsync(
-@"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 [Flags]
 enum EEEnum
@@ -3359,35 +3302,42 @@ enum EEEnum
 
 class MyAttributeAttribute : Attribute
 {
-    public MyAttributeAttribute(EEEnum e) { }
-    public MyAttributeAttribute(short e) { }
- 
-    public void Foo(EEEnum e) { }
-    public void Foo(short e) { }
- 
+    public MyAttributeAttribute(EEEnum e)
+    {
+    }
+
+    public MyAttributeAttribute(short e)
+    {
+    }
+
+    public void Foo(EEEnum e)
+    {
+    }
+
+    public void Foo(short e)
+    {
+    }
+
     [MyAttribute([|(EEEnum)0x0|])]
     public void Bar()
     {
         Foo((EEEnum)0x0);
     }
-}
-");
+}");
         }
 
-        [WorkItem(608180)]
-        [WorkItem(624252)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(608180, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/608180")]
+        [WorkItem(624252, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/624252")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastIfArgumentIsRestricted_TypedReference()
         {
-            await TestMissingAsync(
-@"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 class Program
 {
     static void Main(string[] args)
     {
-        
     }
 
     static void v(dynamic x)
@@ -3398,20 +3348,17 @@ class Program
 
     static void dd(object obj, TypedReference d)
     {
-
     }
-}
-");
+}");
         }
 
-        [WorkItem(627107)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(627107, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/627107")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastOnArgumentsWithOtherDynamicArguments()
         {
-            await TestMissingAsync(
-@"
-using System;
- 
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
+
 class Program
 {
     static void Main()
@@ -3419,117 +3366,130 @@ class Program
         C<string>.InvokeFoo(0);
     }
 }
- 
+
 class C<T>
 {
     public static void InvokeFoo(dynamic x)
     {
         Console.WriteLine(Foo(x, [|(object)""""|], """"));
     }
- 
-    static void Foo(int x, string y, T z) { }
-    static bool Foo(int x, object y, object z) { return true; }
-}
 
-");
+    static void Foo(int x, string y, T z)
+    {
+    }
+
+    static bool Foo(int x, object y, object z)
+    {
+        return true;
+    }
+}");
         }
 
-        [WorkItem(627107)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(627107, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/627107")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastOnArgumentsWithOtherDynamicArguments_Bracketed()
         {
-            await TestMissingAsync(
-@"
-class C<T>
+            await TestMissingInRegularAndScriptAsync(
+@"class C<T>
 {
-    int this[int x, T s, string d = ""abc""] { get { return 0; } set { } }
+    int this[int x, T s, string d = ""abc""]
+    {
+        get
+        {
+            return 0;
+        }
 
-    int this[int x, object s, object d] { get { return 0; } set { } }
+        set
+        {
+        }
+    }
+
+    int this[int x, object s, object d]
+    {
+        get
+        {
+            return 0;
+        }
+
+        set
+        {
+        }
+    }
 
     void Foo(dynamic xx)
     {
-        var y = this[ x: xx, s: """", d: [|(object)""""|]];
+        var y = this[x: xx, s: """", d: [|(object)""""|]];
     }
-}
-");
+}");
         }
 
-        [WorkItem(627107)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(627107, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/627107")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastOnArgumentsWithDynamicReceiverOpt()
         {
-            await TestMissingAsync(
-@"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     static bool Foo(dynamic d)
     {
         d([|(object)""""|]);
         return true;
     }
-}
-");
+}");
         }
 
-        [WorkItem(627107)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(627107, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/627107")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastOnArgumentsWithDynamicReceiverOpt_1()
         {
-            await TestMissingAsync(
-@"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     static bool Foo(dynamic d)
     {
         d.foo([|(object)""""|]);
         return true;
     }
-}
-");
+}");
         }
 
-        [WorkItem(627107)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(627107, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/627107")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastOnArgumentsWithDynamicReceiverOpt_2()
         {
-            await TestMissingAsync(
-@"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     static bool Foo(dynamic d)
     {
         d.foo.bar.foo([|(object)""""|]);
         return true;
     }
-}
-");
+}");
         }
 
-        [WorkItem(627107)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(627107, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/627107")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastOnArgumentsWithDynamicReceiverOpt_3()
         {
-            await TestMissingAsync(
-@"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     static bool Foo(dynamic d)
     {
         d.foo().bar().foo([|(object)""""|]);
         return true;
     }
-}
-");
+}");
         }
 
-        [WorkItem(627107)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(627107, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/627107")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastOnArgumentsWithOtherDynamicArguments_1()
         {
-            await TestMissingAsync(
-@"
-using System;
- 
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
+
 class Program
 {
     static void Main()
@@ -3545,39 +3505,42 @@ class C<T>
         Console.WriteLine(Foo([|(object)""""|], x, """"));
     }
 
-    static void Foo(string y, int x,  T z) { }
-    static bool Foo(object y, int x,  object z) { return true; }
-}
+    static void Foo(string y, int x, T z)
+    {
+    }
 
-");
+    static bool Foo(object y, int x, object z)
+    {
+        return true;
+    }
+}");
         }
 
-        [WorkItem(545998)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(545998, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545998")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastWhichWouldChangeAttributeOverloadResolution2()
         {
             // Note: The cast below cannot be removed because it would result in
             // a different attribute constructor being picked
 
-            await TestMissingAsync(
-@"
-using System;
- 
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
+
 [A(new[] { [|(long)0|] })]
 class A : Attribute
 {
-    public A(long[] x) { }
-}
-");
+    public A(long[] x)
+    {
+    }
+}");
         }
 
-        [WorkItem(529894)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529894, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529894")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontUnnecessaryCastFromEnumToUint()
         {
-            await TestMissingAsync(
-@"
-using System;
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
 
 enum E
 {
@@ -3591,32 +3554,30 @@ class C
         E x = E.X;
         Console.WriteLine([|(uint)|]x > 0);
     }
-}
-");
+}");
         }
 
-        [WorkItem(529846)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(529846, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529846")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontUnnecessaryCastFromTypeParameterToObject()
         {
-            await TestMissingAsync(
-@"
-class C
+            await TestMissingInRegularAndScriptAsync(
+@"class C
 {
     static void Foo<T>(T x, object y)
     {
-        if ([|(object)|]x == y) { }
+        if ([|(object)|]x == y)
+        {
+        }
     }
-}
-
-");
+}");
         }
 
-        [WorkItem(640136)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(640136, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/640136")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task RemoveUnnecessaryCastAndParseCorrect()
         {
-            await TestAsync(
+            await TestInRegularAndScriptAsync(
 @"
 using System;
 using System.Threading.Tasks;
@@ -3642,17 +3603,15 @@ class C
     }
 }
 ",
-            index: 0,
-            compareTokens: false);
+            ignoreTrivia: false);
         }
 
-        [WorkItem(626026)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(626026, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/626026")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastIfUserDefinedExplicitCast()
         {
-            await TestMissingAsync(
-            @"
-class Program
+            await TestMissingInRegularAndScriptAsync(
+@"class Program
 {
     static void Main(string[] args)
     {
@@ -3671,35 +3630,30 @@ public struct A
 
 public struct B
 {
-
-}
-");
+}");
         }
 
-        [WorkItem(768895)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(768895, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/768895")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInTernary()
         {
-            await TestMissingAsync(
-            @"
-class Program
+            await TestMissingInRegularAndScriptAsync(
+@"class Program
 {
     static void Main(string[] args)
     {
         object x = null;
         int y = [|(bool)x|] ? 1 : 0;
     }
-}
-");
+}");
         }
 
-        [WorkItem(770187)]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [WorkItem(770187, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/770187")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveNecessaryCastInSwitchExpression()
         {
-            await TestMissingAsync(
-            @"
-namespace ConsoleApplication23
+            await TestMissingInRegularAndScriptAsync(
+@"namespace ConsoleApplication23
 {
     class Program
     {
@@ -3714,22 +3668,22 @@ namespace ConsoleApplication23
             }
         }
     }
+
     enum E
     {
         A,
         B,
         C
     }
-}
-");
+}");
         }
 
-        [WorkItem(844482)]
+        [WorkItem(844482, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/844482")]
         [WorkItem(2761, "https://github.com/dotnet/roslyn/issues/2761")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastFromBaseToDerivedWithExplicitReference()
         {
-            await TestMissingAsync(
+            await TestMissingInRegularAndScriptAsync(
 @"class Program
 {
     static void Main(string[] args)
@@ -3742,26 +3696,23 @@ namespace ConsoleApplication23
 
 class C
 {
-
 }
 
 class D : C
 {
-
 }");
         }
 
         [WorkItem(3254, "https://github.com/dotnet/roslyn/issues/3254")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToTypeParameterWithExceptionConstraint()
         {
-            await TestMissingAsync(
+            await TestMissingInRegularAndScriptAsync(
 @"using System;
 
 class Program
 {
-    private static void RequiresCondition<TException>(bool condition, string messageOnFalseCondition)
-            where TException : Exception
+    private static void RequiresCondition<TException>(bool condition, string messageOnFalseCondition) where TException : Exception
     {
         if (!condition)
         {
@@ -3772,21 +3723,193 @@ class Program
         }
 
         [WorkItem(3254, "https://github.com/dotnet/roslyn/issues/3254")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
         public async Task DontRemoveCastToTypeParameterWithExceptionSubTypeConstraint()
         {
-            await TestMissingAsync(
+            await TestMissingInRegularAndScriptAsync(
 @"using System;
 
 class Program
 {
-    private static void RequiresCondition<TException>(bool condition, string messageOnFalseCondition)
-            where TException : ArgumentException
+    private static void RequiresCondition<TException>(bool condition, string messageOnFalseCondition) where TException : ArgumentException
     {
         if (!condition)
         {
             throw [|(TException)Activator.CreateInstance(typeof(TException), messageOnFalseCondition)|];
         }
+    }
+}");
+        }
+
+        [WorkItem(8111, "https://github.com/dotnet/roslyn/issues/8111")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        public async Task DontRemoveCastThatChangesShapeOfAnonymousTypeObject()
+        {
+            await TestMissingInRegularAndScriptAsync(
+@"class Program
+{
+    static void Main(string[] args)
+    {
+        object thing = new { shouldBeAnInt = [|(int)Directions.South|] };
+    }
+
+    public enum Directions
+    {
+        North,
+        East,
+        South,
+        West
+    }
+}");
+        }
+
+        [WorkItem(8111, "https://github.com/dotnet/roslyn/issues/8111")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        public async Task RemoveCastThatDoesntChangeShapeOfAnonymousTypeObject()
+        {
+            await TestInRegularAndScriptAsync(
+@"class Program
+{
+    static void Main(string[] args)
+    {
+        object thing = new { shouldBeAnInt = [|(Directions)Directions.South|] };
+    }
+
+    public enum Directions
+    {
+        North,
+        East,
+        South,
+        West
+    }
+}",
+
+@"class Program
+{
+    static void Main(string[] args)
+    {
+        object thing = new { shouldBeAnInt = Directions.South };
+    }
+
+    public enum Directions
+    {
+        North,
+        East,
+        South,
+        West
+    }
+}");
+        }
+
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        public async Task Tuple()
+        {
+            await TestInRegularAndScriptAsync(
+@"class C
+{
+    void Main()
+    {
+        (int, string) tuple = [|((int, string))(1, ""hello"")|];
+    }
+}",
+@"class C
+{
+    void Main()
+    {
+        (int, string) tuple = (1, ""hello"");
+    }
+}");
+        }
+
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        public async Task TupleWithDifferentNames()
+        {
+            await TestInRegularAndScriptAsync(
+@"class C
+{
+    void Main()
+    {
+        (int a, string) tuple = [|((int, string d))(1, f: ""hello"")|];
+    }
+}",
+@"class C
+{
+    void Main()
+    {
+        (int a, string) tuple = (1, f: ""hello"");
+    }
+}");
+        }
+
+        [WorkItem(12572, "https://github.com/dotnet/roslyn/issues/12572")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        public async Task DontRemoveCastThatUnboxes()
+        {
+            // The cast below can't be removed because it could throw a null ref exception.
+            await TestMissingInRegularAndScriptAsync(
+@"using System;
+
+class Program
+{
+    static void Main()
+    {
+        object i = null;
+        switch ([|(int)i|])
+        {
+            case 0:
+                Console.WriteLine(0);
+                break;
+            case 1:
+                Console.WriteLine(1);
+                break;
+            case 2:
+                Console.WriteLine(2);
+                break;
+        }
+    }
+}");
+        }
+
+        [WorkItem(17029, "https://github.com/dotnet/roslyn/issues/17029")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        public async Task DontRemoveCastOnEnumComparison1()
+        {
+            await TestMissingInRegularAndScriptAsync(
+@"
+enum TransferTypeKey
+{
+    Transfer,
+    TransferToBeneficiary
+}
+
+class Program
+{
+    static void Main(dynamic p)
+    {
+        if (p.TYP != [|(int)TransferTypeKey.TransferToBeneficiary|])
+          throw new InvalidOperationException();
+    }
+}");
+        }
+
+        [WorkItem(17029, "https://github.com/dotnet/roslyn/issues/17029")]
+        [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsRemoveUnnecessaryCast)]
+        public async Task DontRemoveCastOnEnumComparison2()
+        {
+            await TestMissingInRegularAndScriptAsync(
+@"
+enum TransferTypeKey
+{
+    Transfer,
+    TransferToBeneficiary
+}
+
+class Program
+{
+    static void Main(dynamic p)
+    {
+        if ([|(int)TransferTypeKey.TransferToBeneficiary|] != p.TYP)
+          throw new InvalidOperationException();
     }
 }");
         }

@@ -103,8 +103,13 @@ namespace Microsoft.CodeAnalysis
         Preprocessing = 18,
 
         /// <summary>
+        /// Symbol represents a value that is discarded, e.g. in M(out _)
+        /// </summary>
+        Discard = 19,
+
+        /// <summary>
         /// Symbol is a non-nullable reference type.
         /// </summary>
-        NonNullableReference = 19,
+        NonNullableReference = 20,
     }
 }

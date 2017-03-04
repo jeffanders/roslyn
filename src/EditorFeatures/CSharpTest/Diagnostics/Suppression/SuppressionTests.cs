@@ -26,20 +26,12 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Diagnostics.Suppression
 {
     public abstract partial class CSharpSuppressionTests : AbstractSuppressionDiagnosticTest
     {
-        protected override ParseOptions GetScriptOptions()
-        {
-            return Options.Script;
-        }
+        protected override ParseOptions GetScriptOptions() => Options.Script;
 
-        protected override Task<TestWorkspace> CreateWorkspaceFromFileAsync(string definition, ParseOptions parseOptions, CompilationOptions compilationOptions)
-        {
-            return CSharpWorkspaceFactory.CreateWorkspaceFromFileAsync(definition, (CSharpParseOptions)parseOptions, (CSharpCompilationOptions)compilationOptions);
-        }
+        protected override string GetLanguage() => LanguageNames.CSharp;
 
-        protected override string GetLanguage()
-        {
-            return LanguageNames.CSharp;
-        }
+        protected override TestWorkspace CreateWorkspaceFromFile(string initialMarkup, TestParameters parameters)
+            => TestWorkspace.CreateCSharp(initialMarkup, parameters.parseOptions, parameters.compilationOptions);
 
         #region "Pragma disable tests"
 
@@ -57,7 +49,7 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Diagnostics.Suppression
                     return Tuple.Create<DiagnosticAnalyzer, ISuppressionFixProvider>(null, new CSharpSuppressionCodeFixProvider());
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestPragmaWarningDirective()
                 {
                     await TestAsync(
@@ -81,7 +73,7 @@ class Class
 }}");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestMultilineStatementPragmaWarningDirective()
                 {
                     await TestAsync(
@@ -107,7 +99,7 @@ class Class
 }}");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestPragmaWarningDirectiveWithExistingTrivia()
                 {
                     await TestAsync(
@@ -136,7 +128,7 @@ class Class
 }}");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestMultipleInstancesOfPragmaWarningDirective()
                 {
                     await TestAsync(
@@ -172,7 +164,8 @@ class Class
         [|int x = 0, y = 0; string s;|]
     }
 }";
-                    using (var workspace = await CreateWorkspaceFromFileAsync(source, parseOptions: null, compilationOptions: null))
+                    var parameters = new TestParameters();
+                    using (var workspace = CreateWorkspaceFromOptions(source, parameters))
                     {
                         var diagnosticService = new TestDiagnosticAnalyzerService(LanguageNames.CSharp, new CSharpCompilerDiagnosticAnalyzer());
                         var incrementalAnalyzer = diagnosticService.CreateIncrementalAnalyzer(workspace);
@@ -183,9 +176,7 @@ class Class
                             SpecializedCollections.EmptyEnumerable<Lazy<IErrorLoggerService>>(),
                             SpecializedCollections.EmptyEnumerable<Lazy<CodeFixProvider, CodeChangeProviderMetadata>>(),
                             SpecializedCollections.SingletonEnumerable(suppressionProviderFactory));
-
-                        TextSpan span;
-                        var document = GetDocumentAndSelectSpan(workspace, out span);
+                        var document = GetDocumentAndSelectSpan(workspace, out var span);
                         var diagnostics = await diagnosticService.GetDiagnosticsForSpanAsync(document, span);
                         Assert.Equal(2, diagnostics.Where(d => d.Id == "CS0219").Count());
 
@@ -210,7 +201,7 @@ class Class
                     }
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestErrorAndWarningScenario()
                 {
                     await TestAsync(
@@ -236,8 +227,8 @@ class Class
 }}");
                 }
 
-                [WorkItem(956453)]
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [WorkItem(956453, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/956453")]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestWholeFilePragmaWarningDirective()
                 {
                     await TestAsync(
@@ -247,8 +238,8 @@ class Class {{ void Method() {{ int x = 0; }} }}
 #pragma warning restore CS0219 // {CSharpResources.WRN_UnreferencedVarAssg_Title}");
                 }
 
-                [WorkItem(970129)]
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [WorkItem(970129, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/970129")]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionAroundSingleToken()
                 {
                     await TestAsync(
@@ -278,8 +269,8 @@ class Program
 }}");
                 }
 
-                [WorkItem(1066576)]
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [WorkItem(1066576, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1066576")]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestPragmaWarningDirectiveAroundTrivia1()
                 {
                     await TestAsync(
@@ -317,8 +308,8 @@ class Class
 }}");
                 }
 
-                [WorkItem(1066576)]
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [WorkItem(1066576, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1066576")]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestPragmaWarningDirectiveAroundTrivia2()
                 {
                     await TestAsync(
@@ -328,8 +319,8 @@ class Class
 #pragma warning restore CS1633 // {CSharpResources.WRN_IllegalPragma_Title}");
                 }
 
-                [WorkItem(1066576)]
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [WorkItem(1066576, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1066576")]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestPragmaWarningDirectiveAroundTrivia3()
                 {
                     await TestAsync(
@@ -339,8 +330,8 @@ class Class
 #pragma warning restore CS1633 // {CSharpResources.WRN_IllegalPragma_Title}");
                 }
 
-                [WorkItem(1066576)]
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [WorkItem(1066576, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1066576")]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestPragmaWarningDirectiveAroundTrivia4()
                 {
                     await TestAsync(
@@ -360,8 +351,8 @@ class C {{ }}
 ");
                 }
 
-                [WorkItem(1066576)]
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [WorkItem(1066576, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1066576")]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestPragmaWarningDirectiveAroundTrivia5()
                 {
                     await TestAsync(
@@ -377,8 +368,8 @@ class C2 {{ }}
 class C3 {{ }}");
                 }
 
-                [WorkItem(1066576)]
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [WorkItem(1066576, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1066576")]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestPragmaWarningDirectiveAroundTrivia6()
                 {
                     await TestAsync(
@@ -406,7 +397,7 @@ class C3 { } // comment
                         new CSharpSimplifyTypeNamesDiagnosticAnalyzer(), new CSharpSuppressionCodeFixProvider());
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestHiddenDiagnosticCannotBeSuppressed()
                 {
                     await TestMissingAsync(
@@ -457,7 +448,7 @@ int Method()
                         new UserDiagnosticAnalyzer(), new CSharpSuppressionCodeFixProvider());
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestInfoDiagnosticSuppressed()
                 {
                     await TestAsync(
@@ -519,7 +510,7 @@ class Class
                         new UserDiagnosticAnalyzer(), new CSharpSuppressionCodeFixProvider());
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestErrorDiagnosticCanBeSuppressed()
                 {
                     await TestAsync(
@@ -584,7 +575,7 @@ class Class
                         new UserDiagnosticAnalyzer(), new CSharpSuppressionCodeFixProvider());
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestDiagnosticWithBadIdSuppressed()
                 {
                     // Diagnostics with bad/invalid ID are not reported.
@@ -673,7 +664,7 @@ class Class
                     return Tuple.Create<DiagnosticAnalyzer, ISuppressionFixProvider>(null, new CSharpSuppressionCodeFixProvider());
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestCompilerDiagnosticsCannotBeSuppressed()
                 {
                     // Another test verifies we have a pragma warning action for this source, this verifies there are no other suppression actions.
@@ -697,7 +688,7 @@ class Class
                         new CSharpSimplifyTypeNamesDiagnosticAnalyzer(), new CSharpSuppressionCodeFixProvider());
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestHiddenDiagnosticsCannotBeSuppressed()
                 {
                     await TestMissingAsync(
@@ -784,7 +775,7 @@ class Class
                         new UserDiagnosticAnalyzer(), new CSharpSuppressionCodeFixProvider());
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionOnSimpleType()
                 {
                     await TestAsync(
@@ -804,7 +795,7 @@ using System;
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""type"", Target = ""~T:Class"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""type"", Target = ""~T:Class"")]
 
 ");
 
@@ -824,10 +815,10 @@ using System;
 }");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionOnNamespace()
                 {
-                    await TestAsync(
+                    await TestInRegularAndScriptAsync(
             @"
 using System;
 
@@ -847,7 +838,7 @@ using System;
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""namespace"", Target = ""~N:N"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""namespace"", Target = ""~N:N"")]
 
 ", index: 1);
 
@@ -870,7 +861,7 @@ using System;
 }");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionOnTypeInsideNamespace()
                 {
                     await TestAsync(
@@ -896,7 +887,7 @@ namespace N1
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""type"", Target = ""~T:N1.N2.Class"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""type"", Target = ""~T:N1.N2.Class"")]
 
 ");
 
@@ -922,7 +913,7 @@ namespace N1
 }");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionOnNestedType()
                 {
                     await TestAsync(
@@ -948,7 +939,7 @@ namespace N
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""type"", Target = ""~T:N.Generic`1.Class"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""type"", Target = ""~T:N.Generic`1.Class"")]
 
 ");
 
@@ -974,7 +965,7 @@ namespace N
 }");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionOnMethod()
                 {
                     await TestAsync(
@@ -1000,7 +991,7 @@ namespace N
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""member"", Target = ""~M:N.Generic`1.Class.Method~System.Int32"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""member"", Target = ""~M:N.Generic`1.Class.Method~System.Int32"")]
 
 ");
 
@@ -1026,7 +1017,7 @@ namespace N
 }");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionOnOverloadedMethod()
                 {
                     await TestAsync(
@@ -1057,7 +1048,7 @@ namespace N
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""member"", Target = ""~M:N.Generic`1.Class.Method(System.Int32,System.Char@)~System.Int32"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""member"", Target = ""~M:N.Generic`1.Class.Method(System.Int32,System.Char@)~System.Int32"")]
 
 ");
 
@@ -1117,12 +1108,12 @@ namespace N
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""member"", Target = ""~M:N.Generic`1.Class.Method~System.Int32"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""member"", Target = ""~M:N.Generic`1.Class.Method~System.Int32"")]
 
 ");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionOnGenericMethod()
                 {
                     await TestAsync(
@@ -1148,7 +1139,7 @@ namespace N
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""member"", Target = ""~M:N.Generic`1.Class.Method``1(``0)~System.Int32"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""member"", Target = ""~M:N.Generic`1.Class.Method``1(``0)~System.Int32"")]
 
 ");
 
@@ -1174,7 +1165,7 @@ namespace N
 }");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionOnProperty()
                 {
                     await TestAsync(
@@ -1200,7 +1191,7 @@ namespace N
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""member"", Target = ""~P:N.Generic.Class.Property"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""member"", Target = ""~P:N.Generic.Class.Property"")]
 
 ");
 
@@ -1226,7 +1217,7 @@ namespace N
 }");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionOnField()
                 {
                     await TestAsync(
@@ -1243,7 +1234,7 @@ class Class
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""member"", Target = ""~F:Class.field"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""member"", Target = ""~F:Class.field"")]
 
 ");
 
@@ -1269,8 +1260,8 @@ class Class
 using System;
 
 // suppressions on field are not relevant.
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""member"", Target = ""~F:E.Field1"")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""member"", Target = ""~F:E.Field2"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""member"", Target = ""~F:E.Field1"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""member"", Target = ""~F:E.Field2"")]
 
 enum E
 {
@@ -1285,7 +1276,7 @@ enum E
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""type"", Target = ""~T:E"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""type"", Target = ""~T:E"")]
 
 ");
 
@@ -1294,7 +1285,7 @@ enum E
             @"
 using System;
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""type"", Target = ""~T:E"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""type"", Target = ""~T:E"")]
 
 enum E
 {
@@ -1305,7 +1296,7 @@ enum E
 }");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionOnField2()
                 {
                     await TestAsync(
@@ -1322,7 +1313,7 @@ class Class
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""member"", Target = ""~F:Class.field"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""member"", Target = ""~F:Class.field"")]
 
 ");
 
@@ -1339,7 +1330,7 @@ class Class
 }");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionOnEvent()
                 {
                     await TestAsync(
@@ -1370,7 +1361,7 @@ class Class
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""member"", Target = ""~E:Class.SampleEvent"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""member"", Target = ""~E:Class.SampleEvent"")]
 
 ");
 
@@ -1401,7 +1392,7 @@ class Class
 }");
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionWithExistingGlobalSuppressionsDocument()
                 {
                     var initialMarkup = @"<Workspace>
@@ -1433,14 +1424,14 @@ class Class { }
 // a specific target and scoped to a namespace, type, member, etc.
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""<Pending>"", Scope = ""type"", Target = ""Class"")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""type"", Target = ""~T:Class2"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""type"", Target = ""~T:Class2"")]
 
 ";
 
                     await TestAsync(initialMarkup, expectedText);
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionWithExistingGlobalSuppressionsDocument2()
                 {
                     // Own custom file named GlobalSuppressions.cs
@@ -1469,14 +1460,14 @@ class Class { }
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""type"", Target = ""~T:Class2"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""type"", Target = ""~T:Class2"")]
 
 ";
 
                     await TestAsync(initialMarkup, expectedText);
                 }
 
-                [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
+                [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
                 public async Task TestSuppressionWithExistingGlobalSuppressionsDocument3()
                 {
                     // Own custom file named GlobalSuppressions.cs + existing GlobalSuppressions2.cs with global suppressions
@@ -1515,7 +1506,7 @@ class Class { }
 // a specific target and scoped to a namespace, type, member, etc.
 
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""<Pending>"", Scope = ""type"", Target = ""Class"")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"", Scope = ""type"", Target = ""~T:Class2"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""InfoDiagnostic"", ""InfoDiagnostic:InfoDiagnostic"", Justification = ""{FeaturesResources.Pending}"", Scope = ""type"", Target = ""~T:Class2"")]
 
 ";
 
@@ -1569,7 +1560,7 @@ class Class { }
             }
 
             [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsSuppression)]
-            [WorkItem(1073825)]
+            [WorkItem(1073825, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1073825")]
             public async Task TestDiagnosticWithoutLocationCanBeSuppressed()
             {
                 await TestAsync(
@@ -1589,7 +1580,7 @@ class Class
 // Project-level suppressions either have no target or are given 
 // a specific target and scoped to a namespace, type, member, etc.
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""NoLocationDiagnostic"", ""NoLocationDiagnostic:NoLocationDiagnostic"", Justification = ""{FeaturesResources.SuppressionPendingJustification}"")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage(""NoLocationDiagnostic"", ""NoLocationDiagnostic:NoLocationDiagnostic"", Justification = ""{FeaturesResources.Pending}"")]
 
 ");
             }

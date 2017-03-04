@@ -24,6 +24,7 @@ using Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel.MethodXml;
 using Microsoft.VisualStudio.LanguageServices.CSharp.Utilities;
 using Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel;
 using Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel.InternalElements;
+using Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel.Interop;
 using Microsoft.VisualStudio.LanguageServices.Implementation.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
 using Roslyn.Utilities;
@@ -367,35 +368,46 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
             return SpecializedCollections.EmptyEnumerable<SyntaxNode>();
         }
 
-        private static bool IsContainerNode(SyntaxNode container)
-        {
-            return container is CompilationUnitSyntax
-                || container is NamespaceDeclarationSyntax
-                || container is TypeDeclarationSyntax
-                || container is EnumDeclarationSyntax;
-        }
+        private static bool IsContainerNode(SyntaxNode container) =>
+            container is CompilationUnitSyntax ||
+            container is NamespaceDeclarationSyntax ||
+            container is BaseTypeDeclarationSyntax;
 
-        private static IEnumerable<SyntaxNode> GetChildMemberNodes(SyntaxNode container)
+        private static bool IsNamespaceOrTypeDeclaration(SyntaxNode node) =>
+            node.Kind() == SyntaxKind.NamespaceDeclaration ||
+            node is BaseTypeDeclarationSyntax ||
+            node is DelegateDeclarationSyntax;
+
+        private static IEnumerable<MemberDeclarationSyntax> GetChildMemberNodes(SyntaxNode container)
         {
             if (container is CompilationUnitSyntax)
             {
                 foreach (var member in ((CompilationUnitSyntax)container).Members)
                 {
-                    yield return member;
+                    if (IsNamespaceOrTypeDeclaration(member))
+                    {
+                        yield return member;
+                    }
                 }
             }
             else if (container is NamespaceDeclarationSyntax)
             {
                 foreach (var member in ((NamespaceDeclarationSyntax)container).Members)
                 {
-                    yield return member;
+                    if (IsNamespaceOrTypeDeclaration(member))
+                    {
+                        yield return member;
+                    }
                 }
             }
             else if (container is TypeDeclarationSyntax)
             {
                 foreach (var member in ((TypeDeclarationSyntax)container).Members)
                 {
-                    yield return member;
+                    if (member.Kind() != SyntaxKind.NamespaceDeclaration)
+                    {
+                        yield return member;
+                    }
                 }
             }
             else if (container is EnumDeclarationSyntax)
@@ -957,8 +969,7 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
             var typeName = SyntaxFactory.ParseTypeName(name);
             if (typeName is PredefinedTypeSyntax)
             {
-                PredefinedType predefinedType;
-                if (SyntaxFactsService.TryGetPredefinedType(((PredefinedTypeSyntax)typeName).Keyword, out predefinedType))
+                if (SyntaxFactsService.TryGetPredefinedType(((PredefinedTypeSyntax)typeName).Keyword, out var predefinedType))
                 {
                     var specialType = predefinedType.ToSpecialType();
                     return semanticModel.Compilation.GetSpecialType(specialType).GetEscapedFullName();
@@ -1466,6 +1477,15 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
             return SpecializedCollections.EmptyEnumerable<ParameterSyntax>();
         }
 
+        public override bool IsExpressionBodiedProperty(SyntaxNode node)
+            => (node as PropertyDeclarationSyntax)?.ExpressionBody != null;
+
+        public override bool TryGetAutoPropertyExpressionBody(SyntaxNode parentNode, out SyntaxNode accessorNode)
+        {
+            accessorNode = (parentNode as PropertyDeclarationSyntax)?.ExpressionBody;
+            return accessorNode != null;
+        }
+
         public override bool IsAccessorNode(SyntaxNode node)
         {
             switch (node.Kind())
@@ -1956,6 +1976,34 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
             return parameter.WithModifiers(newModifiers);
         }
 
+        public override EnvDTE80.vsCMParameterKind UpdateParameterKind(EnvDTE80.vsCMParameterKind parameterKind, PARAMETER_PASSING_MODE passingMode)
+        {
+            var updatedParameterKind = parameterKind;
+
+            switch (passingMode)
+            {
+                case PARAMETER_PASSING_MODE.cmParameterTypeIn:
+                    updatedParameterKind |= EnvDTE80.vsCMParameterKind.vsCMParameterKindNone;
+                    updatedParameterKind &= ~EnvDTE80.vsCMParameterKind.vsCMParameterKindRef;
+                    updatedParameterKind &= ~EnvDTE80.vsCMParameterKind.vsCMParameterKindOut;
+                    break;
+
+                case PARAMETER_PASSING_MODE.cmParameterTypeInOut:
+                    updatedParameterKind &= ~EnvDTE80.vsCMParameterKind.vsCMParameterKindNone;
+                    updatedParameterKind |= EnvDTE80.vsCMParameterKind.vsCMParameterKindRef;
+                    updatedParameterKind &= ~EnvDTE80.vsCMParameterKind.vsCMParameterKindOut;
+                    break;
+
+                case PARAMETER_PASSING_MODE.cmParameterTypeOut:
+                    updatedParameterKind &= ~EnvDTE80.vsCMParameterKind.vsCMParameterKindNone;
+                    updatedParameterKind &= ~EnvDTE80.vsCMParameterKind.vsCMParameterKindRef;
+                    updatedParameterKind |= EnvDTE80.vsCMParameterKind.vsCMParameterKindOut;
+                    break;
+            }
+
+            return updatedParameterKind;
+        }
+
         public override EnvDTE.vsCMFunction ValidateFunctionKind(SyntaxNode containerNode, EnvDTE.vsCMFunction kind, string name)
         {
             if (kind == EnvDTE.vsCMFunction.vsCMFunctionSub)
@@ -2417,12 +2465,12 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
 
             var result = EnvDTE80.vsCMOverrideKind.vsCMOverrideKindNone;
 
-            if ((flags & ModifierFlags.Abstract) != 0 || containingType.Kind() == SyntaxKind.InterfaceDeclaration)
+            if ((flags & ModifierFlags.Abstract) != 0 || containingType?.Kind() == SyntaxKind.InterfaceDeclaration)
             {
                 result |= EnvDTE80.vsCMOverrideKind.vsCMOverrideKindAbstract;
             }
 
-            if ((flags & ModifierFlags.Virtual) != 0 || containingType.Kind() == SyntaxKind.InterfaceDeclaration)
+            if ((flags & ModifierFlags.Virtual) != 0 || containingType?.Kind() == SyntaxKind.InterfaceDeclaration)
             {
                 result |= EnvDTE80.vsCMOverrideKind.vsCMOverrideKindVirtual;
             }
@@ -2686,6 +2734,15 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
             var hasGetter = property.AccessorList != null && property.AccessorList.Accessors.Any(SyntaxKind.GetAccessorDeclaration);
             var hasSetter = property.AccessorList != null && property.AccessorList.Accessors.Any(SyntaxKind.SetAccessorDeclaration);
 
+            if (!hasGetter && !hasSetter)
+            {
+                var expressionBody = property.GetExpressionBody();
+                if (expressionBody != null)
+                {
+                    hasGetter = true;
+                }
+            }
+
             if (hasGetter && hasSetter)
             {
                 return EnvDTE80.vsCMPropertyKind.vsCMPropertyKindReadWrite;
@@ -2748,7 +2805,7 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
                 var newFieldDeclaration = fieldDeclaration.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
 
                 return document.ReplaceNodeAsync(fieldDeclaration, newFieldDeclaration, CancellationToken.None)
-                               .WaitAndGetResult(CancellationToken.None);
+                               .WaitAndGetResult_CodeModel(CancellationToken.None);
             }
         }
 
@@ -2770,7 +2827,7 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
             }
 
             return document.ReplaceNodeAsync(enumDeclaration, newEnumDeclaration, CancellationToken.None)
-                           .WaitAndGetResult(CancellationToken.None);
+                           .WaitAndGetResult_CodeModel(CancellationToken.None);
         }
 
         private Document Delete(Document document, AttributeSyntax node)
@@ -2781,7 +2838,7 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
             if (attributeList.Attributes.Count == 1)
             {
                 var text = document.GetTextAsync(CancellationToken.None)
-                                   .WaitAndGetResult(CancellationToken.None);
+                                   .WaitAndGetResult_CodeModel(CancellationToken.None);
 
                 // Note that we want to keep all leading trivia and delete all trailing trivia.
                 var deletionStart = attributeList.SpanStart;
@@ -2796,7 +2853,7 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
                 var newAttributeList = attributeList.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
 
                 return document.ReplaceNodeAsync(attributeList, newAttributeList, CancellationToken.None)
-                               .WaitAndGetResult(CancellationToken.None);
+                               .WaitAndGetResult_CodeModel(CancellationToken.None);
             }
         }
 
@@ -2806,7 +2863,7 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
             var newArgumentList = argumentList.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
 
             return document.ReplaceNodeAsync(argumentList, newArgumentList, CancellationToken.None)
-                           .WaitAndGetResult(CancellationToken.None);
+                           .WaitAndGetResult_CodeModel(CancellationToken.None);
         }
 
         private Document Delete(Document document, ParameterSyntax node)
@@ -2815,13 +2872,13 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.CodeModel
             var newParameterList = parameterList.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
 
             return document.ReplaceNodeAsync(parameterList, newParameterList, CancellationToken.None)
-                           .WaitAndGetResult(CancellationToken.None);
+                           .WaitAndGetResult_CodeModel(CancellationToken.None);
         }
 
         private Document DeleteMember(Document document, SyntaxNode node)
         {
             var text = document.GetTextAsync(CancellationToken.None)
-                               .WaitAndGetResult(CancellationToken.None);
+                               .WaitAndGetResult_CodeModel(CancellationToken.None);
 
             // We want to delete all the leading trivia from the node back to,
             // but not including:

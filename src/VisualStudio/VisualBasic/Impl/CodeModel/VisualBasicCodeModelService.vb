@@ -18,6 +18,7 @@ Imports Microsoft.CodeAnalysis.VisualBasic.Extensions
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 Imports Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel
 Imports Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel.InternalElements
+Imports Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel.Interop
 Imports Microsoft.VisualStudio.LanguageServices.Implementation.Utilities
 Imports Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel.Extenders
 Imports Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel.MethodXml
@@ -432,25 +433,37 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
                    TypeOf container Is EnumBlockSyntax
         End Function
 
-        Private Shared Iterator Function GetChildMemberNodes(container As SyntaxNode) As IEnumerable(Of SyntaxNode)
+        Private Shared Function IsNamespaceOrTypeDeclaration(node As SyntaxNode) As Boolean
+            Return node.Kind() = SyntaxKind.NamespaceBlock OrElse
+                   TypeOf node Is TypeBlockSyntax OrElse
+                   TypeOf node Is EnumBlockSyntax OrElse
+                   TypeOf node Is DelegateStatementSyntax
+        End Function
+
+        Private Shared Iterator Function GetChildMemberNodes(container As SyntaxNode) As IEnumerable(Of DeclarationStatementSyntax)
             If TypeOf container Is CompilationUnitSyntax Then
                 For Each member In DirectCast(container, CompilationUnitSyntax).Members
-                    Yield member
+                    If IsNamespaceOrTypeDeclaration(member) Then
+                        Yield DirectCast(member, DeclarationStatementSyntax)
+                    End If
                 Next
             ElseIf TypeOf container Is NamespaceBlockSyntax Then
-
                 For Each member In DirectCast(container, NamespaceBlockSyntax).Members
-                    Yield member
+                    If IsNamespaceOrTypeDeclaration(member) Then
+                        Yield DirectCast(member, DeclarationStatementSyntax)
+                    End If
                 Next
             ElseIf TypeOf container Is TypeBlockSyntax Then
-
                 For Each member In DirectCast(container, TypeBlockSyntax).Members
-                    Yield member
+                    If member.Kind() <> SyntaxKind.NamespaceBlock AndAlso TypeOf member Is DeclarationStatementSyntax Then
+                        Yield DirectCast(member, DeclarationStatementSyntax)
+                    End If
                 Next
             ElseIf TypeOf container Is EnumBlockSyntax Then
-
                 For Each member In DirectCast(container, EnumBlockSyntax).Members
-                    Yield member
+                    If member.Kind() = SyntaxKind.EnumMemberDeclaration Then
+                        Yield DirectCast(member, DeclarationStatementSyntax)
+                    End If
                 Next
             End If
         End Function
@@ -458,7 +471,6 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
         Private Shared Function NodeIsSupported(test As Boolean, node As SyntaxNode) As Boolean
             Return Not test OrElse IsNameableNode(node)
         End Function
-
 
         ''' <summary>
         ''' Retrieves the members of a specified <paramref name="container"/> node. The members that are
@@ -1036,6 +1048,14 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
             Return GetExternalSymbolFullName(symbol)
         End Function
 
+        Public Overrides Function IsExpressionBodiedProperty(node As SyntaxNode) As Boolean
+            Return False
+        End Function
+
+        Public Overrides Function TryGetAutoPropertyExpressionBody(parentNode As SyntaxNode, ByRef accessorNode As SyntaxNode) As Boolean
+            Return False
+        End Function
+
         Public Overrides Function IsAccessorNode(node As SyntaxNode) As Boolean
             Select Case node.Kind
                 Case SyntaxKind.GetAccessorBlock,
@@ -1232,7 +1252,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
 
         Private Function DeleteMember(document As Document, node As SyntaxNode) As Document
             Dim text = document.GetTextAsync(CancellationToken.None) _
-                               .WaitAndGetResult(CancellationToken.None)
+                               .WaitAndGetResult_CodeModel(CancellationToken.None)
 
             Dim deletionEnd = node.FullSpan.End
             Dim deletionStart = node.SpanStart
@@ -1287,7 +1307,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
                 Return Delete(document, declarator)
             Else
                 Dim newDeclarator = declarator.RemoveNode(node, SyntaxRemoveOptions.KeepEndOfLine).WithAdditionalAnnotations(Formatter.Annotation)
-                Return document.ReplaceNodeAsync(declarator, newDeclarator, CancellationToken.None).WaitAndGetResult(CancellationToken.None)
+                Return document.ReplaceNodeAsync(declarator, newDeclarator, CancellationToken.None).WaitAndGetResult_CodeModel(CancellationToken.None)
             End If
         End Function
 
@@ -1300,7 +1320,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
                 Return Delete(document, declaration)
             Else
                 Dim newDeclaration = declaration.RemoveNode(node, SyntaxRemoveOptions.KeepEndOfLine).WithAdditionalAnnotations(Formatter.Annotation)
-                Return document.ReplaceNodeAsync(declaration, newDeclaration, CancellationToken.None).WaitAndGetResult(CancellationToken.None)
+                Return document.ReplaceNodeAsync(declaration, newDeclaration, CancellationToken.None).WaitAndGetResult_CodeModel(CancellationToken.None)
             End If
         End Function
 
@@ -1314,7 +1334,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
                 Dim spanEnd = attributeList.FullSpan.End
 
                 Dim text = document.GetTextAsync(CancellationToken.None) _
-                                   .WaitAndGetResult(CancellationToken.None)
+                                   .WaitAndGetResult_CodeModel(CancellationToken.None)
 
                 text = text.Replace(TextSpan.FromBounds(spanStart, spanEnd), String.Empty)
 
@@ -1323,7 +1343,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
                 Dim newAttributeList = attributeList.RemoveNode(node, SyntaxRemoveOptions.KeepEndOfLine)
 
                 Return document.ReplaceNodeAsync(attributeList, newAttributeList, CancellationToken.None) _
-                               .WaitAndGetResult(CancellationToken.None)
+                               .WaitAndGetResult_CodeModel(CancellationToken.None)
             End If
         End Function
 
@@ -1332,7 +1352,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
             Dim newArgumentList = argumentList.RemoveNode(node, SyntaxRemoveOptions.KeepEndOfLine).WithAdditionalAnnotations(Formatter.Annotation)
 
             Return document.ReplaceNodeAsync(argumentList, newArgumentList, CancellationToken.None) _
-                           .WaitAndGetResult(CancellationToken.None)
+                           .WaitAndGetResult_CodeModel(CancellationToken.None)
         End Function
 
         Private Overloads Function Delete(document As Document, node As ParameterSyntax) As Document
@@ -1340,7 +1360,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
             Dim newParameterList = parameterList.RemoveNode(node, SyntaxRemoveOptions.KeepEndOfLine).WithAdditionalAnnotations(Formatter.Annotation)
 
             Return document.ReplaceNodeAsync(parameterList, newParameterList, CancellationToken.None) _
-                           .WaitAndGetResult(CancellationToken.None)
+                           .WaitAndGetResult_CodeModel(CancellationToken.None)
         End Function
 
         Public Overrides Function IsValidExternalSymbol(symbol As ISymbol) As Boolean
@@ -1989,7 +2009,11 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
                 newModifierList.Add(SyntaxFactory.Token(SyntaxKind.OptionalKeyword))
             End If
 
-            If (kind And EnvDTE80.vsCMParameterKind.vsCMParameterKindRef) <> 0 Then
+
+            If (kind And EnvDTE80.vsCMParameterKind.vsCMParameterKindIn) <> 0 AndAlso parameter.Modifiers.Any(SyntaxKind.ByValKeyword) Then
+                ' Ensure that we keep ByVal if it was already present.
+                newModifierList.Add(SyntaxFactory.Token(SyntaxKind.ByValKeyword))
+            ElseIf (kind And EnvDTE80.vsCMParameterKind.vsCMParameterKindRef) <> 0 Then
                 newModifierList.Add(SyntaxFactory.Token(SyntaxKind.ByRefKeyword))
             End If
 
@@ -2014,6 +2038,27 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
             End Select
 
             Return False
+        End Function
+
+        Public Overrides Function UpdateParameterKind(parameterKind As EnvDTE80.vsCMParameterKind, passingMode As PARAMETER_PASSING_MODE) As EnvDTE80.vsCMParameterKind
+            Dim updatedParameterKind = parameterKind
+
+            Select Case passingMode
+                Case PARAMETER_PASSING_MODE.cmParameterTypeIn
+                    updatedParameterKind = updatedParameterKind Or EnvDTE80.vsCMParameterKind.vsCMParameterKindIn
+                    updatedParameterKind = updatedParameterKind And Not EnvDTE80.vsCMParameterKind.vsCMParameterKindRef
+                    updatedParameterKind = updatedParameterKind And Not EnvDTE80.vsCMParameterKind.vsCMParameterKindOut
+
+                Case PARAMETER_PASSING_MODE.cmParameterTypeInOut
+                    updatedParameterKind = updatedParameterKind And Not EnvDTE80.vsCMParameterKind.vsCMParameterKindIn
+                    updatedParameterKind = updatedParameterKind Or EnvDTE80.vsCMParameterKind.vsCMParameterKindRef
+                    updatedParameterKind = updatedParameterKind And Not EnvDTE80.vsCMParameterKind.vsCMParameterKindOut
+
+                Case PARAMETER_PASSING_MODE.cmParameterTypeOut
+                    Throw Exceptions.ThrowEInvalidArg()
+            End Select
+
+            Return updatedParameterKind
         End Function
 
         Public Overrides Function ValidateFunctionKind(containerNode As SyntaxNode, kind As EnvDTE.vsCMFunction, name As String) As EnvDTE.vsCMFunction
@@ -2142,7 +2187,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
                 If trivia.Kind = SyntaxKind.CommentTrivia Then
                     firstCommentFound = True
                     commentList.Add(trivia)
-                ElseIf Not firstCommentFound AndAlso trivia.IsWhitespace() Then
+                ElseIf Not firstCommentFound AndAlso trivia.IsWhitespaceOrEndOfLine() Then
                     Continue For
                 ElseIf firstCommentFound AndAlso trivia.Kind = SyntaxKind.EndOfLineTrivia AndAlso nextTrivia.Kind = SyntaxKind.CommentTrivia Then
                     Continue For
@@ -4053,7 +4098,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
             End If
 
             Dim text = document.GetTextAsync(cancellationToken) _
-                               .WaitAndGetResult(cancellationToken)
+                               .WaitAndGetResult_CodeModel(cancellationToken)
 
             text = text.Replace(position, 0, textToInsert)
 
@@ -4098,7 +4143,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.CodeModel
             End If
 
             Dim text = document.GetTextAsync(cancellationToken) _
-                               .WaitAndGetResult(cancellationToken)
+                               .WaitAndGetResult_CodeModel(cancellationToken)
 
             If methodStatement.HandlesClause.Events.Count = 1 Then
                 ' Easy case, delete the whole clause
