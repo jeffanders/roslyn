@@ -98,6 +98,8 @@ Microsoft.CodeAnalysis.INamedTypeSymbol.GetTypeArgumentCustomModifiers(int ordin
 Microsoft.CodeAnalysis.INamedTypeSymbol.IsComImport.get -> bool
 Microsoft.CodeAnalysis.INamedTypeSymbol.TupleElements.get -> System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.IFieldSymbol>
 Microsoft.CodeAnalysis.INamedTypeSymbol.TupleUnderlyingType.get -> Microsoft.CodeAnalysis.INamedTypeSymbol
+Microsoft.CodeAnalysis.INonNullableReferenceTypeSymbol
+Microsoft.CodeAnalysis.INonNullableReferenceTypeSymbol.UnderlyingType.get -> Microsoft.CodeAnalysis.ITypeSymbol
 Microsoft.CodeAnalysis.IOperation
 Microsoft.CodeAnalysis.IOperation.Accept(Microsoft.CodeAnalysis.Semantics.OperationVisitor visitor) -> void
 Microsoft.CodeAnalysis.IOperation.Accept<TArgument, TResult>(Microsoft.CodeAnalysis.Semantics.OperationVisitor<TArgument, TResult> visitor, TArgument argument) -> TResult
@@ -730,8 +732,14 @@ Microsoft.CodeAnalysis.SymbolDisplayFormat.RemoveMiscellaneousOptions(Microsoft.
 Microsoft.CodeAnalysis.SymbolDisplayLocalOptions.IncludeRef = 4 -> Microsoft.CodeAnalysis.SymbolDisplayLocalOptions
 Microsoft.CodeAnalysis.SymbolDisplayMemberOptions.IncludeRef = 128 -> Microsoft.CodeAnalysis.SymbolDisplayMemberOptions
 Microsoft.CodeAnalysis.SymbolKind.Discard = 19 -> Microsoft.CodeAnalysis.SymbolKind
+Microsoft.CodeAnalysis.SymbolKind.NonNullableReference = 20 -> Microsoft.CodeAnalysis.SymbolKind
+Microsoft.CodeAnalysis.Symbols.NullabilityPreservationKind
+Microsoft.CodeAnalysis.Symbols.NullabilityPreservationKind.ExplicitlyPreserved = 2 -> Microsoft.CodeAnalysis.Symbols.NullabilityPreservationKind
+Microsoft.CodeAnalysis.Symbols.NullabilityPreservationKind.ImplicitlyPreserved = 1 -> Microsoft.CodeAnalysis.Symbols.NullabilityPreservationKind
+Microsoft.CodeAnalysis.Symbols.NullabilityPreservationKind.None = 0 -> Microsoft.CodeAnalysis.Symbols.NullabilityPreservationKind
 Microsoft.CodeAnalysis.Text.SourceText.CanBeEmbedded.get -> bool
 Microsoft.CodeAnalysis.Text.SourceText.GetChecksum() -> System.Collections.Immutable.ImmutableArray<byte>
+Microsoft.CodeAnalysis.TypeKind.NonNullableReference = 13 -> Microsoft.CodeAnalysis.TypeKind
 abstract Microsoft.CodeAnalysis.CompilationOptions.Language.get -> string
 abstract Microsoft.CodeAnalysis.Diagnostics.OperationBlockStartAnalysisContext.RegisterOperationAction(System.Action<Microsoft.CodeAnalysis.Diagnostics.OperationAnalysisContext> action, System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.OperationKind> operationKinds) -> void
 abstract Microsoft.CodeAnalysis.Diagnostics.OperationBlockStartAnalysisContext.RegisterOperationBlockEndAction(System.Action<Microsoft.CodeAnalysis.Diagnostics.OperationBlockAnalysisContext> action) -> void
@@ -998,7 +1006,9 @@ virtual Microsoft.CodeAnalysis.Semantics.OperationVisitor<TArgument, TResult>.Vi
 virtual Microsoft.CodeAnalysis.Semantics.OperationVisitor<TArgument, TResult>.VisitWithStatement(Microsoft.CodeAnalysis.Semantics.IWithStatement operation, TArgument argument) -> TResult
 virtual Microsoft.CodeAnalysis.Semantics.OperationVisitor<TArgument, TResult>.VisitYieldBreakStatement(Microsoft.CodeAnalysis.Semantics.IReturnStatement operation, TArgument argument) -> TResult
 virtual Microsoft.CodeAnalysis.SymbolVisitor.VisitDiscard(Microsoft.CodeAnalysis.IDiscardSymbol symbol) -> void
+virtual Microsoft.CodeAnalysis.SymbolVisitor.VisitNonNullableReferenceType(Microsoft.CodeAnalysis.INonNullableReferenceTypeSymbol symbol) -> void
 virtual Microsoft.CodeAnalysis.SymbolVisitor<TResult>.VisitDiscard(Microsoft.CodeAnalysis.IDiscardSymbol symbol) -> TResult
+virtual Microsoft.CodeAnalysis.SymbolVisitor<TResult>.VisitNonNullableReferenceType(Microsoft.CodeAnalysis.INonNullableReferenceTypeSymbol symbol) -> TResult
 virtual Microsoft.CodeAnalysis.SyntaxNode.ChildThatContainsPosition(int position) -> Microsoft.CodeAnalysis.SyntaxNodeOrToken
 virtual Microsoft.CodeAnalysis.SyntaxNode.SerializeTo(System.IO.Stream stream, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> void
 virtual Microsoft.CodeAnalysis.SyntaxNode.ToFullString() -> string

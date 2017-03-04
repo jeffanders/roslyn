@@ -1347,7 +1347,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Emit
 
         internal Cci.ITypeReference Translate(
             NonNullableReferenceTypeSymbol symbol,
-            CSharpSyntaxNode syntaxNodeOpt,
+            SyntaxNode syntaxNodeOpt,
             DiagnosticBag diagnostics)
         {
             return Translate(symbol.UnderlyingType, syntaxNodeOpt, diagnostics);

@@ -2663,6 +2663,12 @@ namespace Microsoft.CodeAnalysis.CSharp
                 return new BoundIsOperator(node, operand, typeExpression, Conversion.NoConversion, resultType, hasErrors: true);
             }
 
+            if (targetType.TypeKind == TypeKind.NonNullableReference)
+            {
+                Error(diagnostics, ErrorCode.ERR_NonNullableReferenceUsedInAsOrIsExpression, node, targetType);
+                return new BoundAsOperator(node, operand, typeExpression, Conversion.NoConversion, resultType, hasErrors: true);
+            }
+
             // Is and As operator should have null ConstantValue as they are not constant expressions.
             // However we perform analysis of is/as expressions at bind time to detect if the expression 
             // will always evaluate to a constant to generate warnings (always true/false/null).

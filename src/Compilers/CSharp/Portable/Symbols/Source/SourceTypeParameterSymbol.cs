@@ -476,7 +476,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         private readonly LocalFunctionSymbol _owner;
 
         public LocalFunctionTypeParameterSymbol(LocalFunctionSymbol owner, string name, int ordinal, ImmutableArray<Location> locations, ImmutableArray<SyntaxReference> syntaxRefs)
-            : base(name, ordinal, locations, syntaxRefs)
+            : base(name, ordinal, NullabilityPreservationKind.None, locations, syntaxRefs)
         {
             _owner = owner;
         }

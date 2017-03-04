@@ -2582,6 +2582,9 @@ namespace Microsoft.CodeAnalysis.CSharp
                 throw new ArgumentNullException(nameof(destination));
             }
 
+            if (destination.Kind == SymbolKind.NonNullableReference)
+                destination = ((NonNullableReferenceTypeSymbol)destination).UnderlyingType;
+
             position = CheckAndAdjustPosition(position);
             var binder = this.GetEnclosingBinder(position);
             if (binder != null)

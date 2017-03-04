@@ -47,11 +47,17 @@ namespace Microsoft.CodeAnalysis.CSharp
             Debug.Assert((object)destination != null);
 
             var sourceType = sourceExpression.Type;
-
+            
             //PERF: identity conversion is by far the most common implicit conversion, check for that first
             if ((object)sourceType != null && HasIdentityConversion(sourceType, destination))
             {
                 return Conversion.Identity;
+            }
+
+            if (destination.Kind == SymbolKind.NonNullableReference && sourceExpression.EffectiveNullability == EffectiveNullability.NonNullable)
+            {
+                // TODO: Should probably create a Conversion.ImplicitNonNullableConversion
+                return ClassifyImplicitConversionFromExpression(sourceExpression, ((NonNullableReferenceTypeSymbol)destination).UnderlyingType, ref useSiteDiagnostics);
             }
 
             Conversion conversion = ClassifyImplicitBuiltInConversionFromExpression(sourceExpression, sourceType, destination, ref useSiteDiagnostics);
@@ -152,6 +158,8 @@ namespace Microsoft.CodeAnalysis.CSharp
 
             if (forCast)
             {
+                if (destination.Kind == SymbolKind.NonNullableReference)
+                    destination = ((NonNullableReferenceTypeSymbol)destination).UnderlyingType;
                 return ClassifyConversionFromExpressionForCast(sourceExpression, destination, ref useSiteDiagnostics);
             }
 
@@ -487,6 +495,17 @@ namespace Microsoft.CodeAnalysis.CSharp
             {
                 return nullableConversion;
             }
+
+            /*
+            if (destination.Kind == SymbolKind.NonNullableReference)
+            {
+                TypeSymbol underlyingDestination = ((NonNullableReferenceTypeSymbol)destination).UnderlyingType;
+                var conversion = ClassifyStandardImplicitConversion(source, underlyingDestination, ref useSiteDiagnostics);
+                if (conversion.Exists && source.GetEffectiveNullability() != EffectiveNullability.Nullable)
+                {
+                    return conversion;
+                }
+            }*/
 
             if (HasImplicitReferenceConversion(source, destination, ref useSiteDiagnostics))
             {
@@ -868,7 +887,7 @@ namespace Microsoft.CodeAnalysis.CSharp
             // SPEC: provided T is known to be a reference type. [...] The conversion [is] classified 
             // SPEC: as implicit reference conversion. 
 
-            if (destination.IsReferenceType)
+            if (destination.IsReferenceType && destination.GetEffectiveNullability() == EffectiveNullability.Nullable)
             {
                 return Conversion.ImplicitReference;
             }
@@ -1965,7 +1984,7 @@ namespace Microsoft.CodeAnalysis.CSharp
                     {
                         return true;
                     }
-
+                    
                     if (HasImplicitConversionToInterface(source, destination, ref useSiteDiagnostics))
                     {
                         return true;

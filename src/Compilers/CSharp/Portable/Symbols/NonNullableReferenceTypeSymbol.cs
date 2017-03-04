@@ -45,11 +45,11 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
             }
         }
 
-        internal override bool Equals(TypeSymbol t2, bool ignoreCustomModifiersAndArraySizesAndLowerBounds = false, bool ignoreDynamic = false)
+        internal override bool Equals(TypeSymbol t2, TypeCompareKind compareKind = TypeCompareKind.ConsiderEverything)
         {
             if (t2.TypeKind != TypeKind.NonNullableReference)
                 return false;
-            return _underlyingType.Equals(((NonNullableReferenceTypeSymbol)t2).UnderlyingType, ignoreCustomModifiersAndArraySizesAndLowerBounds, ignoreDynamic);
+            return _underlyingType.Equals(((NonNullableReferenceTypeSymbol)t2).UnderlyingType, compareKind);
         }
 
         public override Symbol ContainingSymbol
