@@ -87,13 +87,11 @@ namespace Microsoft.CodeAnalysis.Editor.Implementation.EditAndContinue
         {
             // Only set documents read-only if they're part of a project that supports Enc.
             var workspace = document.Project.Solution.Workspace as VisualStudioWorkspaceImpl;
-            var project = workspace?.ProjectTracker?.GetProject(document.Project.Id) as AbstractEncProject;
+            var project = workspace?.DeferredState?.ProjectTracker?.GetProject(document.Project.Id);
 
-            if (project != null)
+            if (project?.EditAndContinueImplOpt != null)
             {
-                SessionReadOnlyReason sessionReason;
-                ProjectReadOnlyReason projectReason;
-                SetReadOnly(document.Id, _encService.IsProjectReadOnly(document.Project.Id, out sessionReason, out projectReason) && AllowsReadOnly(document.Id));
+                SetReadOnly(document.Id, _encService.IsProjectReadOnly(document.Project.Id, out var sessionReason, out var projectReason) && AllowsReadOnly(document.Id));
             }
         }
 
@@ -104,7 +102,8 @@ namespace Microsoft.CodeAnalysis.Editor.Implementation.EditAndContinue
             // while the code is running and get refreshed next time the web page is hit.
 
             // Note that Razor-like views are modelled as a ContainedDocument but normal code including code-behind are modelled as a StandardTextDocument.
-            var containedDocument = _vsProject.VisualStudioWorkspace.GetHostDocument(documentId) as ContainedDocument;
+            var visualStudioWorkspace = _vsProject.Workspace as VisualStudioWorkspaceImpl;
+            var containedDocument = visualStudioWorkspace?.GetHostDocument(documentId) as ContainedDocument;
             return containedDocument == null;
         }
 
@@ -126,9 +125,8 @@ namespace Microsoft.CodeAnalysis.Editor.Implementation.EditAndContinue
 
         private void SetReadOnlyFlag(IVsTextBuffer buffer, bool value)
         {
-            uint oldFlags;
             uint newFlags;
-            buffer.GetStateFlags(out oldFlags);
+            buffer.GetStateFlags(out var oldFlags);
             if (value)
             {
                 newFlags = oldFlags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY;
@@ -150,12 +148,19 @@ namespace Microsoft.CodeAnalysis.Editor.Implementation.EditAndContinue
             if (doc == null)
             {
                 // TODO (https://github.com/dotnet/roslyn/issues/1204): this check should be unnecessary.
-                log.Write($"GetTextBuffer: document not found for '{documentId?.GetDebuggerDisplay()}'");
+                if (documentId != null)
+                {
+                    log.Write("GetTextBuffer: document not found for '#{0} - {1}'", documentId.Id.ToString(), documentId.DebugName);
+                }
+                else
+                {
+                    log.Write("GetTextBuffer: document not found");
+                }
+
                 return null;
             }
 
-            SourceText text;
-            if (!doc.TryGetText(out text))
+            if (!doc.TryGetText(out var text))
             {
                 // TODO: should not happen since the document is open (see bug 896058)
                 return null;

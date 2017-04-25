@@ -13,7 +13,7 @@ namespace Microsoft.CodeAnalysis.Serialization
     {
         public bool Serializable(Solution solution, string assemblyFilePath)
         {
-            if (assemblyFilePath == null || !File.Exists(assemblyFilePath) || !ReferencePathUtilities.PartOfFrameworkOrReferencePaths(assemblyFilePath))
+            if (assemblyFilePath == null || !File.Exists(assemblyFilePath))
             {
                 return false;
             }
@@ -29,7 +29,7 @@ namespace Microsoft.CodeAnalysis.Serialization
 
         public bool TryGetSerializationPrefixAndVersion(Solution solution, string assemblyFilePath, out string prefix, out VersionStamp version)
         {
-            prefix = FilePathUtilities.GetRelativePath(solution.FilePath, assemblyFilePath);
+            prefix = PathUtilities.GetRelativePath(solution.FilePath, assemblyFilePath);
             version = VersionStamp.Create(File.GetLastWriteTimeUtc(assemblyFilePath));
 
             return true;

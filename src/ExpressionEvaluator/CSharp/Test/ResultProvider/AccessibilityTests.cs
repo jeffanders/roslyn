@@ -10,11 +10,11 @@ using Roslyn.Test.Utilities;
 using System;
 using Xunit;
 
-namespace Microsoft.CodeAnalysis.CSharp.UnitTests
+namespace Microsoft.CodeAnalysis.CSharp.ExpressionEvaluator.UnitTests
 {
     internal class AccessibilityTests : CSharpResultProviderTestBase
     {
-        [WorkItem(889710)]
+        [WorkItem(889710, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/889710")]
         [Fact]
         public void HideNonPublicMembersBaseClass()
         {
@@ -80,11 +80,11 @@ class C
 }";
             // Derived class in assembly with PDB,
             // base class in assembly without PDB.
-            var compilationA = CSharpTestBase.CreateCompilationWithMscorlib(sourceA, options: TestOptions.ReleaseDll);
+            var compilationA = CSharpTestBase.CreateStandardCompilation(sourceA, options: TestOptions.ReleaseDll);
             var bytesA = compilationA.EmitToArray();
             var referenceA = MetadataReference.CreateFromImage(bytesA);
 
-            var compilationB = CSharpTestBase.CreateCompilationWithMscorlib(sourceB, options: TestOptions.DebugDll, references: new MetadataReference[] { referenceA });
+            var compilationB = CSharpTestBase.CreateStandardCompilation(sourceB, options: TestOptions.DebugDll, references: new MetadataReference[] { referenceA });
             var bytesB = compilationB.EmitToArray();
             var assemblyA = ReflectionUtilities.Load(bytesA);
             var assemblyB = ReflectionUtilities.Load(bytesB);
@@ -175,7 +175,7 @@ class C
                 EvalResult("PAD", "null", "object", "(new C()).a.PAD"));
         }
 
-        [WorkItem(889710)]
+        [WorkItem(889710, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/889710")]
         [Fact]
         public void HideNonPublicMembersDerivedClass()
         {
@@ -241,11 +241,11 @@ class C
 }";
             // Base class in assembly with PDB,
             // derived class in assembly without PDB.
-            var compilationA = CSharpTestBase.CreateCompilationWithMscorlib(sourceA, options: TestOptions.DebugDll);
+            var compilationA = CSharpTestBase.CreateStandardCompilation(sourceA, options: TestOptions.DebugDll);
             var bytesA = compilationA.EmitToArray();
             var referenceA = MetadataReference.CreateFromImage(bytesA);
 
-            var compilationB = CSharpTestBase.CreateCompilationWithMscorlib(sourceB, options: TestOptions.ReleaseDll, references: new MetadataReference[] { referenceA });
+            var compilationB = CSharpTestBase.CreateStandardCompilation(sourceB, options: TestOptions.ReleaseDll, references: new MetadataReference[] { referenceA });
             var bytesB = compilationB.EmitToArray();
             var assemblyA = ReflectionUtilities.Load(bytesA);
             var assemblyB = ReflectionUtilities.Load(bytesB);

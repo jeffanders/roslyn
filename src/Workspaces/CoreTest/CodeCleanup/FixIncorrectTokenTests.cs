@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -724,7 +725,7 @@ End Module
         }
 
         [Fact]
-        [WorkItem(606015, "DevDiv")]
+        [WorkItem(606015, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/606015")]
         [Trait(Traits.Feature, Traits.Features.FixIncorrectTokens)]
         public async Task FixFullWidthSingleQuotes()
         {
@@ -751,7 +752,7 @@ End Module
         }
 
         [Fact]
-        [WorkItem(707135, "DevDiv")]
+        [WorkItem(707135, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/707135")]
         [Trait(Traits.Feature, Traits.Features.FixIncorrectTokens)]
         public async Task FixFullWidthSingleQuotes2()
         {
@@ -783,12 +784,11 @@ End Module
             codeWithMarker = FixLineEndings(codeWithMarker);
             expectedResult = FixLineEndings(expectedResult);
 
-            var codeWithoutMarker = default(string);
-            var textSpans = (IList<TextSpan>)new List<TextSpan>();
-            MarkupTestFile.GetSpans(codeWithMarker, out codeWithoutMarker, out textSpans);
+            MarkupTestFile.GetSpans(codeWithMarker,
+                out var codeWithoutMarker, out ImmutableArray<TextSpan> textSpans);
 
             var document = CreateDocument(codeWithoutMarker, LanguageNames.VisualBasic);
-            var codeCleanups = CodeCleaner.GetDefaultProviders(document).Where(p => p.Name == PredefinedCodeCleanupProviderNames.FixIncorrectTokens || p.Name == PredefinedCodeCleanupProviderNames.Format);
+            var codeCleanups = CodeCleaner.GetDefaultProviders(document).WhereAsArray(p => p.Name == PredefinedCodeCleanupProviderNames.FixIncorrectTokens || p.Name == PredefinedCodeCleanupProviderNames.Format);
 
             var cleanDocument = await CodeCleaner.CleanupAsync(document, textSpans[0], codeCleanups);
 

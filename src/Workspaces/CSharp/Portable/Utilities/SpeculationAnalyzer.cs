@@ -22,8 +22,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Utilities
     /// It uses the original tree's semantic model to create a speculative semantic model and verifies that
     /// the syntax replacement doesn't break the semantics of any parenting nodes of the original expression.
     /// </summary>
-    internal class SpeculationAnalyzer : AbstractSpeculationAnalyzer<SyntaxNode, ExpressionSyntax, TypeSyntax, AttributeSyntax,
-        ArgumentSyntax, ForEachStatementSyntax, ThrowStatementSyntax, SemanticModel>
+    internal class SpeculationAnalyzer : AbstractSpeculationAnalyzer<
+        SyntaxNode, ExpressionSyntax, TypeSyntax, AttributeSyntax,
+        ArgumentSyntax, CommonForEachStatementSyntax, ThrowStatementSyntax, SemanticModel, Conversion>
     {
         /// <summary>
         /// Creates a semantic analyzer for speculative syntax replacement.
@@ -274,27 +275,31 @@ namespace Microsoft.CodeAnalysis.CSharp.Utilities
             Debug.Assert(previousOriginalNode == null || previousOriginalNode.Parent == currentOriginalNode);
             Debug.Assert(previousReplacedNode == null || previousReplacedNode.Parent == currentReplacedNode);
 
-            if (currentOriginalNode is BinaryExpressionSyntax)
+            if (currentOriginalNode is BinaryExpressionSyntax binaryExpression)
             {
                 // If replacing the node will result in a broken binary expression, we won't remove it.
-                return ReplacementBreaksBinaryExpression((BinaryExpressionSyntax)currentOriginalNode, (BinaryExpressionSyntax)currentReplacedNode);
+                return ReplacementBreaksBinaryExpression(binaryExpression, (BinaryExpressionSyntax)currentReplacedNode);
+            }
+            else if (currentOriginalNode.Kind() == SyntaxKind.LogicalNotExpression)
+            {
+                return !SymbolsAreCompatible(((PrefixUnaryExpressionSyntax)currentOriginalNode).Operand, ((PrefixUnaryExpressionSyntax)currentReplacedNode).Operand);
             }
             else if (currentOriginalNode.Kind() == SyntaxKind.ConditionalAccessExpression)
             {
                 return ReplacementBreaksConditionalAccessExpression((ConditionalAccessExpressionSyntax)currentOriginalNode, (ConditionalAccessExpressionSyntax)currentReplacedNode);
             }
-            else if (currentOriginalNode is AssignmentExpressionSyntax)
+            else if (currentOriginalNode is AssignmentExpressionSyntax assignment)
             {
                 // If replacing the node will result in a broken assignment expression, we won't remove it.
-                return ReplacementBreaksAssignmentExpression((AssignmentExpressionSyntax)currentOriginalNode, (AssignmentExpressionSyntax)currentReplacedNode);
+                return ReplacementBreaksAssignmentExpression(assignment, (AssignmentExpressionSyntax)currentReplacedNode);
             }
             else if (currentOriginalNode is SelectOrGroupClauseSyntax || currentOriginalNode is OrderingSyntax)
             {
                 return !SymbolsAreCompatible(currentOriginalNode, currentReplacedNode);
             }
-            else if (currentOriginalNode is QueryClauseSyntax)
+            else if (currentOriginalNode is QueryClauseSyntax queryClause)
             {
-                return ReplacementBreaksQueryClause((QueryClauseSyntax)currentOriginalNode, (QueryClauseSyntax)currentReplacedNode);
+                return ReplacementBreaksQueryClause(queryClause, (QueryClauseSyntax)currentReplacedNode);
             }
             else if (currentOriginalNode.Kind() == SyntaxKind.VariableDeclarator)
             {
@@ -411,9 +416,8 @@ namespace Microsoft.CodeAnalysis.CSharp.Utilities
                     }
                 }
             }
-            else if (currentOriginalNode is ConstructorInitializerSyntax)
+            else if (currentOriginalNode is ConstructorInitializerSyntax originalCtorInitializer)
             {
-                var originalCtorInitializer = (ConstructorInitializerSyntax)currentOriginalNode;
                 var newCtorInitializer = (ConstructorInitializerSyntax)currentReplacedNode;
                 return ReplacementBreaksConstructorInitializer(originalCtorInitializer, newCtorInitializer);
             }
@@ -426,8 +430,24 @@ namespace Microsoft.CodeAnalysis.CSharp.Utilities
             {
                 return ReplacementBreaksInterpolation((InterpolationSyntax)currentOriginalNode, (InterpolationSyntax)currentReplacedNode);
             }
+            else if (currentOriginalNode.Kind() == SyntaxKind.ImplicitArrayCreationExpression)
+            {
+                return !TypesAreCompatible((ImplicitArrayCreationExpressionSyntax)currentOriginalNode, (ImplicitArrayCreationExpressionSyntax)currentReplacedNode);
+            }
+            else if (currentOriginalNode is AnonymousObjectMemberDeclaratorSyntax originalAnonymousObjectMemberDeclarator)
+            {
+                var replacedAnonymousObjectMemberDeclarator = (AnonymousObjectMemberDeclaratorSyntax)currentReplacedNode;
+                return ReplacementBreaksAnonymousObjectMemberDeclarator(originalAnonymousObjectMemberDeclarator, replacedAnonymousObjectMemberDeclarator);
+            }
 
             return false;
+        }
+
+        private bool ReplacementBreaksAnonymousObjectMemberDeclarator(AnonymousObjectMemberDeclaratorSyntax originalAnonymousObjectMemberDeclarator, AnonymousObjectMemberDeclaratorSyntax replacedAnonymousObjectMemberDeclarator)
+        {
+            var originalExpressionType = this.OriginalSemanticModel.GetTypeInfo(originalAnonymousObjectMemberDeclarator.Expression, this.CancellationToken).Type;
+            var newExpressionType = this.SpeculativeSemanticModel.GetTypeInfo(replacedAnonymousObjectMemberDeclarator.Expression, this.CancellationToken).Type;
+            return originalExpressionType != newExpressionType;
         }
 
         private bool ReplacementBreaksConstructorInitializer(ConstructorInitializerSyntax ctorInitializer, ConstructorInitializerSyntax newCtorInitializer)
@@ -531,7 +551,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Utilities
             return SyntaxFacts.IsInNamespaceOrTypeContext(node);
         }
 
-        protected override ExpressionSyntax GetForEachStatementExpression(ForEachStatementSyntax forEachStatement)
+        protected override ExpressionSyntax GetForEachStatementExpression(CommonForEachStatementSyntax forEachStatement)
         {
             return forEachStatement.Expression;
         }
@@ -541,7 +561,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Utilities
             return throwStatement.Expression;
         }
 
-        protected override bool IsForEachTypeInferred(ForEachStatementSyntax forEachStatement, SemanticModel semanticModel)
+        protected override bool IsForEachTypeInferred(CommonForEachStatementSyntax forEachStatement, SemanticModel semanticModel)
         {
             return forEachStatement.IsTypeInferred(semanticModel);
         }
@@ -645,9 +665,14 @@ namespace Microsoft.CodeAnalysis.CSharp.Utilities
 
         protected override bool ConversionsAreCompatible(ExpressionSyntax originalExpression, ITypeSymbol originalTargetType, ExpressionSyntax newExpression, ITypeSymbol newTargetType)
         {
-            var originalConversion = this.OriginalSemanticModel.ClassifyConversion(originalExpression, originalTargetType);
-            var newConversion = this.SpeculativeSemanticModel.ClassifyConversion(newExpression, newTargetType);
-            return ConversionsAreCompatible(originalConversion, newConversion);
+            this.GetConversions(originalExpression, originalTargetType, newExpression, newTargetType, out var originalConversion, out var newConversion);
+
+            if (originalConversion == null || newConversion == null)
+            {
+                return false;
+            }
+
+            return ConversionsAreCompatible(originalConversion.Value, newConversion.Value);
         }
 
         private bool ConversionsAreCompatible(Conversion originalConversion, Conversion newConversion)
@@ -674,7 +699,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Utilities
             return true;
         }
 
-        protected override bool ForEachConversionsAreCompatible(SemanticModel originalModel, ForEachStatementSyntax originalForEach, SemanticModel newModel, ForEachStatementSyntax newForEach)
+        protected override bool ForEachConversionsAreCompatible(SemanticModel originalModel, CommonForEachStatementSyntax originalForEach, SemanticModel newModel, CommonForEachStatementSyntax newForEach)
         {
             var originalInfo = originalModel.GetForEachStatementInfo(originalForEach);
             var newInfo = newModel.GetForEachStatementInfo(newForEach);
@@ -682,7 +707,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Utilities
                 && ConversionsAreCompatible(originalInfo.ElementConversion, newInfo.ElementConversion);
         }
 
-        protected override void GetForEachSymbols(SemanticModel model, ForEachStatementSyntax forEach, out IMethodSymbol getEnumeratorMethod, out ITypeSymbol elementType)
+        protected override void GetForEachSymbols(SemanticModel model, CommonForEachStatementSyntax forEach, out IMethodSymbol getEnumeratorMethod, out ITypeSymbol elementType)
         {
             var info = model.GetForEachStatementInfo(forEach);
             getEnumeratorMethod = info.GetEnumeratorMethod;
@@ -693,5 +718,11 @@ namespace Microsoft.CodeAnalysis.CSharp.Utilities
         {
             return compilation.ClassifyConversion(sourceType, targetType).IsReference;
         }
+
+        protected override Conversion ClassifyConversion(SemanticModel model, ExpressionSyntax expression, ITypeSymbol targetType) =>
+            model.ClassifyConversion(expression, targetType);
+
+        protected override Conversion ClassifyConversion(SemanticModel model, ITypeSymbol originalType, ITypeSymbol targetType) =>
+            model.Compilation.ClassifyConversion(originalType, targetType);
     }
 }

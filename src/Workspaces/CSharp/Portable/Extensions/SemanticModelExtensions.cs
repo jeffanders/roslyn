@@ -7,6 +7,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Shared.Utilities;
+using Microsoft.CodeAnalysis.Utilities;
 using Roslyn.Utilities;
 
 namespace Microsoft.CodeAnalysis.CSharp.Extensions
@@ -103,11 +104,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Extensions
             CancellationToken cancellationToken)
         {
             var expr = SyntaxFactory.GetStandaloneExpression(expression);
-
-            ExpressionSyntax qualifier;
-            string name;
-            int arity;
-            DecomposeName(expr, out qualifier, out name, out arity);
+            DecomposeName(expr, out var qualifier, out var name, out var arity);
 
             INamespaceOrTypeSymbol symbol = null;
             if (qualifier != null)
@@ -215,21 +212,31 @@ namespace Microsoft.CodeAnalysis.CSharp.Extensions
                 {
                     return ((IdentifierNameSyntax)current).Identifier.ValueText.ToCamelCase();
                 }
-                else if (current is MemberAccessExpressionSyntax)
+                else if (current is MemberAccessExpressionSyntax memberAccess)
                 {
-                    return ((MemberAccessExpressionSyntax)current).Name.Identifier.ValueText.ToCamelCase();
+                    return memberAccess.Name.Identifier.ValueText.ToCamelCase();
                 }
-                else if (current is MemberBindingExpressionSyntax)
+                else if (current is MemberBindingExpressionSyntax memberBinding)
                 {
-                    return ((MemberBindingExpressionSyntax)current).Name.Identifier.ValueText.ToCamelCase();
+                    return memberBinding.Name.Identifier.ValueText.ToCamelCase();
                 }
-                else if (current is ConditionalAccessExpressionSyntax)
+                else if (current is ConditionalAccessExpressionSyntax conditionalAccess)
                 {
-                    current = ((ConditionalAccessExpressionSyntax)current).WhenNotNull;
+                    current = conditionalAccess.WhenNotNull;
                 }
-                else if (current is CastExpressionSyntax)
+                else if (current is CastExpressionSyntax castExpression)
                 {
-                    current = ((CastExpressionSyntax)current).Expression;
+                    current = castExpression.Expression;
+                }
+                else if (current is DeclarationExpressionSyntax decl)
+                {
+                    var name = decl.Designation as SingleVariableDesignationSyntax;
+                    if (name == null)
+                    {
+                        break;
+                    }
+
+                    return name.Identifier.ValueText.ToCamelCase();
                 }
                 else
                 {
@@ -246,21 +253,20 @@ namespace Microsoft.CodeAnalysis.CSharp.Extensions
             return type.CreateParameterName(capitalize);
         }
 
-        public static IList<string> GenerateParameterNames(
-            this SemanticModel semanticModel,
-            ArgumentListSyntax argumentList)
+        public static ImmutableArray<ParameterName> GenerateParameterNames(
+            this SemanticModel semanticModel, ArgumentListSyntax argumentList)
         {
             return semanticModel.GenerateParameterNames(argumentList.Arguments);
         }
 
-        public static IList<string> GenerateParameterNames(
+        public static IList<ParameterName> GenerateParameterNames(
             this SemanticModel semanticModel,
             AttributeArgumentListSyntax argumentList)
         {
             return semanticModel.GenerateParameterNames(argumentList.Arguments);
         }
 
-        public static IList<string> GenerateParameterNames(
+        public static ImmutableArray<ParameterName> GenerateParameterNames(
             this SemanticModel semanticModel,
             IEnumerable<ArgumentSyntax> arguments,
             IList<string> reservedNames = null)
@@ -272,12 +278,19 @@ namespace Microsoft.CodeAnalysis.CSharp.Extensions
                 arguments.Select(a => a.NameColon != null)).ToList();
 
             var parameterNames = reservedNames.Concat(
-                arguments.Select(a => semanticModel.GenerateNameForArgument(a))).ToList();
+                arguments.Select(semanticModel.GenerateNameForArgument)).ToList();
 
-            return NameGenerator.EnsureUniqueness(parameterNames, isFixed).Skip(reservedNames.Count).ToList();
+            return GenerateNames(reservedNames, isFixed, parameterNames);
         }
 
-        public static IList<string> GenerateParameterNames(
+        private static ImmutableArray<ParameterName> GenerateNames(IList<string> reservedNames, List<bool> isFixed, List<string> parameterNames)
+        {
+            return NameGenerator.EnsureUniqueness(parameterNames, isFixed)
+                                .Select((name, index) => new ParameterName(name, isFixed[index]))
+                                .Skip(reservedNames.Count).ToImmutableArray();
+        }
+
+        public static IList<ParameterName> GenerateParameterNames(
             this SemanticModel semanticModel,
             IEnumerable<AttributeArgumentSyntax> arguments,
             IList<string> reservedNames = null)
@@ -291,13 +304,13 @@ namespace Microsoft.CodeAnalysis.CSharp.Extensions
             var parameterNames = reservedNames.Concat(
                 arguments.Select(a => semanticModel.GenerateNameForArgument(a))).ToList();
 
-            return NameGenerator.EnsureUniqueness(parameterNames, isFixed).Skip(reservedNames.Count).ToList();
+            return GenerateNames(reservedNames, isFixed, parameterNames);
         }
 
         public static ISet<INamespaceSymbol> GetUsingNamespacesInScope(this SemanticModel semanticModel, SyntaxNode location)
         {
             // Avoiding linq here for perf reasons. This is used heavily in the AddImport service
-            HashSet<INamespaceSymbol> result = null;
+            var result = new HashSet<INamespaceSymbol>();
 
             foreach (var @using in location.GetEnclosingUsingDirectives())
             {
@@ -312,7 +325,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Extensions
                 }
             }
 
-            return result ?? SpecializedCollections.EmptySet<INamespaceSymbol>();
+            return result;
         }
 
         public static Accessibility DetermineAccessibilityConstraint(

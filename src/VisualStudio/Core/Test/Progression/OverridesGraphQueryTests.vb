@@ -8,9 +8,9 @@ Imports Roslyn.Test.Utilities
 Namespace Microsoft.VisualStudio.LanguageServices.UnitTests.Progression
 
     Public Class OverridesGraphQueryTests
-        <WpfFact, Trait(Traits.Feature, Traits.Features.Progression)>
+        <Fact, Trait(Traits.Feature, Traits.Features.Progression)>
         Public Async Function TestOverridesMethod1() As Task
-            Using testState = Await ProgressionTestState.CreateAsync(
+            Using testState = ProgressionTestState.Create(
                     <Workspace>
                         <Project Language="C#" CommonReferences="true" FilePath="Z:\Project.csproj">
                             <Document FilePath="Z:\Project.cs">
@@ -53,9 +53,9 @@ class Foo : Base, IComparable
             End Using
         End Function
 
-        <WpfFact, Trait(Traits.Feature, Traits.Features.Progression)>
+        <Fact, Trait(Traits.Feature, Traits.Features.Progression)>
         Public Async Function TestOverridesMethod2() As Task
-            Using testState = Await ProgressionTestState.CreateAsync(
+            Using testState = ProgressionTestState.Create(
                     <Workspace>
                         <Project Language="C#" CommonReferences="true" FilePath="Z:\Project.csproj">
                             <Document FilePath="Z:\Project.cs">

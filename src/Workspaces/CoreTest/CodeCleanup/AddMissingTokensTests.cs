@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeCleanup;
@@ -75,7 +76,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544318, "DevDiv")]
+        [WorkItem(544318, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544318")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task MethodInvocation_TypeArgParens()
         {
@@ -759,7 +760,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544225, "DevDiv")]
+        [WorkItem(544225, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544225")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task StructuredTrivia_Expression_DontCrash()
         {
@@ -779,7 +780,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544169, "DevDiv")]
+        [WorkItem(544169, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544169")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task EventStatement_AsClause()
         {
@@ -796,7 +797,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544167, "DevDiv")]
+        [WorkItem(544167, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544167")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task InvocationExpression_NoParenthesesForPredefinedCastExpression()
         {
@@ -815,8 +816,8 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544178, "DevDiv")]
-        [WorkItem(544317, "DevDiv")]
+        [WorkItem(544178, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544178")]
+        [WorkItem(544317, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544317")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task ObjectCreationExpression()
         {
@@ -835,7 +836,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544317, "DevDiv")]
+        [WorkItem(544317, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544317")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task ObjectCreationExpression_Initializer()
         {
@@ -858,7 +859,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544178, "DevDiv")]
+        [WorkItem(544178, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544178")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task ObjectCreationExpression_GenericName()
         {
@@ -882,7 +883,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(544178, "DevDiv")]
+        [WorkItem(544178, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544178")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task ObjectCreationExpression_AsNewClause()
         {
@@ -897,7 +898,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544301, "DevDiv")]
+        [WorkItem(544301, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544301")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task ContinueStatement_While()
         {
@@ -920,7 +921,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(544301, "DevDiv")]
+        [WorkItem(544301, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544301")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task ContinueStatement_For()
         {
@@ -943,7 +944,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(544380, "DevDiv")]
+        [WorkItem(544380, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544380")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task IfDirective()
         {
@@ -960,7 +961,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544386, "DevDiv")]
+        [WorkItem(544386, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544386")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task NamedFieldInitializer()
         {
@@ -985,7 +986,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544526, "DevDiv")]
+        [WorkItem(544526, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544526")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task DontCrash_ImplementsStatement()
         {
@@ -1004,7 +1005,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544525, "DevDiv")]
+        [WorkItem(544525, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544525")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task AccessorStatement_AddRemoveHandler_RaiseEvent()
         {
@@ -1033,7 +1034,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(545176, "DevDiv")]
+        [WorkItem(545176, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545176")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task CallStatement_Lambda()
         {
@@ -1052,7 +1053,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545256, "DevDiv")]
+        [WorkItem(545256, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545256")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task HandlesClauseItem_DontAddParentheses()
         {
@@ -1071,7 +1072,7 @@ End Structure";
         }
 
         [Fact]
-        [WorkItem(545380, "DevDiv")]
+        [WorkItem(545380, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545380")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task DontAddParenthesesInForEachControlVariable()
         {
@@ -1096,7 +1097,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545380, "DevDiv")]
+        [WorkItem(545380, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545380")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task DontAddParenthesesInForControlVariable()
         {
@@ -1121,7 +1122,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545483, "DevDiv")]
+        [WorkItem(545483, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545483")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task DontAddParenthesesForMissingName()
         {
@@ -1134,7 +1135,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545483, "DevDiv")]
+        [WorkItem(545483, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545483")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task CombinedDelegates()
         {
@@ -1161,7 +1162,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(546581, "DevDiv")]
+        [WorkItem(546581, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546581")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task ThenOmittedWithSurroundingErrors()
         {
@@ -1174,7 +1175,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(546581, "DevDiv")]
+        [WorkItem(546581, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546581")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task ThenOmittedWithSurroundingErrors1()
         {
@@ -1187,7 +1188,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(546797, "DevDiv")]
+        [WorkItem(546797, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546797")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task ParenthesisWithLineContinuation()
         {
@@ -1199,7 +1200,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(546806, "DevDiv")]
+        [WorkItem(546806, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546806")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task ThenWithLineContinuation()
         {
@@ -1215,7 +1216,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(531278, "DevDiv")]
+        [WorkItem(531278, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/531278")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task ThenInIfDirective()
         {
@@ -1243,7 +1244,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(607792, "DevDiv")]
+        [WorkItem(607792, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/607792")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task CaseKeywordInSelectStatement()
         {
@@ -1285,7 +1286,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(530789, "DevDiv")]
+        [WorkItem(530789, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530789")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task Bug530789()
         {
@@ -1307,7 +1308,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(530039, "DevDiv")]
+        [WorkItem(530039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530039")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestArraySyntax()
         {
@@ -1329,7 +1330,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestAsyncFunctionWithoutAsClause()
         {
@@ -1417,7 +1418,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestAsyncFunctionWithoutAsClause_WithAddedImports()
         {
@@ -1511,7 +1512,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestIteratorFunctionWithoutAsClause()
         {
@@ -1593,7 +1594,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestIteratorFunctionWithoutAsClause_WithAddedImports()
         {
@@ -1683,7 +1684,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestAsyncFunctionWithAsClause()
         {
@@ -1853,7 +1854,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestAsyncFunctionWithAsClause_WithAddedImports()
         {
@@ -2029,7 +2030,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestIteratorFunctionWithAsClause()
         {
@@ -2225,7 +2226,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestIteratorFunctionWithAsClause_WithAddedImports()
         {
@@ -2427,7 +2428,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestAsyncFunctionWithAliasedReturnType()
         {
@@ -2457,7 +2458,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestIteratorFunctionWithAliasedReturnType()
         {
@@ -2487,7 +2488,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestAsyncFunctionWithAliasedReturnType_2()
         {
@@ -2515,7 +2516,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestIteratorFunctionWithAliasedReturnType_2()
         {
@@ -2543,7 +2544,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestAsyncFunctionWithQualifiedNameReturnType()
         {
@@ -2569,7 +2570,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestIteratorFunctionWithQualifiedNameReturnType()
         {
@@ -2595,7 +2596,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestAsyncLambdaFunction()
         {
@@ -2663,7 +2664,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(602932, "DevDiv")]
+        [WorkItem(602932, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/602932")]
         [Trait(Traits.Feature, Traits.Features.AddMissingTokens)]
         public async Task TestIteratorLambdaFunction()
         {
@@ -2834,12 +2835,11 @@ End Class";
 
         private async Task VerifyAsync(string codeWithMarker, string expectedResult)
         {
-            var codeWithoutMarker = default(string);
-            var textSpans = (IList<TextSpan>)new List<TextSpan>();
-            MarkupTestFile.GetSpans(codeWithMarker, out codeWithoutMarker, out textSpans);
+            MarkupTestFile.GetSpans(codeWithMarker, 
+                out var codeWithoutMarker, out ImmutableArray<TextSpan> textSpans);
 
             var document = CreateDocument(codeWithoutMarker, LanguageNames.VisualBasic);
-            var codeCleanups = CodeCleaner.GetDefaultProviders(document).Where(p => p.Name == PredefinedCodeCleanupProviderNames.AddMissingTokens || p.Name == PredefinedCodeCleanupProviderNames.Format || p.Name == PredefinedCodeCleanupProviderNames.Simplification);
+            var codeCleanups = CodeCleaner.GetDefaultProviders(document).WhereAsArray(p => p.Name == PredefinedCodeCleanupProviderNames.AddMissingTokens || p.Name == PredefinedCodeCleanupProviderNames.Format || p.Name == PredefinedCodeCleanupProviderNames.Simplification);
 
             var cleanDocument = await CodeCleaner.CleanupAsync(document, textSpans[0], codeCleanups);
 

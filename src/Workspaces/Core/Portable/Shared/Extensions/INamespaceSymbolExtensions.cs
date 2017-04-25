@@ -90,11 +90,10 @@ namespace Microsoft.CodeAnalysis.Shared.Extensions
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var current = stack.Pop();
-                if (current is INamespaceSymbol)
+                if (current is INamespaceSymbol childNamespace)
                 {
-                    var child = (INamespaceSymbol)current;
-                    stack.Push(child.GetMembers().AsEnumerable());
-                    yield return child;
+                    stack.Push(childNamespace.GetMembers().AsEnumerable());
+                    yield return childNamespace;
                 }
                 else
                 {
@@ -148,6 +147,26 @@ namespace Microsoft.CodeAnalysis.Shared.Extensions
             {
                 return ContainsAccessibleTypesOrNamespacesWorker(namespaceSymbol, assembly, namespaceQueue.Object);
             }
+        }
+
+        public static INamespaceSymbol GetQualifiedNamespace(
+            this INamespaceSymbol globalNamespace,
+            string namespaceName)
+        {
+            var namespaceSymbol = globalNamespace;
+            foreach (var name in namespaceName.Split('.'))
+            {
+                var members = namespaceSymbol.GetMembers(name);
+                namespaceSymbol = members.Count() == 1
+                        ? members.First() as INamespaceSymbol
+                        : null;
+
+                if ((object)namespaceSymbol == null)
+                {
+                    break;
+                }
+            }
+            return namespaceSymbol;
         }
 
         private static bool ContainsAccessibleTypesOrNamespacesWorker(

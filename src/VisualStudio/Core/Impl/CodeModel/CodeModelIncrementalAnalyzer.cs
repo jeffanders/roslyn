@@ -10,13 +10,12 @@ using Microsoft.CodeAnalysis.Editor;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Shared.TestHooks;
 using Microsoft.CodeAnalysis.SolutionCrawler;
-using Microsoft.VisualStudio.LanguageServices.Implementation.Interop;
 using Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem;
 using Roslyn.Utilities;
 
 namespace Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel
 {
-    [ExportIncrementalAnalyzerProvider(WorkspaceKind.Host), Shared]
+    [ExportIncrementalAnalyzerProvider(nameof(CodeModelIncrementalAnalyzerProvider), new[] { WorkspaceKind.Host }), Shared]
     internal class CodeModelIncrementalAnalyzerProvider : IIncrementalAnalyzerProvider
     {
         private readonly IAsynchronousOperationListener _listener;
@@ -55,7 +54,7 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel
                 _workspace = workspace;
             }
 
-            public Task AnalyzeSyntaxAsync(Document document, CancellationToken cancellationToken)
+            public Task AnalyzeSyntaxAsync(Document document, InvocationReasons reasons, CancellationToken cancellationToken)
             {
                 FireEvents(document.Id, cancellationToken);
 
@@ -70,32 +69,36 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel
 
             public void FireEvents(DocumentId documentId, CancellationToken cancellationToken)
             {
-                var project = _workspace.ProjectTracker.GetProject(documentId.ProjectId);
-                if (project == null)
+                _notificationService.RegisterNotification(() =>
                 {
-                    return;
-                }
+                    var project = _workspace.DeferredState.ProjectTracker.GetProject(documentId.ProjectId);
+                    if (project == null)
+                    {
+                        return false;
+                    }
 
-                var codeModelProvider = project as IProjectCodeModelProvider;
-                if (codeModelProvider == null)
-                {
-                    return;
-                }
+                    var codeModelProvider = project as IProjectCodeModelProvider;
+                    if (codeModelProvider == null)
+                    {
+                        return false;
+                    }
 
-                var filename = _workspace.GetFilePath(documentId);
-                if (filename == null)
-                {
-                    return;
-                }
+                    var filename = _workspace.GetFilePath(documentId);
+                    if (filename == null)
+                    {
+                        return false;
+                    }
 
-                ComHandle<EnvDTE80.FileCodeModel2, FileCodeModel> fileCodeModelHandle;
-                if (!codeModelProvider.ProjectCodeModel.TryGetCachedFileCodeModel(filename, out fileCodeModelHandle))
-                {
-                    return;
-                }
+                    if (!codeModelProvider.ProjectCodeModel.TryGetCachedFileCodeModel(filename, out var fileCodeModelHandle))
+                    {
+                        return false;
+                    }
 
-                var codeModel = fileCodeModelHandle.Object;
-                _notificationService.RegisterNotification(() => codeModel.FireEvents(), _listener.BeginAsyncOperation("CodeModelEvent"), cancellationToken);
+                    var codeModel = fileCodeModelHandle.Object;
+                    return codeModel.FireEvents();
+                },
+                _listener.BeginAsyncOperation("CodeModelEvent"),
+                cancellationToken);
             }
 
             #region unused
@@ -124,12 +127,12 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel
                 return false;
             }
 
-            public Task AnalyzeDocumentAsync(Document document, SyntaxNode bodyOpt, CancellationToken cancellationToken)
+            public Task AnalyzeDocumentAsync(Document document, SyntaxNode bodyOpt, InvocationReasons reasons, CancellationToken cancellationToken)
             {
                 return SpecializedTasks.EmptyTask;
             }
 
-            public Task AnalyzeProjectAsync(Project project, bool semanticsChanged, CancellationToken cancellationToken)
+            public Task AnalyzeProjectAsync(Project project, bool semanticsChanged, InvocationReasons reasons, CancellationToken cancellationToken)
             {
                 return SpecializedTasks.EmptyTask;
             }

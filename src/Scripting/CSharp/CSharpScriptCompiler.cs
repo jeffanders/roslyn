@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
+using System.Text;
 using System.Threading;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Scripting;
@@ -12,7 +13,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Scripting
     {
         public static readonly ScriptCompiler Instance = new CSharpScriptCompiler();
 
-        private static readonly CSharpParseOptions s_defaultOptions = new CSharpParseOptions(languageVersion: LanguageVersion.CSharp6, kind: SourceCodeKind.Script);
+        private static readonly CSharpParseOptions s_defaultOptions = new CSharpParseOptions(kind: SourceCodeKind.Script);
 
         private CSharpScriptCompiler()
         {
@@ -41,7 +42,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Scripting
             // TODO: report diagnostics
             diagnostics.Free();
 
-            var tree = SyntaxFactory.ParseSyntaxTree(script.Code, s_defaultOptions, script.Options.FilePath);
+            var tree = SyntaxFactory.ParseSyntaxTree(script.SourceText, s_defaultOptions, script.Options.FilePath);
 
             string assemblyName, submissionTypeName;
             script.Builder.GenerateSubmissionId(out assemblyName, out submissionTypeName);
@@ -64,7 +65,7 @@ namespace Microsoft.CodeAnalysis.CSharp.Scripting
                     sourceReferenceResolver: script.Options.SourceResolver,
                     metadataReferenceResolver: script.Options.MetadataResolver,
                     assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default
-                ),
+                ).WithTopLevelBinderFlags(BinderFlags.IgnoreCorLibraryDuplicatedTypes),
                 previousSubmission,
                 script.ReturnType,
                 script.GlobalsType

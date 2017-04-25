@@ -56,9 +56,7 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel.Inter
 
         internal bool IsValidNode()
         {
-            var node = LookupNode();
-
-            if (node == null)
+            if (!TryLookupNode(out var node))
             {
                 return false;
             }
@@ -72,7 +70,17 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel.Inter
             return true;
         }
 
-        internal abstract SyntaxNode LookupNode();
+        internal virtual SyntaxNode LookupNode()
+        {
+            if (!TryLookupNode(out var node))
+            {
+                throw Exceptions.ThrowEFail();
+            }
+
+            return node;
+        }
+
+        internal abstract bool TryLookupNode(out SyntaxNode node);
 
         internal virtual ISymbol LookupSymbol()
         {
@@ -144,7 +152,7 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel.Inter
         {
             get
             {
-                var point = FileCodeModel.EnsureEditor(() => CodeModelService.GetStartPoint(LookupNode()));
+                var point = CodeModelService.GetStartPoint(LookupNode());
                 if (point == null)
                 {
                     return null;
@@ -170,7 +178,7 @@ namespace Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel.Inter
 
         public virtual EnvDTE.TextPoint GetStartPoint(EnvDTE.vsCMPart part)
         {
-            var point = FileCodeModel.EnsureEditor(() => CodeModelService.GetStartPoint(LookupNode(), part));
+            var point = CodeModelService.GetStartPoint(LookupNode(), part);
             if (point == null)
             {
                 return null;

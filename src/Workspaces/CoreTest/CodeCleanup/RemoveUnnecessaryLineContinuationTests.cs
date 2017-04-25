@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -585,7 +586,7 @@ End _
         }
 
         [Fact]
-        [WorkItem(544470, "DevDiv")]
+        [WorkItem(544470, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544470")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task AttributeTargetColon()
         {
@@ -599,7 +600,7 @@ CLSCompliant>";
         }
 
         [Fact]
-        [WorkItem(529428, "DevDiv")]
+        [WorkItem(529428, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529428")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LineContinuationInImport()
         {
@@ -615,7 +616,7 @@ CLSCompliant>";
         }
 
         [Fact]
-        [WorkItem(529425, "DevDiv")]
+        [WorkItem(529425, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529425")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task ColonInOption()
         {
@@ -627,7 +628,7 @@ CLSCompliant>";
         }
 
         [Fact]
-        [WorkItem(544524, "DevDiv")]
+        [WorkItem(544524, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544524")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LineContinuationInNamedFieldInitializer()
         {
@@ -655,7 +656,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(544523, "DevDiv")]
+        [WorkItem(544523, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544523")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task IfPart_Colon1()
         {
@@ -677,7 +678,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(544523, "DevDiv")]
+        [WorkItem(544523, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544523")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task IfPart_Colon2()
         {
@@ -699,7 +700,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(544523, "DevDiv")]
+        [WorkItem(544523, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544523")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task IfPart_Colon3()
         {
@@ -721,7 +722,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(544523, "DevDiv")]
+        [WorkItem(544523, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544523")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task IfPart_Colon4()
         {
@@ -743,7 +744,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(544521, "DevDiv")]
+        [WorkItem(544521, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544521")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LabelColon()
         {
@@ -763,7 +764,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(544521, "DevDiv")]
+        [WorkItem(544521, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544521")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LabelColon_ColonTrivia()
         {
@@ -783,7 +784,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(544520, "DevDiv")]
+        [WorkItem(544520, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544520")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LineContinuation_MixedWithImplicitLineContinuation()
         {
@@ -807,7 +808,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(544549, "DevDiv")]
+        [WorkItem(544549, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544549")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task ColonTrivia_EndOfFile()
         {
@@ -821,7 +822,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545538, "DevDiv")]
+        [WorkItem(545538, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545538")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task ColonTriviaBeforeCommentTrivia()
         {
@@ -841,7 +842,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545540, "DevDiv")]
+        [WorkItem(545540, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545540")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task InsideWithStatementWithMemberCall()
         {
@@ -867,7 +868,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545540, "DevDiv")]
+        [WorkItem(545540, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545540")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task InsideWithStatementWithMemberCall2()
         {
@@ -893,7 +894,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545540, "DevDiv")]
+        [WorkItem(545540, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545540")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task InsideWithStatementWithMemberCall3()
         {
@@ -919,7 +920,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545540, "DevDiv")]
+        [WorkItem(545540, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545540")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task InsideWithStatementWithMemberCall4()
         {
@@ -945,7 +946,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(607791, "DevDiv")]
+        [WorkItem(607791, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/607791")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task InsideWithStatementWithDictionaryAccess()
         {
@@ -975,7 +976,7 @@ End Module
         }
 
         [Fact]
-        [WorkItem(607791, "DevDiv")]
+        [WorkItem(607791, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/607791")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task InsideWithStatementWithDictionaryAccess2()
         {
@@ -1003,7 +1004,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(529821, "DevDiv")]
+        [WorkItem(529821, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529821")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task InsideObjectInitializer()
         {
@@ -1035,7 +1036,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545545, "DevDiv")]
+        [WorkItem(545545, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545545")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LineContinuationBetweenXmlAndDot()
         {
@@ -1057,7 +1058,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545545, "DevDiv")]
+        [WorkItem(545545, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545545")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LineContinuationBetweenXmlAndDot1()
         {
@@ -1079,7 +1080,7 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(545565, "DevDiv")]
+        [WorkItem(545565, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545565")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LineContinuationBeforeFromQueryExpression()
         {
@@ -1101,7 +1102,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(545565, "DevDiv")]
+        [WorkItem(545565, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545565")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LineContinuationBeforeFromAggregateExpression()
         {
@@ -1123,7 +1124,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(530635, "DevDiv")]
+        [WorkItem(530635, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530635")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LineContinuationAtEndOfLambdaExpression1()
         {
@@ -1151,7 +1152,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(530635, "DevDiv")]
+        [WorkItem(530635, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530635")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LineContinuationAtEndOfLambdaExpression2()
         {
@@ -1183,7 +1184,7 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(546798, "DevDiv")]
+        [WorkItem(546798, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546798")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task LineContinuationAfterDot()
         {
@@ -1199,8 +1200,8 @@ End Class";
         }
 
         [Fact]
-        [WorkItem(530621, "DevDiv")]
-        [WorkItem(631933, "DevDiv")]
+        [WorkItem(530621, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530621")]
+        [WorkItem(631933, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/631933")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task DontRemoveLineContinuationAfterColonInSingleLineIfStatement()
         {
@@ -1218,8 +1219,8 @@ End Module";
         }
 
         [Fact]
-        [WorkItem(609481, "DevDiv")]
-        [WorkItem(631933, "DevDiv")]
+        [WorkItem(609481, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/609481")]
+        [WorkItem(631933, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/631933")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task DontRemoveLineContinuationInSingleLineIfStatement()
         {
@@ -1250,8 +1251,8 @@ End Module
         }
 
         [Fact]
-        [WorkItem(609481, "DevDiv")]
-        [WorkItem(631933, "DevDiv")]
+        [WorkItem(609481, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/609481")]
+        [WorkItem(631933, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/631933")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task DontRemoveLineContinuationInNestedSingleLineIfStatement()
         {
@@ -1379,7 +1380,7 @@ End Module
         }
 
         [Fact]
-        [WorkItem(1085887)]
+        [WorkItem(1085887, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1085887")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task DontRemoveLineContinuationInVisualBasic9()
         {
@@ -1410,7 +1411,7 @@ End Module
         }
 
         [Fact]
-        [WorkItem(1085887)]
+        [WorkItem(1085887, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1085887")]
         [Trait(Traits.Feature, Traits.Features.RemoveUnnecessaryLineContinuation)]
         public async Task RemoveLineContinuationInVisualBasic10_11_12_And_14()
         {
@@ -1455,16 +1456,15 @@ End Class";
 
         private async Task VerifyAsync(string codeWithMarker, string expectedResult, LanguageVersion langVersion = LanguageVersion.VisualBasic14)
         {
-            var codeWithoutMarker = default(string);
-            var textSpans = (IList<TextSpan>)new List<TextSpan>();
-            MarkupTestFile.GetSpans(codeWithMarker, out codeWithoutMarker, out textSpans);
+            MarkupTestFile.GetSpans(codeWithMarker, 
+                out var codeWithoutMarker, out ImmutableArray<TextSpan> textSpans);
 
             var document = CreateDocument(codeWithoutMarker, LanguageNames.VisualBasic, langVersion);
-            var codeCleanups = CodeCleaner.GetDefaultProviders(document).Where(p => p.Name == PredefinedCodeCleanupProviderNames.RemoveUnnecessaryLineContinuation || p.Name == PredefinedCodeCleanupProviderNames.Format);
+            var codeCleanups = CodeCleaner.GetDefaultProviders(document).WhereAsArray(p => p.Name == PredefinedCodeCleanupProviderNames.RemoveUnnecessaryLineContinuation || p.Name == PredefinedCodeCleanupProviderNames.Format);
 
             var cleanDocument = await CodeCleaner.CleanupAsync(document, textSpans[0], codeCleanups);
 
-            Assert.Equal(expectedResult, cleanDocument.GetSyntaxRootAsync().Result.ToFullString());
+            Assert.Equal(expectedResult, (await cleanDocument.GetSyntaxRootAsync()).ToFullString());
         }
 
         private static Document CreateDocument(string code, string language, LanguageVersion langVersion)

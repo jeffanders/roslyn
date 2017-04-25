@@ -1,19 +1,18 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Test.Utilities;
+using Microsoft.Win32;
 
 namespace Roslyn.Test.Utilities
 {
-    public static class TestHelpers
+    public static class DesktopTestHelpers
     {
         public static IEnumerable<Type> GetAllTypesImplementingGivenInterface(Assembly assembly, Type interfaceType)
         {
@@ -48,49 +47,7 @@ namespace Roslyn.Test.Utilities
                     where type.IsAssignableFrom(t)
                     select t).ToList();
         }
-
-        public static IEnumerable<Type> GetAllTypesWithStaticFieldsImplementingType(Assembly assembly, Type type)
-        {
-            return assembly.GetTypes().Where(t =>
-            {
-                return t.GetFields(BindingFlags.Public | BindingFlags.Static).Any(f => type.IsAssignableFrom(f.FieldType));
-            }).ToList();
-        }
-
-        public static string GetCultureInvariantString(object value)
-        {
-            if (value == null)
-                return null;
-
-            var valueType = value.GetType();
-            if (valueType == typeof(string))
-            {
-                return value as string;
-            }
-
-            if (valueType == typeof(DateTime))
-            {
-                return ((DateTime)value).ToString("M/d/yyyy h:mm:ss tt", CultureInfo.InvariantCulture);
-            }
-
-            if (valueType == typeof(float))
-            {
-                return ((float)value).ToString(CultureInfo.InvariantCulture);
-            }
-
-            if (valueType == typeof(double))
-            {
-                return ((double)value).ToString(CultureInfo.InvariantCulture);
-            }
-
-            if (valueType == typeof(decimal))
-            {
-                return ((decimal)value).ToString(CultureInfo.InvariantCulture);
-            }
-
-            return value.ToString();
-        }
-
+ 
         public static TempFile CreateCSharpAnalyzerAssemblyWithTestAnalyzer(TempDirectory dir, string assemblyName)
         {
             var analyzerSource = @"
@@ -106,22 +63,41 @@ public class TestAnalyzer : DiagnosticAnalyzer
     public override void Initialize(AnalysisContext context) { throw new NotImplementedException(); }
 }";
 
-            var metadata = dir.CopyFile(typeof(System.Reflection.Metadata.MetadataReader).Assembly.Location);
+            dir.CopyFile(typeof(System.Reflection.Metadata.MetadataReader).Assembly.Location);
             var immutable = dir.CopyFile(typeof(ImmutableArray).Assembly.Location);
             var analyzer = dir.CopyFile(typeof(DiagnosticAnalyzer).Assembly.Location);
+            dir.CopyFile(Path.Combine(Path.GetDirectoryName(typeof(CSharpCompilation).Assembly.Location), "System.IO.FileSystem.dll"));
 
             var analyzerCompilation = CSharpCompilation.Create(
                 assemblyName,
                 new SyntaxTree[] { SyntaxFactory.ParseSyntaxTree(analyzerSource) },
                 new MetadataReference[]
                 {
-                    TestBase.SystemRuntimePP7Ref,
+                    TestReferences.NetStandard13.SystemRuntime,
                     MetadataReference.CreateFromFile(immutable.Path),
                     MetadataReference.CreateFromFile(analyzer.Path)
                 },
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
             return dir.CreateFile(assemblyName + ".dll").WriteAllBytes(analyzerCompilation.EmitToArray());
+        }
+
+        public static string GetMSBuildDirectory()
+        {
+            var vsVersion = Environment.GetEnvironmentVariable("VisualStudioVersion") ?? "14.0";
+            using (var key = Registry.LocalMachine.OpenSubKey($@"SOFTWARE\Microsoft\MSBuild\ToolsVersions\{vsVersion}", false))
+            {
+                if (key != null)
+                {
+                    var toolsPath = key.GetValue("MSBuildToolsPath");
+                    if (toolsPath != null)
+                    {
+                        return toolsPath.ToString();
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

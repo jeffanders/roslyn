@@ -1,5 +1,6 @@
 ﻿' Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+Imports System.Collections.Immutable
 Imports System.Threading
 Imports Microsoft.CodeAnalysis
 Imports Microsoft.CodeAnalysis.Formatting
@@ -49,16 +50,16 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.UnitTests.Formatting
                 Dim spans = New List(Of TextSpan)()
                 spans.Add(syntaxTree.GetRoot().FullSpan)
 
-                Dim changes = Await Formatter.GetFormattedTextChangesAsync(syntaxTree.GetRoot(CancellationToken.None), workspace, cancellationToken:=CancellationToken.None).ConfigureAwait(True)
+                Dim changes = Await Formatter.GetFormattedTextChangesAsync(Await syntaxTree.GetRootAsync(), workspace, cancellationToken:=CancellationToken.None).ConfigureAwait(True)
                 AssertResult(expected, Await document.GetTextAsync(), changes)
 
-                changes = Await Formatter.GetFormattedTextChangesAsync(syntaxTree.GetRoot(), syntaxTree.GetRoot(CancellationToken.None).FullSpan, workspace, cancellationToken:=CancellationToken.None).ConfigureAwait(True)
+                changes = Await Formatter.GetFormattedTextChangesAsync(Await syntaxTree.GetRootAsync(), (Await syntaxTree.GetRootAsync()).FullSpan, workspace, cancellationToken:=CancellationToken.None).ConfigureAwait(True)
                 AssertResult(expected, Await document.GetTextAsync(), changes)
 
                 spans = New List(Of TextSpan)()
                 spans.Add(syntaxTree.GetRoot().FullSpan)
 
-                changes = Await Formatter.GetFormattedTextChangesAsync(syntaxTree.GetRoot(CancellationToken.None), spans, workspace, cancellationToken:=CancellationToken.None).ConfigureAwait(True)
+                changes = Await Formatter.GetFormattedTextChangesAsync(Await syntaxTree.GetRootAsync(), spans, workspace, cancellationToken:=CancellationToken.None).ConfigureAwait(True)
                 AssertResult(expected, Await document.GetTextAsync(), changes)
 
                 ' format with node and transform
@@ -69,7 +70,7 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.UnitTests.Formatting
         Protected Function AssertFormatSpanAsync(markupCode As String, expected As String) As Task
             Dim code As String = Nothing
             Dim cursorPosition As Integer? = Nothing
-            Dim spans As IList(Of TextSpan) = Nothing
+            Dim spans As ImmutableArray(Of TextSpan) = Nothing
             MarkupTestFile.GetSpans(markupCode, code, spans)
 
             Return AssertFormatAsync(expected, code, spans)
