@@ -11,19 +11,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CommandLine;
 
+using static Microsoft.CodeAnalysis.CommandLine.CompilerServerLogger;
+
 namespace Microsoft.CodeAnalysis.CompilerServer
 {
     internal struct RunRequest
     {
         public string Language { get; }
         public string CurrentDirectory { get; }
+        public string TempDirectory { get; }
         public string LibDirectory { get; }
         public string[] Arguments { get; }
 
-        public RunRequest(string language, string currentDirectory, string libDirectory, string[] arguments)
+        public RunRequest(string language, string currentDirectory, string tempDirectory, string libDirectory, string[] arguments)
         {
             Language = language;
             CurrentDirectory = currentDirectory;
+            TempDirectory = tempDirectory;
             LibDirectory = libDirectory;
             Arguments = arguments;
         }
@@ -55,25 +59,22 @@ namespace Microsoft.CodeAnalysis.CompilerServer
 
         public bool TryCreateCompiler(RunRequest request, out CommonCompiler compiler)
         {
+            var buildPaths = new BuildPaths(ClientDirectory, request.CurrentDirectory, SdkDirectory, request.TempDirectory);
             switch (request.Language)
             {
                 case LanguageNames.CSharp:
                     compiler = new CSharpCompilerServer(
-                        this,
+                        AssemblyReferenceProvider,
                         args: request.Arguments,
-                        clientDirectory: ClientDirectory,
-                        baseDirectory: request.CurrentDirectory,
-                        sdkDirectory: SdkDirectory,
+                        buildPaths: buildPaths,
                         libDirectory: request.LibDirectory,
                         analyzerLoader: AnalyzerAssemblyLoader);
                     return true;
                 case LanguageNames.VisualBasic:
                     compiler = new VisualBasicCompilerServer(
-                        this,
+                        AssemblyReferenceProvider,
                         args: request.Arguments,
-                        clientDirectory: ClientDirectory,
-                        baseDirectory: request.CurrentDirectory,
-                        sdkDirectory: SdkDirectory,
+                        buildPaths: buildPaths,
                         libDirectory: request.LibDirectory,
                         analyzerLoader: AnalyzerAssemblyLoader);
                     return true;
@@ -81,6 +82,44 @@ namespace Microsoft.CodeAnalysis.CompilerServer
                     compiler = null;
                     return false;
             }
+        }
+
+        public BuildResponse RunCompilation(RunRequest request, CancellationToken cancellationToken)
+        {
+            Log($"CurrentDirectory = '{request.CurrentDirectory}'");
+            Log($"LIB = '{request.LibDirectory}'");
+            for (int i = 0; i < request.Arguments.Length; ++i)
+            {
+                Log($"Argument[{i}] = '{request.Arguments[i]}'");
+            }
+
+            // Compiler server must be provided with a valid temporary directory in order to correctly
+            // isolate signing between compilations.
+            if (string.IsNullOrEmpty(request.TempDirectory))
+            {
+                Log($"Rejecting build due to missing temp directory");
+                return new RejectedBuildResponse();
+            }
+
+            CommonCompiler compiler;
+            if (!TryCreateCompiler(request, out compiler))
+            {
+                // We can't do anything with a request we don't know about. 
+                Log($"Got request with id '{request.Language}'");
+                return new RejectedBuildResponse();
+            }
+
+            bool utf8output = compiler.Arguments.Utf8Output;
+            if (!CheckAnalyzers(request.CurrentDirectory, compiler.Arguments.AnalyzerReferences))
+            {
+                return new AnalyzerInconsistencyBuildResponse();
+            }
+
+            Log($"****Running {request.Language} compiler...");
+            TextWriter output = new StringWriter(CultureInfo.InvariantCulture);
+            int returnCode = compiler.Run(output, cancellationToken);
+            Log($"****{request.Language} Compilation complete.\r\n****Return code: {returnCode}\r\n****Output:\r\n{output.ToString()}\r\n");
+            return new CompletedBuildResponse(returnCode, utf8output, output.ToString());
         }
     }
 }

@@ -1,9 +1,10 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.CodeAnalysis.EditAndContinue;
 using Microsoft.CodeAnalysis.EditAndContinue.UnitTests;
+using Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.EditAndContinue;
 using Microsoft.CodeAnalysis.Test.Utilities;
 using Roslyn.Test.Utilities;
 using Xunit;
@@ -14,7 +15,7 @@ namespace Microsoft.CodeAnalysis.CSharp.EditAndContinue.UnitTests
     {
         #region Matching
 
-        [WpfFact]
+        [Fact]
         public void Match1()
         {
             var src1 = @"
@@ -63,7 +64,7 @@ if (x > 1)
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void KnownMatches_Root()
         {
             string src1 = @"
@@ -89,7 +90,7 @@ Console.WriteLine(2);
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void Locals_Rename()
         {
             var src1 = @"
@@ -111,7 +112,7 @@ int y = 1;
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void Locals_TypeChange()
         {
             var src1 = @"
@@ -133,7 +134,7 @@ byte x = 1;
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void BlocksWithLocals1()
         {
             var src1 = @"
@@ -171,7 +172,7 @@ byte x = 1;
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void IfBlocksWithLocals1()
         {
             var src1 = @"
@@ -215,7 +216,7 @@ if (X)
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void BlocksWithLocals2()
         {
             var src1 = @"
@@ -257,7 +258,7 @@ if (X)
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void BlocksWithLocals3()
         {
             var src1 = @"
@@ -318,7 +319,7 @@ if (X)
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchLambdas1()
         {
             var src1 = "Action x = a => a;";
@@ -338,7 +339,7 @@ if (X)
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchLambdas2a()
         {
             var src1 = @"
@@ -363,7 +364,7 @@ F(y => y + 1, G(), x => x + 1, (int x) => x, u => u, async (u, v) => u + v);
             expected.AssertEqual(actual);
         }
 
-        [WpfFact, WorkItem(830419)]
+        [Fact, WorkItem(830419, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/830419")]
         public void MatchLambdas2b()
         {
             var src1 = @"
@@ -385,7 +386,7 @@ F((a) => x, () => x);
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchLambdas3()
         {
             var src1 = @"
@@ -407,7 +408,7 @@ a += u => u;
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchLambdas4()
         {
             var src1 = @"
@@ -442,7 +443,7 @@ foreach (var a in z)
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchLambdas5()
         {
             var src1 = @"
@@ -466,7 +467,7 @@ F(a => b => c => d);
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchLambdas6()
         {
             var src1 = @"
@@ -490,7 +491,7 @@ F(a => G(b => H(c => I(d))));
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchLambdas7()
         {
             var src1 = @"
@@ -542,7 +543,7 @@ F(a =>
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchQueries1()
         {
             var src1 = @"
@@ -576,7 +577,7 @@ var q = from c in cars
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchQueries2()
         {
             var src1 = @"
@@ -648,7 +649,7 @@ var q = from c in cars
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchQueries3()
         {
             var src1 = @"
@@ -692,7 +693,7 @@ var q = from a in await seq1
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchQueries4()
         {
             var src1 = "F(from a in await b from x in y select c);";
@@ -714,7 +715,7 @@ var q = from a in await seq1
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchQueries5()
         {
             var src1 = "F(from a in b  group a by a.x into g  select g);";
@@ -737,7 +738,7 @@ var q = from a in await seq1
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchYields()
         {
             var src1 = @"
@@ -771,7 +772,7 @@ foreach (var x in y) { yield return /*3*/ 2; }
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void KnownMatches()
         {
             string src1 = @"
@@ -821,7 +822,7 @@ Console.WriteLine(1)/*4*/;
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchConstructorWithInitializer1()
         {
             var src1 = @"
@@ -844,7 +845,7 @@ Console.WriteLine(1)/*4*/;
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchConstructorWithInitializer2()
         {
             var src1 = @"
@@ -866,7 +867,7 @@ Console.WriteLine(1)/*4*/;
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchExceptionHandlers()
         {
             var src1 = @"
@@ -903,7 +904,530 @@ catch (Exception e) when (filter(e)) { Console.WriteLine(30); }
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
+        public void MatchTuple()
+        {
+            var src1 = @"
+return (1, 2);
+return (d, 6);
+return (10, e, 22);
+return (2, () => { 
+    int a = 6;
+    return 1;
+});";
+
+            var src2 = @"
+return (1, 2, 3);
+return (d, 5);
+return (10, e);
+return (2, () => {
+    int a = 6;
+    return 5;
+});";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "return (1, 2);", "return (1, 2, 3);" },
+                { "return (d, 6);", "return (d, 5);" },
+                { "return (10, e, 22);", "return (10, e);" },
+                { "return (2, () => {      int a = 6;     return 1; });", "return (2, () => {     int a = 6;     return 5; });" },
+                { "() => {      int a = 6;     return 1; }", "() => {     int a = 6;     return 5; }" },
+                { "{      int a = 6;     return 1; }", "{     int a = 6;     return 5; }" },
+                { "int a = 6;", "int a = 6;" },
+                { "int a = 6", "int a = 6" },
+                { "a = 6", "a = 6" },
+                { "return 1;", "return 5;" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchLocalFunctionDefinitions()
+        {
+            var src1 = @"
+(int a, string c) F1(int i) { return null; }
+(int a, int b) F2(int i) { return null; }
+(int a, int b, int c) F3(int i) { return null; }
+";
+
+            var src2 = @"
+(int a, int b) F1(int i) { return null; }
+(int a, int b, string c) F2(int i) { return null; }
+(int a, int b) F3(int i) { return null; }
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "(int a, string c) F1(int i) { return null; }", "(int a, int b) F1(int i) { return null; }" },
+                { "{ return null; }", "{ return null; }" },
+                { "return null;", "return null;" },
+                { "(int a, int b) F2(int i) { return null; }", "(int a, int b, string c) F2(int i) { return null; }" },
+                { "{ return null; }", "{ return null; }" },
+                { "return null;", "return null;" },
+                { "(int a, int b, int c) F3(int i) { return null; }", "(int a, int b) F3(int i) { return null; }" },
+                { "{ return null; }", "{ return null; }" },
+                { "return null;", "return null;" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchVariableDesignations()
+        {
+            var src1 = @"
+M(out int z);
+N(out var a);
+";
+
+            var src2 = @"
+M(out var z);
+N(out var b);
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "M(out int z);", "M(out var z);" },
+                { "z", "z" },
+                { "N(out var a);", "N(out var b);" },
+                { "a", "b" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchParenthesizedVariable_Update()
+        {
+            var src1 = @"
+var (x1, (x2, x3)) = (1, (2, true));
+var (a1, a2) = (1, () => { return 7; });
+";
+
+            var src2 = @"
+var (x1, (x3, x4)) = (1, (2, true));
+var (a1, a3) = (1, () => { return 8; });
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "var (x1, (x2, x3)) = (1, (2, true));", "var (x1, (x3, x4)) = (1, (2, true));" },
+                { "x1", "x1" },
+                { "x2", "x4" },
+                { "x3", "x3" },
+                { "var (a1, a2) = (1, () => { return 7; });", "var (a1, a3) = (1, () => { return 8; });" },
+                { "a1", "a1" },
+                { "a2", "a3" },
+                { "() => { return 7; }", "() => { return 8; }" },
+                { "{ return 7; }", "{ return 8; }" },
+                { "return 7;", "return 8;" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchParenthesizedVariable_Insert()
+        {
+            var src1 = @"var (z1, z2) = (1, 2);";
+            var src2 = @"var (z1, z2, z3) = (1, 2, 5);";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "var (z1, z2) = (1, 2);", "var (z1, z2, z3) = (1, 2, 5);" },
+                { "z1", "z1" },
+                { "z2", "z2" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchParenthesizedVariable_Delete()
+        {
+            var src1 = @"var (y1, y2, y3) = (1, 2, 7);";
+            var src2 = @"var (y1, y2) = (1, 4);";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "var (y1, y2, y3) = (1, 2, 7);", "var (y1, y2) = (1, 4);" },
+                { "y1", "y1" },
+                { "y2", "y2" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchForeachVariable_Update1()
+        {
+            var src1 = @"
+foreach (var (a1, a2) in e) { A1(); }
+foreach ((var b1, var b2) in e) { A2(); }
+";
+
+            var src2 = @"
+foreach (var (a1, a3) in e) { A1(); }
+foreach ((var b3, int b2) in e) { A2(); }
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "foreach (var (a1, a2) in e) { A1(); }", "foreach (var (a1, a3) in e) { A1(); }" },
+                { "a1", "a1" },
+                { "a2", "a3" },
+                { "{ A1(); }", "{ A1(); }" },
+                { "A1();", "A1();" },
+                { "foreach ((var b1, var b2) in e) { A2(); }", "foreach ((var b3, int b2) in e) { A2(); }" },
+                { "b1", "b3" },
+                { "b2", "b2" },
+                { "{ A2(); }", "{ A2(); }" },
+                { "A2();", "A2();" },
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchForeachVariable_Update2()
+        {
+            var src1 = @"
+foreach (_ in e2) { yield return 4; }
+foreach (_ in e3) { A(); }
+";
+
+            var src2 = @"
+foreach (_ in e4) { A(); }
+foreach (var b in e2) { yield return 4; }
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "foreach (_ in e2) { yield return 4; }", "foreach (var b in e2) { yield return 4; }" },
+                { "{ yield return 4; }", "{ yield return 4; }" },
+                { "yield return 4;", "yield return 4;" },
+                { "foreach (_ in e3) { A(); }", "foreach (_ in e4) { A(); }" },
+                { "{ A(); }", "{ A(); }" },
+                { "A();", "A();" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchForeachVariable_Insert()
+        {
+            var src1 = @"
+foreach (var (a3, a4) in e) { }
+foreach ((var b4, var b5) in e) { }
+";
+
+            var src2 = @"
+foreach (var (a3, a5, a4) in e) { }
+foreach ((var b6, var b4, var b5) in e) { }
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "foreach (var (a3, a4) in e) { }", "foreach (var (a3, a5, a4) in e) { }" },
+                { "a3", "a3" },
+                { "a4", "a4" },
+                { "{ }", "{ }" },
+                { "foreach ((var b4, var b5) in e) { }", "foreach ((var b6, var b4, var b5) in e) { }" },
+                { "b4", "b4" },
+                { "b5", "b5" },
+                { "{ }", "{ }" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchForeachVariable_Delete()
+        {
+            var src1 = @"
+foreach (var (a11, a12, a13) in e) { A1(); }
+foreach ((var b7, var b8, var b9) in e) { A2(); }
+";
+
+            var src2 = @"
+foreach (var (a12, a13) in e1) { A1(); }
+foreach ((var b7, var b9) in e) { A2(); }
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "foreach (var (a11, a12, a13) in e) { A1(); }", "foreach (var (a12, a13) in e1) { A1(); }" },
+                { "a12", "a12" },
+                { "a13", "a13" },
+                { "{ A1(); }", "{ A1(); }" },
+                { "A1();", "A1();" },
+                { "foreach ((var b7, var b8, var b9) in e) { A2(); }", "foreach ((var b7, var b9) in e) { A2(); }" },
+                { "b7", "b7" },
+                { "b9", "b9" },
+                { "{ A2(); }", "{ A2(); }" },
+                { "A2();", "A2();" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchConstantPattern()
+        {
+            var src1 = @"
+if ((o is null) && (y == 7)) return 3;
+if (a is 7) return 5;
+";
+
+            var src2 = @"
+if ((o1 is null) && (y == 7)) return 3;
+if (a is 77) return 5;
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs {
+                { "if ((o is null) && (y == 7)) return 3;", "if ((o1 is null) && (y == 7)) return 3;" },
+                { "return 3;", "return 3;" },
+                { "if (a is 7) return 5;", "if (a is 77) return 5;" },
+                { "return 5;", "return 5;" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchDeclarationPattern()
+        {
+            var src1 = @"
+if (!(o is int i) && (y == 7)) return;
+if (!(a is string s)) return;
+if (!(b is string t)) return;
+if (!(c is int j)) return;
+";
+
+            var src2 = @"
+if (!(b is string t1)) return;
+if (!(o1 is int i) && (y == 7)) return;
+if (!(c is int)) return;
+if (!(a is int s)) return;
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs {
+                { "if (!(o is int i) && (y == 7)) return;", "if (!(o1 is int i) && (y == 7)) return;" },
+                { "i", "i" },
+                { "return;", "return;" },
+                { "if (!(a is string s)) return;", "if (!(a is int s)) return;" },
+                { "s", "s" },
+                { "return;", "return;" },
+                { "if (!(b is string t)) return;", "if (!(b is string t1)) return;" },
+                { "t", "t1" },
+                { "return;", "return;" },
+                { "if (!(c is int j)) return;", "if (!(c is int)) return;" },
+                { "return;", "return;" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchCasePattern_UpdateInsert()
+        {
+            var src1 = @"
+switch(shape)
+{
+    case Circle c: return 1;
+    default: return 4;
+}
+";
+
+            var src2 = @"
+switch(shape)
+{
+    case Circle c1: return 1;
+    case Point p: return 0;
+    default: return 4;
+}
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs {
+                { "switch(shape) {     case Circle c: return 1;     default: return 4; }", "switch(shape) {     case Circle c1: return 1;     case Point p: return 0;     default: return 4; }" },
+                { "case Circle c: return 1;", "case Circle c1: return 1;" },
+                { "case Circle c:", "case Circle c1:" },
+                { "c", "c1" },
+                { "return 1;", "return 1;" },
+                { "default: return 4;", "default: return 4;" },
+                { "return 4;", "return 4;" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchWhenCondition()
+        {
+            var src1 = @"
+switch(shape)
+{
+    case Circle c when (c < 10): return 1;
+    case Circle c when (c > 100): return 2;
+}
+";
+
+            var src2 = @"
+switch(shape)
+{
+    case Circle c when (c < 5): return 1;
+    case Circle c2 when (c2 > 100): return 2;
+}
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "switch(shape) {     case Circle c when (c < 10): return 1;     case Circle c when (c > 100): return 2; }", "switch(shape) {     case Circle c when (c < 5): return 1;     case Circle c2 when (c2 > 100): return 2; }" },
+                { "case Circle c when (c < 10): return 1;", "case Circle c when (c < 5): return 1;" },
+                { "case Circle c when (c < 10):", "case Circle c when (c < 5):" },
+                { "c", "c" },
+                { "when (c < 10)", "when (c < 5)" },
+                { "return 1;", "return 1;" },
+                { "case Circle c when (c > 100): return 2;", "case Circle c2 when (c2 > 100): return 2;" },
+                { "case Circle c when (c > 100):", "case Circle c2 when (c2 > 100):" },
+                { "c", "c2" },
+                { "when (c > 100)", "when (c2 > 100)" },
+                { "return 2;", "return 2;" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchRef()
+        {
+            var src1 = @"
+ref int a = ref G(new int[] { 1, 2 });
+    ref int G(int[] p)
+    {
+        return ref p[1];
+    }
+";
+
+            var src2 = @"
+ref int32 a = ref G1(new int[] { 1, 2 });
+    ref int G1(int[] p)
+    {
+        return ref p[2];
+    }
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "ref int a = ref G(new int[] { 1, 2 });", "ref int32 a = ref G1(new int[] { 1, 2 });" },
+                { "ref int a = ref G(new int[] { 1, 2 })", "ref int32 a = ref G1(new int[] { 1, 2 })" },
+                { "a = ref G(new int[] { 1, 2 })", "a = ref G1(new int[] { 1, 2 })" },
+                { "ref int G(int[] p)     {         return ref p[1];     }", "ref int G1(int[] p)     {         return ref p[2];     }" },
+                { "{         return ref p[1];     }", "{         return ref p[2];     }" },
+                { "return ref p[1];", "return ref p[2];" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchThrowException_UpdateInsert()
+        {
+            var src1 = @"
+return a > 3 ? a : throw new Exception();
+return c > 7 ? c : 7;
+";
+
+            var src2 = @"
+return a > 3 ? a : throw new ArgumentException();
+return c > 7 ? c : throw new IndexOutOfRangeException();
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "return a > 3 ? a : throw new Exception();", "return a > 3 ? a : throw new ArgumentException();" },
+                { "return c > 7 ? c : 7;", "return c > 7 ? c : throw new IndexOutOfRangeException();" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
+        public void MatchThrowException_UpdateDelete()
+        {
+            var src1 = @"
+return a > 3 ? a : throw new Exception();
+return b > 5 ? b : throw new OperationCanceledException();
+";
+
+            var src2 = @"
+return a > 3 ? a : throw new ArgumentException();
+return b > 5 ? b : 5;
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs
+            {
+                { "return a > 3 ? a : throw new Exception();", "return a > 3 ? a : throw new ArgumentException();" },
+                { "return b > 5 ? b : throw new OperationCanceledException();", "return b > 5 ? b : 5;" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
+        [Fact]
         public void StringLiteral_update()
         {
             var src1 = @"
@@ -917,7 +1441,7 @@ var x = ""Hello2"";
             edits.VerifyEdits("Update [x = \"Hello1\"]@8 -> [x = \"Hello2\"]@8");
         }
 
-        [WpfFact]
+        [Fact]
         public void InterpolatedStringText_update()
         {
             var src1 = @"
@@ -931,7 +1455,7 @@ var x = $""Hello2"";
             edits.VerifyEdits("Update [x = $\"Hello1\"]@8 -> [x = $\"Hello2\"]@8");
         }
 
-        [WpfFact]
+        [Fact]
         public void Interpolation_update()
         {
             var src1 = @"
@@ -945,7 +1469,7 @@ var x = $""Hello{124}"";
             edits.VerifyEdits("Update [x = $\"Hello{123}\"]@8 -> [x = $\"Hello{124}\"]@8");
         }
 
-        [WpfFact]
+        [Fact]
         public void InterpolationFormatClause_update()
         {
             var src1 = @"
@@ -959,11 +1483,44 @@ var x = $""Hello{123:N2}"";
             edits.VerifyEdits("Update [x = $\"Hello{123:N1}\"]@8 -> [x = $\"Hello{123:N2}\"]@8");
         }
 
+        [WorkItem(18970, "https://github.com/dotnet/roslyn/issues/18970")]
+        [Fact]
+        public void MatchCasePattern_UpdateDelete()
+        {
+            var src1 = @"
+switch(shape)
+{
+    case Point p: return 0;
+    case Circle c: return 1;
+}
+";
+
+            var src2 = @"
+switch(shape)
+{
+    case Circle circle: return 1;
+}
+";
+
+            var match = GetMethodMatches(src1, src2, kind: MethodKind.Regular);
+            var actual = ToMatchingPairs(match);
+
+            var expected = new MatchingPairs {
+                { "switch(shape) {     case Point p: return 0;     case Circle c: return 1; }", "switch(shape) {     case Circle circle: return 1; }" },
+                { "p", "circle" },
+                { "case Circle c: return 1;", "case Circle circle: return 1;" },
+                { "case Circle c:", "case Circle circle:" },
+                { "return 1;", "return 1;" }
+            };
+
+            expected.AssertEqual(actual);
+        }
+
         #endregion
 
         #region Variable Declaration
 
-        [WpfFact]
+        [Fact]
         public void VariableDeclaration_Insert()
         {
             var src1 = "if (x == 1) { x++; }";
@@ -977,7 +1534,7 @@ var x = $""Hello{123:N2}"";
                 "Insert [x = 1]@6");
         }
 
-        [WpfFact]
+        [Fact]
         public void VariableDeclaration_Update()
         {
             var src1 = "int x = F(1), y = G(2);";
@@ -990,11 +1547,136 @@ var x = $""Hello{123:N2}"";
                 "Update [y = G(2)]@16 -> [y = G(4)]@16");
         }
 
+        [Fact]
+        public void ParenthesizedVariableDeclaration_Update()
+        {
+            var src1 = @"
+var (x1, (x2, x3)) = (1, (2, true));
+var (a1, a2) = (1, () => { return 7; });
+";
+           var src2 = @"
+var (x1, (x2, x4)) = (1, (2, true));
+var (a1, a3) = (1, () => { return 8; });
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [x3]@18 -> [x4]@18",
+                "Update [a2]@51 -> [a3]@51");
+        }
+
+        [Fact]
+        public void ParenthesizedVariableDeclaration_Insert()
+        {
+            var src1 = @"var (z1, z2) = (1, 2);";
+            var src2 = @"var (z1, z2, z3) = (1, 2, 5);";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [var (z1, z2) = (1, 2);]@2 -> [var (z1, z2, z3) = (1, 2, 5);]@2",
+                "Insert [z3]@15");
+        }
+
+        [Fact]
+        public void ParenthesizedVariableDeclaration_Delete()
+        {
+            var src1 = @"var (y1, y2, y3) = (1, 2, 7);";
+            var src2 = @"var (y1, y2) = (1, 4);";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [var (y1, y2, y3) = (1, 2, 7);]@2 -> [var (y1, y2) = (1, 4);]@2",
+                "Delete [y3]@15");
+        }
+
+        [Fact]
+        public void VariableDeclaraions_Reorder()
+        {
+            var src1 = @"var (a, b) = (1, 2); var (c, d) = (3, 4);";
+            var src2 = @"var (c, d) = (3, 4); var (a, b) = (1, 2);";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Reorder [var (c, d) = (3, 4);]@23 -> @2");
+        }
+
+        [Fact]
+        public void VariableNames_Reorder()
+        {
+            var src1 = @"var (a, b) = (1, 2);";
+            var src2 = @"var (b, a) = (2, 1);";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [var (a, b) = (1, 2);]@2 -> [var (b, a) = (2, 1);]@2",
+                "Reorder [b]@10 -> @7");
+        }
+
+        [Fact]
+        public void VariableNamesAndDeclaraions_Reorder()
+        {
+            var src1 = @"var (a, b) = (1, 2); var (c, d) = (3, 4);";
+            var src2 = @"var (d, c) = (3, 4); var (a, b) = (1, 2);";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Reorder [var (c, d) = (3, 4);]@23 -> @2",
+                "Reorder [d]@31 -> @7");
+        }
+
+        [Fact]
+        public void ParenthesizedVariableDeclaration_Reorder()
+        {
+            var src1 = @"var (a, (b, c)) = (1, (2, 3));";
+            var src2 = @"var ((b, c), a) = ((2, 3), 1);";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [var (a, (b, c)) = (1, (2, 3));]@2 -> [var ((b, c), a) = ((2, 3), 1);]@2",
+                "Reorder [a]@7 -> @15");
+        }
+
+        [Fact]
+        public void ParenthesizedVariableDeclaration_DoubleReorder()
+        {
+            var src1 = @"var (a, (b, c)) = (1, (2, 3));";
+            var src2 = @"var ((c, b), a) = ((2, 3), 1);";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [var (a, (b, c)) = (1, (2, 3));]@2 -> [var ((c, b), a) = ((2, 3), 1);]@2",
+                "Reorder [b]@11 -> @11",
+                "Reorder [c]@14 -> @8");
+        }
+
+        [Fact]
+        public void ParenthesizedVariableDeclaration_ComplexReorder()
+        {
+            var src1 = @"var (a, (b, c)) = (1, (2, 3)); var (x, (y, z)) = (4, (5, 6));";
+            var src2 = @"var (x, (y, z)) = (4, (5, 6)); var ((c, b), a) = (1, (2, 3)); ";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Reorder [var (x, (y, z)) = (4, (5, 6));]@33 -> @2",
+                "Update [var (a, (b, c)) = (1, (2, 3));]@2 -> [var ((c, b), a) = (1, (2, 3));]@33",
+                "Reorder [b]@11 -> @42",
+                "Reorder [c]@14 -> @39");
+        }
+
         #endregion
 
         #region Switch
 
-        [WpfFact]
+        [Fact]
         public void Switch1()
         {
             var src1 = "switch (a) { case 1: f(); break; } switch (b) { case 2: g(); break; }";
@@ -1010,7 +1692,7 @@ var x = $""Hello{123:N2}"";
                 "Move [case 2: g(); break;]@50 -> @50");
         }
 
-        [WpfFact]
+        [Fact]
         public void Switch_Case_Reorder()
         {
             var src1 = "switch (expr) { case 1: f(); break;   case 2: case 3: case 4: g(); break; }";
@@ -1022,7 +1704,7 @@ var x = $""Hello{123:N2}"";
                 "Reorder [case 2: case 3: case 4: g(); break;]@40 -> @18");
         }
 
-        [WpfFact]
+        [Fact]
         public void Switch_Case_Update()
         {
             var src1 = "switch (expr) { case 1: f(); break; }";
@@ -1034,11 +1716,42 @@ var x = $""Hello{123:N2}"";
                 "Update [case 1: f(); break;]@18 -> [case 2: f(); break;]@18");
         }
 
+        [WorkItem(18970, "https://github.com/dotnet/roslyn/issues/18970")]
+        [Fact]
+        public void CasePatternLabel_UpdateDelete()
+        {
+            var src1 = @"
+switch(shape)
+{
+    case Point p: return 0;
+    case Circle c: return 1;
+}
+";
+
+            var src2 = @"
+switch(shape)
+{
+    case Circle circle: return 1;
+}
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [case Circle c: return 1;]@55 -> [case Circle circle: return 1;]@26",
+                "Update [p]@37 -> [circle]@38",
+                "Move [p]@37 -> @38",
+                "Delete [case Point p: return 0;]@26",
+                "Delete [case Point p:]@26",
+                "Delete [return 0;]@40",
+                "Delete [c]@67");
+        }
+
         #endregion
 
         #region Try Catch Finally
 
-        [WpfFact]
+        [Fact]
         public void TryInsert1()
         {
             var src1 = "x++;";
@@ -1054,7 +1767,7 @@ var x = $""Hello{123:N2}"";
                 "Insert [{ }]@21");
         }
 
-        [WpfFact]
+        [Fact]
         public void TryInsert2()
         {
             var src1 = "{ x++; }";
@@ -1069,7 +1782,7 @@ var x = $""Hello{123:N2}"";
                 "Insert [{ }]@21");
         }
 
-        [WpfFact]
+        [Fact]
         public void TryDelete1()
         {
             var src1 = "try { x++; } catch { }";
@@ -1085,7 +1798,7 @@ var x = $""Hello{123:N2}"";
                 "Delete [{ }]@21");
         }
 
-        [WpfFact]
+        [Fact]
         public void TryDelete2()
         {
             var src1 = "try { x++; } catch { }";
@@ -1100,7 +1813,7 @@ var x = $""Hello{123:N2}"";
                 "Delete [{ }]@21");
         }
 
-        [WpfFact]
+        [Fact]
         public void TryReorder()
         {
             var src1 = "try { x++; } catch { /*1*/ } try { y++; } catch { /*2*/ }";
@@ -1112,7 +1825,7 @@ var x = $""Hello{123:N2}"";
                 "Reorder [try { y++; } catch { /*2*/ }]@31 -> @2");
         }
 
-        [WpfFact]
+        [Fact]
         public void Finally_DeleteHeader()
         {
             var src1 = "try { /*1*/ } catch (E1 e) { /*2*/ } finally { /*3*/ }";
@@ -1125,7 +1838,7 @@ var x = $""Hello{123:N2}"";
                 "Delete [finally { /*3*/ }]@39");
         }
 
-        [WpfFact]
+        [Fact]
         public void Finally_InsertHeader()
         {
             var src1 = "try { /*1*/ } catch (E1 e) { /*2*/ } { /*3*/ }";
@@ -1138,7 +1851,7 @@ var x = $""Hello{123:N2}"";
                 "Move [{ /*3*/ }]@39 -> @47");
         }
 
-        [WpfFact]
+        [Fact]
         public void CatchUpdate()
         {
             var src1 = "try { } catch (Exception e) { }";
@@ -1150,7 +1863,7 @@ var x = $""Hello{123:N2}"";
                 "Update [(Exception e)]@16 -> [(IOException e)]@16");
         }
 
-        [WpfFact]
+        [Fact]
         public void CatchInsert()
         {
             var src1 = "try { /*1*/ } catch (Exception e) { /*2*/ } ";
@@ -1164,7 +1877,7 @@ var x = $""Hello{123:N2}"";
                 "Insert [{ /*3*/ }]@38");
         }
 
-        [WpfFact]
+        [Fact]
         public void CatchBodyUpdate()
         {
             var src1 = "try { } catch (E e) { x++; }";
@@ -1176,7 +1889,7 @@ var x = $""Hello{123:N2}"";
                 "Update [x++;]@24 -> [y++;]@24");
         }
 
-        [WpfFact]
+        [Fact]
         public void CatchDelete()
         {
             var src1 = "try { } catch (IOException e) { } catch (Exception e) { } ";
@@ -1190,7 +1903,7 @@ var x = $""Hello{123:N2}"";
                 "Delete [{ }]@56");
         }
 
-        [WpfFact]
+        [Fact]
         public void CatchReorder1()
         {
             var src1 = "try { } catch (IOException e) { } catch (Exception e) { } ";
@@ -1202,7 +1915,7 @@ var x = $""Hello{123:N2}"";
                 "Reorder [catch (Exception e) { }]@36 -> @10");
         }
 
-        [WpfFact]
+        [Fact]
         public void CatchReorder2()
         {
             var src1 = "try { } catch (IOException e) { } catch (Exception e) { } catch { }";
@@ -1216,7 +1929,7 @@ var x = $""Hello{123:N2}"";
                 "Insert [(A e)]@16");
         }
 
-        [WpfFact]
+        [Fact]
         public void CatchFilterReorder2()
         {
             var src1 = "try { } catch (Exception e) when (e != null) { } catch (Exception e) { } catch { }";
@@ -1230,7 +1943,7 @@ var x = $""Hello{123:N2}"";
                 "Insert [when (s == 1)]@16");
         }
 
-        [WpfFact]
+        [Fact]
         public void CatchInsertDelete()
         {
             var src1 = @"
@@ -1251,7 +1964,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [(E e)]@23");
         }
 
-        [WpfFact]
+        [Fact]
         public void Catch_DeleteHeader1()
         {
             var src1 = "try { /*1*/ } catch (E1 e) { /*2*/ } catch (E2 e) { /*3*/ }";
@@ -1265,7 +1978,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [(E2 e)]@45");
         }
 
-        [WpfFact]
+        [Fact]
         public void Catch_InsertHeader1()
         {
             var src1 = "try { /*1*/ } catch (E1 e) { /*2*/ } { /*3*/ }";
@@ -1279,7 +1992,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [{ /*3*/ }]@39 -> @52");
         }
 
-        [WpfFact]
+        [Fact]
         public void Catch_DeleteHeader2()
         {
             var src1 = "try { /*1*/ } catch (E1 e) { /*2*/ } catch { /*3*/ }";
@@ -1292,7 +2005,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [catch { /*3*/ }]@39");
         }
 
-        [WpfFact]
+        [Fact]
         public void Catch_InsertHeader2()
         {
             var src1 = "try { /*1*/ } catch (E1 e) { /*2*/ } { /*3*/ }";
@@ -1305,7 +2018,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [{ /*3*/ }]@39 -> @45");
         }
 
-        [WpfFact]
+        [Fact]
         public void Catch_InsertFilter1()
         {
             var src1 = "try { /*1*/ } catch (E1 e) { /*2*/ }";
@@ -1317,7 +2030,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Insert [when (e == null)]@29");
         }
 
-        [WpfFact]
+        [Fact]
         public void Catch_InsertFilter2()
         {
             var src1 = "try { /*1*/ } catch when (e == null) { /*2*/ }";
@@ -1329,7 +2042,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Insert [(E1 e)]@22");
         }
 
-        [WpfFact]
+        [Fact]
         public void Catch_InsertFilter3()
         {
             var src1 = "try { /*1*/ } catch { /*2*/ }";
@@ -1342,7 +2055,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Insert [when (e == null)]@29");
         }
 
-        [WpfFact]
+        [Fact]
         public void Catch_DeleteDeclaration1()
         {
             var src1 = "try { /*1*/ } catch (E1 e) { /*2*/ }";
@@ -1354,7 +2067,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [(E1 e)]@22");
         }
 
-        [WpfFact]
+        [Fact]
         public void Catch_DeleteFilter1()
         {
             var src1 = "try { /*1*/ } catch (E1 e) when (e == null) { /*2*/ }";
@@ -1366,7 +2079,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [when (e == null)]@29");
         }
 
-        [WpfFact]
+        [Fact]
         public void Catch_DeleteFilter2()
         {
             var src1 = "try { /*1*/ } catch (E1 e) when (e == null) { /*2*/ }";
@@ -1378,7 +2091,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [(E1 e)]@22");
         }
 
-        [WpfFact]
+        [Fact]
         public void Catch_DeleteFilter3()
         {
             var src1 = "try { /*1*/ } catch (E1 e) when (e == null) { /*2*/ }";
@@ -1391,7 +2104,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [when (e == null)]@29");
         }
 
-        [WpfFact]
+        [Fact]
         public void TryCatchFinally_DeleteHeader()
         {
             var src1 = "try { /*1*/ } catch { /*2*/ } finally { /*3*/ }";
@@ -1408,7 +2121,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [finally { /*3*/ }]@32");
         }
 
-        [WpfFact]
+        [Fact]
         public void TryCatchFinally_InsertHeader()
         {
             var src1 = "{ /*1*/ } { /*2*/ } { /*3*/ }";
@@ -1425,7 +2138,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [{ /*3*/ }]@22 -> @40");
         }
 
-        [WpfFact]
+        [Fact]
         public void TryFilterFinally_InsertHeader()
         {
             var src1 = "{ /*1*/ } if (a == 1) { /*2*/ } { /*3*/ }";
@@ -1448,7 +2161,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
 
         #region Blocks
 
-        [WpfFact]
+        [Fact]
         public void Block_Insert()
         {
             var src1 = "";
@@ -1461,7 +2174,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Insert [x++;]@4");
         }
 
-        [WpfFact]
+        [Fact]
         public void Block_Delete()
         {
             var src1 = "{ x++; }";
@@ -1474,7 +2187,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [x++;]@4");
         }
 
-        [WpfFact]
+        [Fact]
         public void Block_Reorder()
         {
             var src1 = "{ x++; } { y++; }";
@@ -1486,7 +2199,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Reorder [{ y++; }]@11 -> @2");
         }
 
-        [WpfFact]
+        [Fact]
         public void Block_AddLine()
         {
             var src1 = "{ x++; }";
@@ -1502,7 +2215,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
 
         #region Checked/Unchecked
 
-        [WpfFact]
+        [Fact]
         public void Checked_Insert()
         {
             var src1 = "";
@@ -1516,7 +2229,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Insert [x++;]@12");
         }
 
-        [WpfFact]
+        [Fact]
         public void Checked_Delete()
         {
             var src1 = "checked { x++; }";
@@ -1530,7 +2243,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [x++;]@12");
         }
 
-        [WpfFact]
+        [Fact]
         public void Checked_Update()
         {
             var src1 = "checked { x++; }";
@@ -1542,7 +2255,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Update [checked { x++; }]@2 -> [unchecked { x++; }]@2");
         }
 
-        [WpfFact]
+        [Fact]
         public void Checked_DeleteHeader()
         {
             var src1 = "checked { x++; }";
@@ -1555,7 +2268,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [checked { x++; }]@2");
         }
 
-        [WpfFact]
+        [Fact]
         public void Checked_InsertHeader()
         {
             var src1 = "{ x++; }";
@@ -1568,7 +2281,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [{ x++; }]@2 -> @10");
         }
 
-        [WpfFact]
+        [Fact]
         public void Unchecked_InsertHeader()
         {
             var src1 = "{ x++; }";
@@ -1585,7 +2298,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
 
         #region Unsafe
 
-        [WpfFact]
+        [Fact]
         public void Unsafe_Insert()
         {
             var src1 = "";
@@ -1599,7 +2312,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Insert [x++;]@11");
         }
 
-        [WpfFact]
+        [Fact]
         public void Unsafe_Delete()
         {
             var src1 = "unsafe { x++; }";
@@ -1613,7 +2326,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [x++;]@11");
         }
 
-        [WpfFact]
+        [Fact]
         public void Unsafe_DeleteHeader()
         {
             var src1 = "unsafe { x++; }";
@@ -1626,7 +2339,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [unsafe { x++; }]@2");
         }
 
-        [WpfFact]
+        [Fact]
         public void Unsafe_InsertHeader()
         {
             var src1 = "{ x++; }";
@@ -1643,7 +2356,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
 
         #region Using Statement
 
-        [WpfFact]
+        [Fact]
         public void Using1()
         {
             string src1 = @"using (a) { using (b) { Foo(); } }";
@@ -1657,7 +2370,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [using (b) { Foo(); }]@14 -> @26");
         }
 
-        [WpfFact]
+        [Fact]
         public void Using_DeleteHeader()
         {
             string src1 = @"using (a) { Foo(); }";
@@ -1670,7 +2383,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [using (a) { Foo(); }]@2");
         }
 
-        [WpfFact]
+        [Fact]
         public void Using_InsertHeader()
         {
             string src1 = @"{ Foo(); }";
@@ -1687,7 +2400,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
 
         #region Lock Statement
 
-        [WpfFact]
+        [Fact]
         public void Lock1()
         {
             string src1 = @"lock (a) { lock (b) { Foo(); } }";
@@ -1701,7 +2414,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [lock (b) { Foo(); }]@13 -> @24");
         }
 
-        [WpfFact]
+        [Fact]
         public void Lock_DeleteHeader()
         {
             string src1 = @"lock (a) { Foo(); }";
@@ -1714,7 +2427,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [lock (a) { Foo(); }]@2");
         }
 
-        [WpfFact]
+        [Fact]
         public void Lock_InsertHeader()
         {
             string src1 = @"{ Foo(); }";
@@ -1731,7 +2444,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
 
         #region ForEach Statement
 
-        [WpfFact]
+        [Fact]
         public void ForEach1()
         {
             string src1 = @"foreach (var a in e) { foreach (var b in f) { Foo(); } }";
@@ -1758,7 +2471,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void ForEach_Swap1()
         {
             string src1 = @"foreach (var a in e) { foreach (var b in f) { Foo(); } }";
@@ -1785,7 +2498,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             expected.AssertEqual(actual);
         }
 
-        [WpfFact]
+        [Fact]
         public void Foreach_DeleteHeader()
         {
             string src1 = @"foreach (var a in b) { Foo(); }";
@@ -1798,7 +2511,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [foreach (var a in b) { Foo(); }]@2");
         }
 
-        [WpfFact]
+        [Fact]
         public void Foreach_InsertHeader()
         {
             string src1 = @"{ Foo(); }";
@@ -1811,11 +2524,139 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [{ Foo(); }]@2 -> @23");
         }
 
+        [Fact]
+        public void ForeachVariable_Update1()
+        {
+            var src1 = @"
+foreach (var (a1, a2) in e) { }
+foreach ((var b1, var b2) in e) { }
+foreach (var a in e1) { yield return 7; }
+";
+
+            var src2 = @"
+foreach (var (a1, a3) in e) { }
+foreach ((var b3, int b2) in e) { }
+foreach (_ in e1) { yield return 7; }
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [foreach ((var b1, var b2) in e) { }]@37 -> [foreach ((var b3, int b2) in e) { }]@37",
+                "Update [foreach (var a in e1) { yield return 7; }]@74 -> [foreach (_ in e1) { yield return 7; }]@74",
+                "Update [a2]@22 -> [a3]@22",
+                "Update [b1]@51 -> [b3]@51");
+        }
+
+        [Fact]
+        public void ForeachVariable_Update2()
+        {
+            var src1 = @"
+foreach (_ in e2) { yield return 5; }
+foreach (_ in e3) {  A(); }
+";
+
+            var src2 = @"
+foreach (var b in e2) { yield return 5; }
+foreach (_ in e4) { A(); }
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [foreach (_ in e2) { yield return 5; }]@4 -> [foreach (var b in e2) { yield return 5; }]@4",
+                "Update [foreach (_ in e3) {  A(); }]@43 -> [foreach (_ in e4) { A(); }]@47");
+        }
+
+        [Fact]
+        public void ForeachVariable_Insert()
+        {
+            var src1 = @"
+foreach (var (a3, a4) in e) { }
+foreach ((var b4, var b5) in e) { }
+";
+
+            var src2 = @"
+foreach (var (a3, a5, a4) in e) { }
+foreach ((var b6, var b4, var b5) in e) { }
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [foreach (var (a3, a4) in e) { }]@4 -> [foreach (var (a3, a5, a4) in e) { }]@4",
+                "Update [foreach ((var b4, var b5) in e) { }]@37 -> [foreach ((var b6, var b4, var b5) in e) { }]@41",
+                "Insert [a5]@22",
+                "Insert [b6]@55");
+        }
+
+        [Fact]
+        public void ForeachVariable_Delete()
+        {
+            var src1 = @"
+foreach (var (a11, a12, a13) in e) { F(); }
+foreach ((var b7, var b8, var b9) in e) { G(); }
+";
+
+            var src2 = @"
+foreach (var (a12, a13) in e1) { F(); }
+foreach ((var b7, var b9) in e) { G(); }
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [foreach (var (a11, a12, a13) in e) { F(); }]@4 -> [foreach (var (a12, a13) in e1) { F(); }]@4",
+                "Update [foreach ((var b7, var b8, var b9) in e) { G(); }]@49 -> [foreach ((var b7, var b9) in e) { G(); }]@45",
+                "Delete [a11]@18",
+                "Delete [b8]@71");
+        }
+
+        [Fact]
+        public void ForeachVariable_Reorder()
+        {
+            var src1 = @"
+foreach (var (a, b) in e1) { }
+foreach ((var x, var y) in e2) { }
+";
+
+            var src2 = @"
+foreach ((var x, var y) in e2) { }
+foreach (var (a, b) in e1) { }
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Reorder [foreach ((var x, var y) in e2) { }]@36 -> @4");
+        }
+
+        [Fact]
+        public void ForeachVariableEmbedded_Reorder()
+        {
+            var src1 = @"
+foreach (var (a, b) in e1) { 
+    foreach ((var x, var y) in e2) { }
+}
+";
+
+            var src2 = @"
+foreach ((var x, var y) in e2) { }
+foreach (var (a, b) in e1) { }
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Move [foreach ((var x, var y) in e2) { }]@39 -> @4");
+        }
+
+
         #endregion
 
         #region For Statement
 
-        [WpfFact]
+        [Fact]
         public void For1()
         {
             string src1 = @"for (int a = 0; a < 10; a++) { for (int a = 0; a < 20; a++) { Foo(); } }";
@@ -1833,7 +2674,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [for (int a = 0; a < 20; a++) { Foo(); }]@33 -> @64");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_DeleteHeader()
         {
             string src1 = @"for (int i = 10, j = 0; i > j; i--, j++) { Foo(); }";
@@ -1852,7 +2693,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [j++]@38");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_InsertHeader()
         {
             string src1 = @"{ Foo(); }";
@@ -1871,7 +2712,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Insert [j = 0]@19");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_DeclaratorsToInitializers()
         {
             string src1 = @"for (var i = 10; i < 10; i++) { }";
@@ -1885,7 +2726,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [i = 10]@11");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_InitializersToDeclarators()
         {
             string src1 = @"for (i = 10, j = 0; i < 10; i++) { }";
@@ -1901,7 +2742,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [j = 0]@15");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Declarations_Reorder()
         {
             string src1 = @"for (var i = 10, j = 0; i > j; i++, j++) { }";
@@ -1912,7 +2753,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Reorder [j = 0]@19 -> @11");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Declarations_Insert()
         {
             string src1 = @"for (var i = 0, j = 1; i > j; i++, j++) { }";
@@ -1925,7 +2766,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Insert [k = 2]@25");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Declarations_Delete()
         {
             string src1 = @"for (var i = 0, j = 1, k = 2; i > j; i++, j++) { }";
@@ -1938,7 +2779,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [k = 2]@25");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Initializers_Reorder()
         {
             string src1 = @"for (i = 10, j = 0; i > j; i++, j++) { }";
@@ -1949,7 +2790,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Reorder [j = 0]@15 -> @7");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Initializers_Insert()
         {
             string src1 = @"for (i = 10; i < 10; i++) { }";
@@ -1960,7 +2801,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Insert [j = 0]@15");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Initializers_Delete()
         {
             string src1 = @"for (i = 10, j = 0; i < 10; i++) { }";
@@ -1971,7 +2812,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Delete [j = 0]@15");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Initializers_Update()
         {
             string src1 = @"for (i = 1; i < 10; i++) { }";
@@ -1982,7 +2823,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Update [i = 1]@7 -> [i = 2]@7");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Initializers_Update_Lambda()
         {
             string src1 = @"for (int i = 10, j = F(() => 1); i > j; i++) { }";
@@ -1993,7 +2834,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Update [() => 1]@25 -> [() => 2]@25");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Condition_Update()
         {
             string src1 = @"for (int i = 0; i < 10; i++) { }";
@@ -2004,7 +2845,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Update [i < 10]@18 -> [i < 20]@18");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Condition_Lambda()
         {
             string src1 = @"for (int i = 0; F(() => 1); i++) { }";
@@ -2015,7 +2856,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Update [() => 1]@20 -> [() => 2]@20");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Incrementors_Reorder()
         {
             string src1 = @"for (int i = 10, j = 0; i > j; i--, j++) { }";
@@ -2026,7 +2867,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Reorder [j++]@38 -> @33");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Incrementors_Insert()
         {
             string src1 = @"for (int i = 10, j = 0; i > j; i--) { }";
@@ -2037,7 +2878,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Insert [j++]@33");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Incrementors_Delete()
         {
             string src1 = @"for (int i = 10, j = 0; i > j; j++, i--) { }";
@@ -2048,7 +2889,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Delete [i--]@38");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Incrementors_Update()
         {
             string src1 = @"for (int i = 10, j = 0; i > j; j++) { }";
@@ -2059,7 +2900,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
             edits.VerifyEdits("Update [j++]@33 -> [i++]@33");
         }
 
-        [WpfFact]
+        [Fact]
         public void For_Incrementors_Update_Lambda()
         {
             string src1 = @"for (int i = 10, j = 0; i > j; F(() => 1)) { }";
@@ -2074,7 +2915,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
 
         #region While Statement
 
-        [WpfFact]
+        [Fact]
         public void While1()
         {
             string src1 = @"while (a) { while (b) { Foo(); } }";
@@ -2088,7 +2929,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [while (b) { Foo(); }]@14 -> @26");
         }
 
-        [WpfFact]
+        [Fact]
         public void While_DeleteHeader()
         {
             string src1 = @"while (a) { Foo(); }";
@@ -2101,7 +2942,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [while (a) { Foo(); }]@2");
         }
 
-        [WpfFact]
+        [Fact]
         public void While_InsertHeader()
         {
             string src1 = @"{ Foo(); }";
@@ -2118,7 +2959,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
 
         #region Do Statement
 
-        [WpfFact]
+        [Fact]
         public void Do1()
         {
             string src1 = @"do { do { Foo(); } while (b); } while (a);";
@@ -2132,7 +2973,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [do { Foo(); } while (b);]@7 -> @12");
         }
 
-        [WpfFact]
+        [Fact]
         public void Do_DeleteHeader()
         {
             string src1 = @"do { Foo(); } while (a);";
@@ -2145,7 +2986,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [do { Foo(); } while (a);]@2");
         }
 
-        [WpfFact]
+        [Fact]
         public void Do_InsertHeader()
         {
             string src1 = @"{ Foo(); }";
@@ -2162,7 +3003,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
 
         #region If Statement
 
-        [WpfFact]
+        [Fact]
         public void IfStatement_TestExpression_Update()
         {
             var src1 = "var x = 1; if (x == 1) { x++; }";
@@ -2174,7 +3015,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Update [if (x == 1) { x++; }]@13 -> [if (x == 2) { x++; }]@13");
         }
 
-        [WpfFact]
+        [Fact]
         public void ElseClause_Insert()
         {
             var src1 = "if (x == 1) x++; ";
@@ -2187,7 +3028,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Insert [y++;]@24");
         }
 
-        [WpfFact]
+        [Fact]
         public void ElseClause_InsertMove()
         {
             var src1 = "if (x == 1) x++; else y++;";
@@ -2200,7 +3041,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [y++;]@24 -> @36");
         }
 
-        [WpfFact]
+        [Fact]
         public void If1()
         {
             string src1 = @"if (a) if (b) Foo();";
@@ -2213,7 +3054,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [if (b) Foo();]@9 -> @16");
         }
 
-        [WpfFact]
+        [Fact]
         public void If_DeleteHeader()
         {
             string src1 = @"if (a) { Foo(); }";
@@ -2226,7 +3067,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [if (a) { Foo(); }]@2");
         }
 
-        [WpfFact]
+        [Fact]
         public void If_InsertHeader()
         {
             string src1 = @"{ Foo(); }";
@@ -2239,7 +3080,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [{ Foo(); }]@2 -> @9");
         }
 
-        [WpfFact]
+        [Fact]
         public void Else_DeleteHeader()
         {
             string src1 = @"if (a) { Foo(/*1*/); } else { Foo(/*2*/); }";
@@ -2252,7 +3093,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [else { Foo(/*2*/); }]@25");
         }
 
-        [WpfFact]
+        [Fact]
         public void Else_InsertHeader()
         {
             string src1 = @"if (a) { Foo(/*1*/); } { Foo(/*2*/); }";
@@ -2265,7 +3106,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [{ Foo(/*2*/); }]@25 -> @30");
         }
 
-        [WpfFact]
+        [Fact]
         public void ElseIf_DeleteHeader()
         {
             string src1 = @"if (a) { Foo(/*1*/); } else if (b) { Foo(/*2*/); }";
@@ -2279,7 +3120,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [if (b) { Foo(/*2*/); }]@30");
         }
 
-        [WpfFact]
+        [Fact]
         public void ElseIf_InsertHeader()
         {
             string src1 = @"if (a) { Foo(/*1*/); } { Foo(/*2*/); }";
@@ -2293,7 +3134,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [{ Foo(/*2*/); }]@25 -> @37");
         }
 
-        [WpfFact]
+        [Fact]
         public void IfElseElseIf_InsertHeader()
         {
             string src1 = @"{ /*1*/ } { /*2*/ } { /*3*/ }";
@@ -2311,7 +3152,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Move [{ /*3*/ }]@22 -> @46");
         }
 
-        [WpfFact]
+        [Fact]
         public void IfElseElseIf_DeleteHeader()
         {
             string src1 = @"if (a) { /*1*/ } else if (b) { /*2*/ } else { /*3*/ }";
@@ -2333,7 +3174,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
 
         #region Switch Statement
 
-        [WpfFact]
+        [Fact]
         public void SwitchStatement_Update_Expression()
         {
             var src1 = "var x = 1; switch (x + 1) { case 1: break; }";
@@ -2345,7 +3186,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Update [switch (x + 1) { case 1: break; }]@13 -> [switch (x + 2) { case 1: break; }]@13");
         }
 
-        [WpfFact]
+        [Fact]
         public void SwitchStatement_Update_SectionLabel()
         {
             var src1 = "var x = 1; switch (x) { case 1: break; }";
@@ -2357,7 +3198,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Update [case 1: break;]@26 -> [case 2: break;]@26");
         }
 
-        [WpfFact]
+        [Fact]
         public void SwitchStatement_Update_AddSectionLabel()
         {
             var src1 = "var x = 1; switch (x) { case 1: break; }";
@@ -2369,7 +3210,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Update [case 1: break;]@26 -> [case 1: case 2: break;]@26");
         }
 
-        [WpfFact]
+        [Fact]
         public void SwitchStatement_Update_DeleteSectionLabel()
         {
             var src1 = "var x = 1; switch (x) { case 1: case 2: break; }";
@@ -2381,7 +3222,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Update [case 1: case 2: break;]@26 -> [case 1: break;]@26");
         }
 
-        [WpfFact]
+        [Fact]
         public void SwitchStatement_Update_BlockInSection()
         {
             var src1 = "var x = 1; switch (x) { case 1: { x++; break; } }";
@@ -2393,7 +3234,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Update [x++;]@36 -> [x--;]@36");
         }
 
-        [WpfFact]
+        [Fact]
         public void SwitchStatement_Update_BlockInDefaultSection()
         {
             var src1 = "var x = 1; switch (x) { default: { x++; break; } }";
@@ -2405,7 +3246,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Update [x++;]@37 -> [x--;]@37");
         }
 
-        [WpfFact]
+        [Fact]
         public void SwitchStatement_Insert_Section()
         {
             var src1 = "var x = 1; switch (x) { case 1: break; }";
@@ -2418,7 +3259,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Insert [break;]@49");
         }
 
-        [WpfFact]
+        [Fact]
         public void SwitchStatement_Delete_Section()
         {
             var src1 = "var x = 1; switch (x) { case 1: break; case 2: break; }";
@@ -2435,7 +3276,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
 
         #region Lambdas
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_InVariableDeclarator()
         {
             var src1 = "Action x = a => a, y = b => b;";
@@ -2448,7 +3289,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Update [b => b]@25 -> [b => b + 1]@27");
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_InExpressionStatement()
         {
             var src1 = "F(a => a, b => b);";
@@ -2461,7 +3302,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Update [a => a]@4 -> [a => a+1]@12");
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_ReorderArguments()
         {
             var src1 = "F(G(a => {}), G(b => {}));";
@@ -2473,7 +3314,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Reorder [b => {}]@18 -> @6");
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_InWhile()
         {
             var src1 = "while (F(a => a)) { /*1*/ }";
@@ -2488,7 +3329,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Delete [while (F(a => a)) { /*1*/ }]@2");
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_InLambda()
         {
             var src1 = "F(() => { G(x => y); });";
@@ -2500,7 +3341,7 @@ try { Console.WriteLine(); } catch (E e) { /*1*/ } finally { /*3*/ }";
                 "Update [() => { G(x => y); }]@4 -> [q => { G(() => y); }]@4");
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Insert_Static_Top()
         {
             var src1 = @"
@@ -2529,7 +3370,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Insert_Static_Nested1()
         {
             var src1 = @"
@@ -2563,7 +3404,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Insert_ThisOnly_Top1()
         {
             var src1 = @"
@@ -2601,7 +3442,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "F", "this"));
         }
 
-        [WpfFact, WorkItem(1291)]
+        [Fact, WorkItem(1291, "https://github.com/dotnet/roslyn/issues/1291")]
         public void Lambdas_Insert_ThisOnly_Top2()
         {
             var src1 = @"
@@ -2643,7 +3484,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "x", "x"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Insert_ThisOnly_Nested1()
         {
             var src1 = @"
@@ -2680,7 +3521,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "F", "this"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Insert_ThisOnly_Nested2()
         {
             var src1 = @"
@@ -2736,7 +3577,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "F", "this"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_InsertAndDelete_Scopes1()
         {
             var src1 = @"
@@ -2805,21 +3646,21 @@ class C
             var insert = GetTopEdits(src1, src2);
 
             insert.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.Lambda, "y0", "x1"),
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x3", CSharpFeaturesResources.Lambda, "x1", "x3"),
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "y0", CSharpFeaturesResources.Lambda, "this", "y0"),
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x3", CSharpFeaturesResources.Lambda, "this", "x3"));
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.lambda, "y0", "x1"),
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x3", CSharpFeaturesResources.lambda, "x1", "x3"),
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "y0", CSharpFeaturesResources.lambda, "this", "y0"),
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x3", CSharpFeaturesResources.lambda, "this", "x3"));
 
             var delete = GetTopEdits(src2, src1);
 
             delete.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.DeleteLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.Lambda, "y0", "x1"),
-                Diagnostic(RudeEditKind.DeleteLambdaWithMultiScopeCapture, "x3", CSharpFeaturesResources.Lambda, "x1", "x3"),
-                Diagnostic(RudeEditKind.DeleteLambdaWithMultiScopeCapture, "y0", CSharpFeaturesResources.Lambda, "this", "y0"),
-                Diagnostic(RudeEditKind.DeleteLambdaWithMultiScopeCapture, "x3", CSharpFeaturesResources.Lambda, "this", "x3"));
+                Diagnostic(RudeEditKind.DeleteLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.lambda, "y0", "x1"),
+                Diagnostic(RudeEditKind.DeleteLambdaWithMultiScopeCapture, "x3", CSharpFeaturesResources.lambda, "x1", "x3"),
+                Diagnostic(RudeEditKind.DeleteLambdaWithMultiScopeCapture, "y0", CSharpFeaturesResources.lambda, "this", "y0"),
+                Diagnostic(RudeEditKind.DeleteLambdaWithMultiScopeCapture, "x3", CSharpFeaturesResources.lambda, "this", "x3"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Insert_ForEach1()
         {
             var src1 = @"
@@ -2865,10 +3706,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.Lambda, "x0", "x1"));
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.lambda, "x0", "x1"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Insert_ForEach2()
         {
             var src1 = @"
@@ -2904,10 +3745,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.Lambda, "x0", "x1"));
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.lambda, "x0", "x1"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Insert_For1()
         {
             var src1 = @"
@@ -2950,10 +3791,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x2", CSharpFeaturesResources.Lambda, "x0", "x2"));
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x2", CSharpFeaturesResources.lambda, "x0", "x2"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Insert_Switch1()
         {
             var src1 = @"
@@ -3024,10 +3865,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x0", CSharpFeaturesResources.Lambda, "x2", "x0"));
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x0", CSharpFeaturesResources.lambda, "x2", "x0"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Insert_Using1()
         {
             var src1 = @"
@@ -3082,10 +3923,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.Lambda, "x0", "x1"));
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.lambda, "x0", "x1"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Insert_Catch1()
         {
             var src1 = @"
@@ -3138,10 +3979,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.Lambda, "x0", "x1"));
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.lambda, "x0", "x1"));
         }
 
-        [WpfFact, WorkItem(1504, "https://github.com/dotnet/roslyn/issues/1504")]
+        [Fact, WorkItem(1504, "https://github.com/dotnet/roslyn/issues/1504")]
         public void Lambdas_Insert_CatchFilter1()
         {
             var src1 = @"
@@ -3192,12 +4033,12 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x0", CSharpFeaturesResources.Lambda, "x1", "x0")
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x0", CSharpFeaturesResources.lambda, "x1", "x0")
                 );
         }
 
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_CeaseCapture_This()
         {
             var src1 = @"
@@ -3232,7 +4073,7 @@ class C
                 Diagnostic(RudeEditKind.NotCapturingVariable, "F", "this"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Signature1()
         {
             var src1 = @"
@@ -3266,10 +4107,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingLambdaParameters, "a", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.ChangingLambdaParameters, "a", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Signature2()
         {
             var src1 = @"
@@ -3303,10 +4144,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingLambdaParameters, "(a, b)", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.ChangingLambdaParameters, "(a, b)", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Signature3()
         {
             var src1 = @"
@@ -3340,10 +4181,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingLambdaReturnType, "a", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.ChangingLambdaReturnType, "a", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Signature_SyntaxOnly1()
         {
             var src1 = @"
@@ -3379,7 +4220,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Signature_ReturnType1()
         {
             var src1 = @"
@@ -3413,10 +4254,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingLambdaReturnType, "a", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.ChangingLambdaReturnType, "a", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Signature_BodySyntaxOnly()
         {
             var src1 = @"
@@ -3452,7 +4293,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Signature_ParameterName1()
         {
             var src1 = @"
@@ -3488,7 +4329,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Signature_ParameterRefness1()
         {
             var src1 = @"
@@ -3528,10 +4369,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingLambdaParameters, "(int a)", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.ChangingLambdaParameters, "(int a)", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Signature_ParameterRefness2()
         {
             var src1 = @"
@@ -3571,7 +4412,7 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingLambdaParameters, "(out int a)", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.ChangingLambdaParameters, "(out int a)", CSharpFeaturesResources.lambda));
         }
 
         // Add corresponding test to VB
@@ -3661,7 +4502,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_DelegateType1()
         {
             var src1 = @"
@@ -3702,7 +4543,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_SourceType1()
         {
             var src1 = @"
@@ -3743,7 +4584,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_SourceType2()
         {
             var src1 = @"
@@ -3786,10 +4627,10 @@ class C
 ";
             var edits = GetTopEdits(src1, src2);
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingLambdaParameters, "a", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.ChangingLambdaParameters, "a", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_SourceTypeAndMetadataType1()
         {
             var src1 = @"
@@ -3834,10 +4675,10 @@ namespace System
 ";
             var edits = GetTopEdits(src1, src2);
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingLambdaParameters, "a", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.ChangingLambdaParameters, "a", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Generic1()
         {
             var src1 = @"
@@ -3874,7 +4715,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Generic2()
         {
             var src1 = @"
@@ -3909,10 +4750,10 @@ class C
 ";
             var edits = GetTopEdits(src1, src2);
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingLambdaParameters, "(a, b)", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.ChangingLambdaParameters, "(a, b)", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_CapturedParameters1()
         {
             var src1 = @"
@@ -3950,7 +4791,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact, WorkItem(2223, "https://github.com/dotnet/roslyn/issues/2223")]
+        [Fact, WorkItem(2223, "https://github.com/dotnet/roslyn/issues/2223")]
         public void Lambdas_Update_CapturedParameters2()
         {
             var src1 = @"
@@ -4000,7 +4841,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_CeaseCapture_Closure1()
         {
             var src1 = @"
@@ -4039,10 +4880,10 @@ class C
 
             // y is no longer captured in f2
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.NotAccessingCapturedVariableInLambda, "a2", "y", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.NotAccessingCapturedVariableInLambda, "a2", "y", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_CeaseCapture_IndexerParameter1()
         {
             var src1 = @"
@@ -4067,7 +4908,7 @@ class C
                 Diagnostic(RudeEditKind.NotCapturingVariable, "a1", "a1"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_CeaseCapture_IndexerParameter2()
         {
             var src1 = @"
@@ -4092,7 +4933,7 @@ class C
                 Diagnostic(RudeEditKind.NotCapturingVariable, "a1", "a1"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_CeaseCapture_MethodParameter1()
         {
             var src1 = @"
@@ -4123,7 +4964,7 @@ class C
                 Diagnostic(RudeEditKind.NotCapturingVariable, "a2", "a2"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_CeaseCapture_MethodParameter2()
         {
             var src1 = @"
@@ -4148,7 +4989,7 @@ class C
                 Diagnostic(RudeEditKind.NotCapturingVariable, "a2", "a2"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_CeaseCapture_LambdaParameter1()
         {
             var src1 = @"
@@ -4187,7 +5028,139 @@ class C
                 Diagnostic(RudeEditKind.NotCapturingVariable, "a1", "a1"));
         }
 
-        [WpfFact]
+        [Fact, WorkItem(234448, "https://devdiv.visualstudio.com/DevDiv/_workitems?id=234448")]
+        public void Lambdas_Update_CeaseCapture_SetterValueParameter1()
+        {
+            var src1 = @"
+using System;
+
+class C
+{
+    int D
+    {
+        get { return 0; }
+        set { new Action(() => { Console.Write(value); }).Invoke(); }
+    }
+}
+";
+            var src2 = @"
+using System;
+
+class C
+{
+    int D
+    {
+        get { return 0; }
+        set { }
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            edits.VerifySemanticDiagnostics(
+                Diagnostic(RudeEditKind.NotCapturingVariable, "set", "value"));
+        }
+
+        [Fact, WorkItem(234448, "https://devdiv.visualstudio.com/DevDiv/_workitems?id=234448")]
+        public void Lambdas_Update_CeaseCapture_IndexerSetterValueParameter1()
+        {
+            var src1 = @"
+using System;
+
+class C
+{
+    int this[int a1, int a2]
+    {
+        get { return 0; }
+        set { new Action(() => { Console.Write(value); }).Invoke(); }
+    }
+}
+";
+            var src2 = @"
+using System;
+
+class C
+{
+    int this[int a1, int a2]
+    {
+        get { return 0; }
+        set { }
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            edits.VerifySemanticDiagnostics(
+                Diagnostic(RudeEditKind.NotCapturingVariable, "set", "value"));
+        }
+
+        [Fact, WorkItem(234448, "https://devdiv.visualstudio.com/DevDiv/_workitems?id=234448")]
+        public void Lambdas_Update_CeaseCapture_EventAdderValueParameter1()
+        {
+            var src1 = @"
+using System;
+
+class C
+{
+    event Action D
+    {
+        add { new Action(() => { Console.Write(value); }).Invoke(); }
+        remove { }
+    }
+}
+";
+            var src2 = @"
+using System;
+
+class C
+{
+    event Action D
+    {
+        add {  }
+        remove { }
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            edits.VerifySemanticDiagnostics(
+                Diagnostic(RudeEditKind.NotCapturingVariable, "add", "value"));
+        }
+
+        [Fact, WorkItem(234448, "https://devdiv.visualstudio.com/DevDiv/_workitems?id=234448")]
+        public void Lambdas_Update_CeaseCapture_EventRemoverValueParameter1()
+        {
+            var src1 = @"
+using System;
+
+class C
+{
+    event Action D
+    {
+        add {  }
+        remove { new Action(() => { Console.Write(value); }).Invoke(); }
+    }
+}
+";
+            var src2 = @"
+using System;
+
+class C
+{
+    event Action D
+    {
+        add { }
+        remove { }
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            edits.VerifySemanticDiagnostics(
+                Diagnostic(RudeEditKind.NotCapturingVariable, "remove", "value"));
+        }
+
+        [Fact]
         public void Lambdas_Update_DeleteCapture1()
         {
             var src1 = @"
@@ -4228,7 +5201,7 @@ class C
                 Diagnostic(RudeEditKind.DeletingCapturedVariable, "{", "y").WithFirstLine("{ // error"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Capturing_IndexerGetterParameter1()
         {
             var src1 = @"
@@ -4253,7 +5226,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "a1", "a1"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Capturing_IndexerGetterParameter2()
         {
             var src1 = @"
@@ -4278,7 +5251,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "a1", "a1"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Capturing_IndexerSetterParameter1()
         {
             var src1 = @"
@@ -4303,7 +5276,106 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "a1", "a1"));
         }
 
-        [WpfFact]
+        [Fact]
+        public void Lambdas_Update_Capturing_IndexerSetterValueParameter1()
+        {
+            var src1 = @"
+using System;
+
+class C
+{
+    int this[int a1, int a2]
+    {
+        get { return 0; }
+        set {  }
+    }
+}
+";
+            var src2 = @"
+using System;
+
+class C
+{
+    int this[int a1, int a2]
+    {
+        get { return 0; }
+        set { new Action(() => { Console.Write(value); }).Invoke(); }
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            edits.VerifySemanticDiagnostics(
+                Diagnostic(RudeEditKind.CapturingVariable, "set", "value"));
+        }
+
+        [Fact]
+        public void Lambdas_Update_Capturing_EventAdderValueParameter1()
+        {
+            var src1 = @"
+using System;
+
+class C
+{
+    event Action D
+    {
+        add {  }
+        remove { }
+    }
+}
+";
+            var src2 = @"
+using System;
+
+class C
+{
+    event Action D
+    {
+        add {  }
+        remove { new Action(() => { Console.Write(value); }).Invoke(); }
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            edits.VerifySemanticDiagnostics(
+                Diagnostic(RudeEditKind.CapturingVariable, "remove", "value"));
+        }
+
+        [Fact]
+        public void Lambdas_Update_Capturing_EventRemoverValueParameter1()
+        {
+            var src1 = @"
+using System;
+
+class C
+{
+    event Action D
+    {
+        add {  }
+        remove {  }
+    }
+}
+";
+            var src2 = @"
+using System;
+
+class C
+{
+    event Action D
+    {
+        add { }
+        remove { new Action(() => { Console.Write(value); }).Invoke(); }
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            edits.VerifySemanticDiagnostics(
+                Diagnostic(RudeEditKind.CapturingVariable, "remove", "value"));
+        }
+
+        [Fact]
         public void Lambdas_Update_Capturing_MethodParameter1()
         {
             var src1 = @"
@@ -4334,7 +5406,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "a2", "a2"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Capturing_MethodParameter2()
         {
             var src1 = @"
@@ -4359,7 +5431,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "a2", "a2"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Capturing_LambdaParameter1()
         {
             var src1 = @"
@@ -4398,7 +5470,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "a1", "a1"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_StaticToThisOnly1()
         {
             var src1 = @"
@@ -4433,7 +5505,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "F", "this"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_StaticToThisOnly_Partial()
         {
             var src1 = @"
@@ -4476,7 +5548,7 @@ partial class C
                 Diagnostic(RudeEditKind.CapturingVariable, "F", "this").WithFirstLine("partial void F()  // impl"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_StaticToThisOnly3()
         {
             var src1 = @"
@@ -4510,10 +5582,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a1", "this", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a1", "this", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_StaticToClosure1()
         {
             var src1 = @"
@@ -4551,11 +5623,11 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "x", "x", CSharpFeaturesResources.Lambda).WithFirstLine("x+ // 1"),
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "x", "x", CSharpFeaturesResources.Lambda).WithFirstLine("x; // 2"));
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "x", "x", CSharpFeaturesResources.lambda).WithFirstLine("x+ // 1"),
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "x", "x", CSharpFeaturesResources.lambda).WithFirstLine("x; // 2"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_ThisOnlyToClosure1()
         {
             var src1 = @"
@@ -4591,10 +5663,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "y", "y", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "y", "y", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Nested1()
         {
             var src1 = @"
@@ -4634,7 +5706,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Nested2()
         {
             var src1 = @"
@@ -4676,7 +5748,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "a1", "a1").WithFirstLine("var f1 = new Func<int, int>(a1 =>"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Accessing_Closure1()
         {
             var src1 = @"
@@ -4714,10 +5786,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "x0", "x0", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "x0", "x0", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Accessing_Closure2()
         {
             var src1 = @"
@@ -4768,10 +5840,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.NotAccessingCapturedVariableInLambda, "a", "x0", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.NotAccessingCapturedVariableInLambda, "a", "x0", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Accessing_Closure3()
         {
             var src1 = @"
@@ -4824,10 +5896,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "x0", "x0", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "x0", "x0", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Accessing_Closure4()
         {
             var src1 = @"
@@ -4882,13 +5954,13 @@ class C
             // TODO: "a => x + x0" is matched with "a => y1 + x0", hence we report more errors.
             // Including statement distance when matching would help.
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.NotAccessingCapturedVariableInLambda, "a", "this", CSharpFeaturesResources.Lambda).WithFirstLine("G(a => y1 + x0);   // error: connecting previously disconnected closures"),
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "y1", "y1", CSharpFeaturesResources.Lambda).WithFirstLine("G(a => y1 + x0);   // error: connecting previously disconnected closures"),
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "this", CSharpFeaturesResources.Lambda).WithFirstLine("G(a => x);         // error: disconnecting previously connected closures"),
-                Diagnostic(RudeEditKind.NotAccessingCapturedVariableInLambda, "a", "y1", CSharpFeaturesResources.Lambda).WithFirstLine("G(a => x);         // error: disconnecting previously connected closures"));
+                Diagnostic(RudeEditKind.NotAccessingCapturedVariableInLambda, "a", "this", CSharpFeaturesResources.lambda).WithFirstLine("G(a => y1 + x0);   // error: connecting previously disconnected closures"),
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "y1", "y1", CSharpFeaturesResources.lambda).WithFirstLine("G(a => y1 + x0);   // error: connecting previously disconnected closures"),
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "this", CSharpFeaturesResources.lambda).WithFirstLine("G(a => x);         // error: disconnecting previously connected closures"),
+                Diagnostic(RudeEditKind.NotAccessingCapturedVariableInLambda, "a", "y1", CSharpFeaturesResources.lambda).WithFirstLine("G(a => x);         // error: disconnecting previously connected closures"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_Update_Accessing_Closure_NestedLambdas()
         {
             var src1 = @"
@@ -4936,11 +6008,11 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.Lambda, "x0", "x1"),
-                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.Lambda, "x0", "x1"));
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.lambda, "x0", "x1"),
+                Diagnostic(RudeEditKind.InsertLambdaWithMultiScopeCapture, "x1", CSharpFeaturesResources.lambda, "x0", "x1"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_RenameCapturedLocal()
         {
             string src1 = @"
@@ -4974,7 +6046,7 @@ class Program
                 Diagnostic(RudeEditKind.RenamingCapturedVariable, "X", "x", "X"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Lambdas_RenameCapturedParameter()
         {
             string src1 = @"
@@ -5010,7 +6082,7 @@ class Program
 
         #region Queries
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_Select1()
         {
             var src1 = @"
@@ -5040,10 +6112,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "select", CSharpFeaturesResources.SelectClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "select", CSharpFeaturesResources.select_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_Select2()
         {
             var src1 = @"
@@ -5073,10 +6145,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "select", CSharpFeaturesResources.SelectClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "select", CSharpFeaturesResources.select_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_From1()
         {
             var src1 = @"
@@ -5106,10 +6178,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "from", CSharpFeaturesResources.FromClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "from", CSharpFeaturesResources.from_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_From2()
         {
             var src1 = @"
@@ -5141,7 +6213,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_From3()
         {
             var src1 = @"
@@ -5175,7 +6247,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_Let1()
         {
             var src1 = @"
@@ -5207,10 +6279,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "let", CSharpFeaturesResources.LetClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "let", CSharpFeaturesResources.let_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_OrderBy1()
         {
             var src1 = @"
@@ -5242,10 +6314,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "a + 1.0 descending", CSharpFeaturesResources.OrderByClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "a + 1.0 descending", CSharpFeaturesResources.orderby_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_OrderBy2()
         {
             var src1 = @"
@@ -5277,10 +6349,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "a + 2.0 ascending", CSharpFeaturesResources.OrderByClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "a + 2.0 ascending", CSharpFeaturesResources.orderby_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_Join1()
         {
             var src1 = @"
@@ -5312,10 +6384,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "join", CSharpFeaturesResources.JoinClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "join", CSharpFeaturesResources.join_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_Join2()
         {
             var src1 = @"
@@ -5347,10 +6419,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "join", CSharpFeaturesResources.JoinClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "join", CSharpFeaturesResources.join_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_Join3()
         {
             var src1 = @"
@@ -5382,10 +6454,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "join", CSharpFeaturesResources.JoinClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "join", CSharpFeaturesResources.join_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_Join4()
         {
             var src1 = @"
@@ -5417,10 +6489,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "join", CSharpFeaturesResources.JoinClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "join", CSharpFeaturesResources.join_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_GroupBy1()
         {
             var src1 = @"
@@ -5452,10 +6524,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "group", CSharpFeaturesResources.GroupByClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "group", CSharpFeaturesResources.groupby_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Update_Signature_GroupBy2()
         {
             var src1 = @"
@@ -5487,10 +6559,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "group", CSharpFeaturesResources.GroupByClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "group", CSharpFeaturesResources.groupby_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_FromSelect_Update1()
         {
             var src1 = "F(from a in b from x in y select c);";
@@ -5504,7 +6576,7 @@ class C
                 "Update [select c]@28 -> [select c + 1]@28");
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_FromSelect_Update2()
         {
             var src1 = "F(from a in b from x in y select c);";
@@ -5516,7 +6588,7 @@ class C
                 "Update [from x in y]@16 -> [from x in z]@16");
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_FromSelect_Update3()
         {
             var src1 = "F(from a in await b from x in y select c);";
@@ -5528,7 +6600,7 @@ class C
                 "Update [await b]@14 -> [await c]@14");
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Select_Reduced1()
         {
             var src1 = @"
@@ -5561,7 +6633,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Select_Reduced2()
         {
             var src1 = @"
@@ -5594,7 +6666,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_FromSelect_Delete()
         {
             var src1 = "F(from a in b from c in d select a + c);";
@@ -5607,7 +6679,7 @@ class C
                 "Delete [from c in d]@16");
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_JoinInto_Update()
         {
             var src1 = "F(from a in b join b in c on a equals b into g1 select g1);";
@@ -5620,7 +6692,7 @@ class C
                 "Update [into g1]@42 -> [into g2]@42");
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_JoinIn_Update()
         {
             var src1 = "F(from a in b join b in await A(1) on a equals b select g);";
@@ -5632,7 +6704,7 @@ class C
                 "Update [await A(1)]@26 -> [await A(2)]@26");
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_GroupBy_Update()
         {
             var src1 = "F(from a in b  group a by a.x into g  select g);";
@@ -5646,7 +6718,7 @@ class C
                 "Update [select g]@40 -> [select h]@40");
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_OrderBy_Reorder()
         {
             var src1 = "F(from a in b  orderby a.x, a.b descending, a.c ascending  select a.d);";
@@ -5658,7 +6730,7 @@ class C
                 "Reorder [a.c ascending]@46 -> @30");
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_GroupBy_Reduced1()
         {
             var src1 = @"
@@ -5687,10 +6759,10 @@ class C
 ";
             var edits = GetTopEdits(src1, src2);
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "group", CSharpFeaturesResources.GroupByClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "group", CSharpFeaturesResources.groupby_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_GroupBy_Reduced2()
         {
             var src1 = @"
@@ -5721,7 +6793,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_GroupBy_Reduced3()
         {
             var src1 = @"
@@ -5750,10 +6822,10 @@ class C
 ";
             var edits = GetTopEdits(src1, src2);
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "group", CSharpFeaturesResources.GroupByClause));
+                Diagnostic(RudeEditKind.ChangingQueryLambdaType, "group", CSharpFeaturesResources.groupby_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_GroupBy_Reduced4()
         {
             var src1 = @"
@@ -5784,7 +6856,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_OrderBy_Continuation_Update()
         {
             var src1 = "F(from a in b  orderby a.x, a.b descending  select a.d  into z  orderby a.c ascending select z);";
@@ -5817,7 +6889,7 @@ class C
                 "Update [a.c ascending]@74 -> [a.b descending]@73");
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_CapturedTransparentIdentifiers_FromClause1()
         {
             string src1 = @"
@@ -5869,7 +6941,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_CapturedTransparentIdentifiers_LetClause1()
         {
             string src1 = @"
@@ -5913,7 +6985,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_CapturedTransparentIdentifiers_JoinClause1()
         {
             string src1 = @"
@@ -5957,7 +7029,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_CeaseCapturingTransparentIdentifiers1()
         {
             string src1 = @"
@@ -6005,7 +7077,7 @@ class C
                 Diagnostic(RudeEditKind.NotCapturingVariable, "from b in new[] { 2 }", "b"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_CapturingTransparentIdentifiers1()
         {
             string src1 = @"
@@ -6052,7 +7124,7 @@ class C
                 Diagnostic(RudeEditKind.CapturingVariable, "b", "b"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_AccessingCapturedTransparentIdentifier1()
         {
             var src1 = @"
@@ -6091,7 +7163,7 @@ class C
             edits.VerifySemanticDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_AccessingCapturedTransparentIdentifier2()
         {
             var src1 = @"
@@ -6130,10 +7202,10 @@ class C
 ";
             var edits = GetTopEdits(src1, src2);
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "a", CSharpFeaturesResources.SelectClause));
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "a", CSharpFeaturesResources.select_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_AccessingCapturedTransparentIdentifier3()
         {
             var src1 = @"
@@ -6170,11 +7242,11 @@ class C
 ";
             var edits = GetTopEdits(src1, src2);
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "a", CSharpFeaturesResources.SelectClause),
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "a", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "a", CSharpFeaturesResources.select_clause),
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "a", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_NotAccessingCapturedTransparentIdentifier1()
         {
             var src1 = @"
@@ -6213,10 +7285,10 @@ class C
 ";
             var edits = GetTopEdits(src1, src2);
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.NotAccessingCapturedVariableInLambda, "select", "a", CSharpFeaturesResources.SelectClause));
+                Diagnostic(RudeEditKind.NotAccessingCapturedVariableInLambda, "select", "a", CSharpFeaturesResources.select_clause));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_NotAccessingCapturedTransparentIdentifier2()
         {
             var src1 = @"
@@ -6253,11 +7325,11 @@ class C
 ";
             var edits = GetTopEdits(src1, src2);
             edits.VerifySemanticDiagnostics(
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "a", CSharpFeaturesResources.SelectClause),
-                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "a", CSharpFeaturesResources.Lambda));
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "a", CSharpFeaturesResources.select_clause),
+                Diagnostic(RudeEditKind.AccessingCapturedVariableInLambda, "a", "a", CSharpFeaturesResources.lambda));
         }
 
-        [WpfFact]
+        [Fact]
         public void Queries_Insert1()
         {
             var src1 = @"
@@ -6291,7 +7363,7 @@ class C
 
         #region Yield
 
-        [WpfFact]
+        [Fact]
         public void Yield_Update1()
         {
             var src1 = @"
@@ -6319,11 +7391,11 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.Update, "yield break;", CSharpFeaturesResources.YieldStatement),
-                Diagnostic(RudeEditKind.Update, "yield return 4;", CSharpFeaturesResources.YieldStatement));
+                Diagnostic(RudeEditKind.Update, "yield break;", CSharpFeaturesResources.yield_statement),
+                Diagnostic(RudeEditKind.Update, "yield return 4;", CSharpFeaturesResources.yield_statement));
         }
 
-        [WpfFact]
+        [Fact]
         public void Yield_Delete1()
         {
             var src1 = @"
@@ -6342,7 +7414,7 @@ yield return 3;
                 "Delete [yield return 2;]@42");
         }
 
-        [WpfFact]
+        [Fact]
         public void Yield_Delete2()
         {
             var src1 = @"
@@ -6369,10 +7441,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "{", CSharpFeaturesResources.YieldStatement));
+                Diagnostic(RudeEditKind.Delete, "{", CSharpFeaturesResources.yield_statement));
         }
 
-        [WpfFact]
+        [Fact]
         public void Yield_Insert1()
         {
             var src1 = @"
@@ -6393,7 +7465,7 @@ yield return 4;
                 "Insert [yield return 4;]@76");
         }
 
-        [WpfFact]
+        [Fact]
         public void Yield_Insert2()
         {
             var src1 = @"
@@ -6421,15 +7493,214 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.Insert, "yield return 4;", CSharpFeaturesResources.YieldStatement),
-                Diagnostic(RudeEditKind.Insert, "yield return 2;", CSharpFeaturesResources.YieldStatement));
+                Diagnostic(RudeEditKind.Insert, "yield return 4;", CSharpFeaturesResources.yield_statement),
+                Diagnostic(RudeEditKind.Insert, "yield return 2;", CSharpFeaturesResources.yield_statement));
+        }
+
+        [Fact]
+        public void MissingIteratorStateMachineAttribute()
+        {
+            var src1 = @"
+using System.Collections.Generic;
+
+class C
+{
+    static IEnumerable<int> F()
+    {
+        yield return 1;
+    }
+}
+";
+            var src2 = @"
+using System.Collections.Generic;
+
+class C
+{
+    static IEnumerable<int> F()
+    {
+        yield return 2;
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            CSharpEditAndContinueTestHelpers.Instance40.VerifySemantics(
+                edits,
+                ActiveStatementsDescription.Empty,
+                null,
+                null,
+                null,
+                new[]
+                {
+                    Diagnostic(RudeEditKind.UpdatingStateMachineMethodMissingAttribute, "static IEnumerable<int> F()", "System.Runtime.CompilerServices.IteratorStateMachineAttribute")
+                });
+        }
+
+        [Fact]
+        public void MissingIteratorStateMachineAttribute2()
+        {
+            var src1 = @"
+using System.Collections.Generic;
+
+class C
+{
+    static IEnumerable<int> F()
+    {
+        return null;
+    }
+}
+";
+            var src2 = @"
+using System.Collections.Generic;
+
+class C
+{
+    static IEnumerable<int> F()
+    {
+        yield return 2;
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            CSharpEditAndContinueTestHelpers.Instance40.VerifySemantics(
+                edits,
+                ActiveStatementsDescription.Empty,
+                null,
+                null,
+                null,
+                null);
+        }
+
+        [Fact]
+        public void CSharp7SwitchStatement()
+        {
+            var src1 = @"
+class C
+{
+    static void F(object o)
+    {
+        switch (o)
+        {
+            case int i:
+                break;
+        }
+        System.Console.WriteLine(1);
+    }
+}
+";
+            var src2 = @"
+class C
+{
+    static void F(object o)
+    {
+        switch (o)
+        {
+            case int i:
+                break;
+        }
+        System.Console.WriteLine(2);
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            CSharpEditAndContinueTestHelpers.Instance.VerifySemantics(
+                edits,
+                ActiveStatementsDescription.Empty,
+                expectedDiagnostics: new[]
+                {
+                    Diagnostic(RudeEditKind.UpdateAroundActiveStatement, null, CSharpFeaturesResources.v7_switch)
+                });
+        }
+
+        [Fact]
+        public void AddCSharp7SwitchStatement()
+        {
+            var src1 = @"
+class C
+{
+    static void F(object o)
+    {
+    }
+}
+";
+            var src2 = @"
+class C
+{
+    static void F(object o)
+    {
+        switch (o)
+        {
+            case string s:
+                break;
+        }
+        switch (o)
+        {
+            case int i:
+                break;
+        }
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            CSharpEditAndContinueTestHelpers.Instance.VerifySemantics(
+                edits,
+                ActiveStatementsDescription.Empty,
+                additionalOldSources: null,
+                additionalNewSources: null,
+                expectedSemanticEdits: null,
+                expectedDiagnostics: new[]
+                {
+                    Diagnostic(RudeEditKind.UpdateAroundActiveStatement, "switch (o)", CSharpFeaturesResources.v7_switch)
+                });
+        }
+
+        [Fact]
+        public void AddCSharp7SwitchStatement2()
+        {
+            var src1 = @"
+class C
+{
+    static void F(object o)
+    {
+        switch (o)
+        {
+            case 1:
+            case """":
+                break;
+        }
+    }
+}
+";
+            var src2 = @"
+class C
+{
+    static void F(object o)
+    {
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            CSharpEditAndContinueTestHelpers.Instance.VerifySemantics(
+                edits,
+                ActiveStatementsDescription.Empty,
+                additionalOldSources: null,
+                additionalNewSources: null,
+                expectedSemanticEdits: null,
+                expectedDiagnostics: new[]
+                {
+                    Diagnostic(RudeEditKind.UpdateAroundActiveStatement, null, CSharpFeaturesResources.v7_switch)
+                });
         }
 
         #endregion
 
         #region Await
 
-        [WpfFact]
+        [Fact]
         public void Await_Update_OK()
         {
             var src1 = @"
@@ -6486,7 +7757,7 @@ class C
             edits.VerifyRudeDiagnostics();
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Update_Errors()
         {
             var src1 = @"
@@ -6536,7 +7807,7 @@ class C
                 Diagnostic(RudeEditKind.AwaitStatementUpdate, "b += await F(2);"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Delete1()
         {
             var src1 = @"
@@ -6556,7 +7827,7 @@ await F(3);
                 "Delete [await F(2)]@37");
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Delete2()
         {
             var src1 = @"
@@ -6588,10 +7859,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "F(2);", CSharpFeaturesResources.AwaitExpression));
+                Diagnostic(RudeEditKind.Delete, "F(2);", CSharpFeaturesResources.await_expression));
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Delete3()
         {
             var src1 = @"
@@ -6615,10 +7886,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "await F(1);", CSharpFeaturesResources.AwaitExpression));
+                Diagnostic(RudeEditKind.Delete, "await F(1);", CSharpFeaturesResources.await_expression));
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Delete4()
         {
             var src1 = @"
@@ -6636,10 +7907,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "=> await F(1)", CSharpFeaturesResources.AwaitExpression));
+                Diagnostic(RudeEditKind.Delete, "=> await F(1)", CSharpFeaturesResources.await_expression));
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Delete5()
         {
             var src1 = @"
@@ -6657,11 +7928,11 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifyRudeDiagnostics(ActiveStatementsDescription.Empty,
-                Diagnostic(RudeEditKind.Delete, "=> F(1)", CSharpFeaturesResources.AwaitExpression),
-                Diagnostic(RudeEditKind.ModifiersUpdate, "static Task<int> F()", FeaturesResources.Method));
+                Diagnostic(RudeEditKind.Delete, "=> F(1)", CSharpFeaturesResources.await_expression),
+                Diagnostic(RudeEditKind.ModifiersUpdate, "static Task<int> F()", FeaturesResources.method));
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Delete6()
         {
             var src1 = @"
@@ -6682,7 +7953,7 @@ class C
                 Diagnostic(RudeEditKind.ModifiersUpdate, "static void F()", "method"));
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Insert1()
         {
             var src1 = @"
@@ -6705,7 +7976,7 @@ await F(4);
                 "Insert [await F(4)]@63");
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Insert2()
         {
             var src1 = @"
@@ -6733,11 +8004,11 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.AwaitExpression),
-                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.AwaitExpression));
+                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.await_expression),
+                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.await_expression));
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Insert3()
         {
             var src1 = @"
@@ -6763,13 +8034,13 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.Delete, "await", CSharpFeaturesResources.AwaitExpression),
-                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.AwaitExpression),
-                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.AwaitExpression),
-                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.AwaitExpression));
+                Diagnostic(RudeEditKind.Delete, "await", CSharpFeaturesResources.await_expression),
+                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.await_expression),
+                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.await_expression),
+                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.await_expression));
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Insert4()
         {
             var src1 = @"
@@ -6787,10 +8058,10 @@ class C
             var edits = GetTopEdits(src1, src2);
 
             edits.VerifyRudeDiagnostics(
-                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.AwaitExpression));
+                Diagnostic(RudeEditKind.Insert, "await", CSharpFeaturesResources.await_expression));
         }
 
-        [WpfFact]
+        [Fact]
         public void Await_Insert5()
         {
             var src1 = @"
@@ -6810,6 +8081,487 @@ class C
             edits.VerifyRudeDiagnostics();
         }
 
+        [Fact]
+        public void MissingAsyncStateMachineAttribute1()
+        {
+            var src1 = @"
+using System.Threading.Tasks;
+
+class C
+{
+    static async Task<int> F()
+    {
+        await new Task();
+        return 1;
+    }
+}
+";
+            var src2 = @"
+using System.Threading.Tasks;
+
+class C
+{
+    static async Task<int> F()
+    {
+        await new Task();
+        return 2;
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            CSharpEditAndContinueTestHelpers.InstanceMinAsync.VerifySemantics(
+                edits,
+                ActiveStatementsDescription.Empty,
+                null,
+                null,
+                null,
+                new[]
+                {
+                    Diagnostic(RudeEditKind.UpdatingStateMachineMethodMissingAttribute, "static async Task<int> F()", "System.Runtime.CompilerServices.AsyncStateMachineAttribute")
+                });
+        }
+
+        [Fact]
+        public void MissingAsyncStateMachineAttribute2()
+        {
+            var src1 = @"
+using System.Threading.Tasks;
+
+class C
+{
+    static Task<int> F()
+    {
+        return null;
+    }
+}
+";
+            var src2 = @"
+using System.Threading.Tasks;
+
+class C
+{
+    static async Task<int> F()
+    {
+        await new Task();
+        return 2;
+    }
+}
+";
+            var edits = GetTopEdits(src1, src2);
+
+            CSharpEditAndContinueTestHelpers.InstanceMinAsync.VerifySemantics(
+                edits,
+                ActiveStatementsDescription.Empty,
+                null,
+                null,
+                null,
+                null);
+        }
+
         #endregion
+
+        #region Out Var
+
+        [Fact]
+        public void OutVarType_Update()
+        {
+            var src1 = @"
+M(out var y);
+";
+            var src2 = @"
+M(out int y);
+";
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [M(out var y);]@4 -> [M(out int y);]@4");
+        }
+
+        [Fact]
+        public void OutVarNameAndType_Update()
+        {
+            var src1 = @"
+M(out var y);
+";
+            var src2 = @"
+M(out int z);
+";
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [M(out var y);]@4 -> [M(out int z);]@4",
+                "Update [y]@14 -> [z]@14");
+        }
+
+        [Fact]
+        public void OutVar_Insert()
+        {
+            var src1 = @"
+M();
+";
+            var src2 = @"
+M(out int y);
+";
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [M();]@4 -> [M(out int y);]@4",
+                "Insert [y]@14");
+        }
+
+        [Fact]
+        public void OutVar_Delete()
+        {
+            var src1 = @"
+M(out int y);
+";
+
+            var src2 = @"
+M();
+";
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [M(out int y);]@4 -> [M();]@4",
+                "Delete [y]@14");
+        }
+
+        #endregion
+
+        #region Pattern
+
+        [Fact]
+        public void ConstantPattern_Update()
+        {
+            var src1 = @"
+if ((o is null) && (y == 7)) return 3;
+if (a is 7) return 5;
+";
+
+            var src2 = @"
+if ((o1 is null) && (y == 7)) return 3;
+if (a is 77) return 5;
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [if ((o is null) && (y == 7)) return 3;]@4 -> [if ((o1 is null) && (y == 7)) return 3;]@4",
+                "Update [if (a is 7) return 5;]@44 -> [if (a is 77) return 5;]@45");
+        }
+
+        [Fact]
+        public void DeclarationPattern_Update()
+        {
+            var src1 = @"
+if (!(o is int i) && (y == 7)) return;
+if (!(a is string s)) return;
+if (!(b is string t)) return;
+if (!(c is int j)) return;
+";
+
+            var src2 = @"
+if (!(o1 is int i) && (y == 7)) return;
+if (!(a is int s)) return;
+if (!(b is string t1)) return;
+if (!(c is int)) return;
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [if (!(o is int i) && (y == 7)) return;]@4 -> [if (!(o1 is int i) && (y == 7)) return;]@4",
+                "Update [if (!(a is string s)) return;]@44 -> [if (!(a is int s)) return;]@45",
+                "Update [if (!(c is int j)) return;]@106 -> [if (!(c is int)) return;]@105",
+                "Update [t]@93 -> [t1]@91",
+                "Delete [j]@121");
+        }
+
+        [Fact]
+        public void DeclarationPattern_Reorder()
+        {
+            var src1 = @"if ((a is int i) && (b is int j)) { A(); }";
+            var src2 = @"if ((b is int j) && (a is int i)) { A(); }";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [if ((a is int i) && (b is int j)) { A(); }]@2 -> [if ((b is int j) && (a is int i)) { A(); }]@2",
+                "Reorder [j]@32 -> @16");
+        }
+
+        [Fact]
+        public void CasePattern_UpdateInsert()
+        {
+            var src1 = @"
+switch(shape)
+{
+    case Circle c: return 1;
+    default: return 4;
+}
+";
+
+            var src2 = @"
+switch(shape)
+{
+    case Circle c1: return 1;
+    case Point p: return 0;
+    default: return 4;
+}
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [case Circle c: return 1;]@26 -> [case Circle c1: return 1;]@26",
+                "Insert [case Point p: return 0;]@57",
+                "Insert [case Point p:]@57",
+                "Insert [return 0;]@71",
+                "Update [c]@38 -> [c1]@38",
+                "Insert [p]@68");
+        }
+
+        [Fact]
+        public void CasePattern_UpdateDelete()
+        {
+            var src1 = @"
+switch(shape)
+{
+    case Point p: return 0;
+    case Circle c: A(c); break;
+    default: return 4;
+}
+";
+
+            var src2 = @"
+switch(shape)
+{
+    case Circle c1: A(c1); break;
+    default: return 4;
+}
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [case Circle c: A(c); break;]@55 -> [case Circle c1: A(c1); break;]@26",
+                "Update [A(c);]@70 -> [A(c1);]@42",
+                "Update [p]@37 -> [c1]@38",
+                "Move [p]@37 -> @38",
+                "Delete [case Point p: return 0;]@26",
+                "Delete [case Point p:]@26",
+                "Delete [return 0;]@40",
+                "Delete [c]@67");
+        }
+
+        [Fact]
+        public void WhenCondition_Update()
+        {
+            var src1 = @"
+switch(shape)
+{
+    case Circle c when (c < 10): return 1;
+    case Circle c when (c > 100): return 2;
+}
+";
+
+            var src2 = @"
+switch(shape)
+{
+    case Circle c when (c < 5): return 1;
+    case Circle c2 when (c2 > 100): return 2;
+}
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [case Circle c when (c < 10): return 1;]@26 -> [case Circle c when (c < 5): return 1;]@26",
+                "Update [case Circle c when (c > 100): return 2;]@70 -> [case Circle c2 when (c2 > 100): return 2;]@69",
+                "Update [when (c < 10)]@40 -> [when (c < 5)]@40",
+                "Update [c]@82 -> [c2]@81",
+                "Update [when (c > 100)]@84 -> [when (c2 > 100)]@84");
+        }
+
+        [Fact]
+        public void CasePatternWithWhenCondition_UpdateReorder()
+        {
+            var src1 = @"
+switch(shape)
+{
+    case Rectangle r: return 0;
+    case Circle c when (c.Radius < 10): return 1;
+    case Circle c when (c.Radius > 100): return 2;
+}
+";
+
+            var src2 = @"
+switch(shape)
+{
+    case Circle c when (c.Radius > 99): return 2;
+    case Circle c when (c.Radius < 10): return 1;
+    case Rectangle r: return 0;
+}
+";
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Reorder [case Circle c when (c.Radius < 10): return 1;]@59 -> @77",
+                "Reorder [case Circle c when (c.Radius > 100): return 2;]@110 -> @26",
+                "Update [case Circle c when (c.Radius > 100): return 2;]@110 -> [case Circle c when (c.Radius > 99): return 2;]@26",
+                "Move [c]@71 -> @38",
+                "Update [when (c.Radius > 100)]@124 -> [when (c.Radius > 99)]@40",
+                "Move [c]@122 -> @89");
+        }
+
+        #endregion
+
+        #region Ref
+
+        [Fact]
+        public void Ref_Update()
+        {
+            var src1 = @"
+ref int a = ref G(new int[] { 1, 2 });
+ref int G(int[] p) { return ref p[1];  }
+";
+
+            var src2 = @"
+ref int32 a = ref G1(new int[] { 1, 2 });
+ref int G1(int[] p) { return ref p[2]; }
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [ref int G(int[] p) { return ref p[1];  }]@44 -> [ref int G1(int[] p) { return ref p[2]; }]@47",
+                "Update [ref int a = ref G(new int[] { 1, 2 })]@4 -> [ref int32 a = ref G1(new int[] { 1, 2 })]@4",
+                "Update [a = ref G(new int[] { 1, 2 })]@12 -> [a = ref G1(new int[] { 1, 2 })]@14");
+        }
+
+        [Fact]
+        public void Ref_Insert()
+        {
+            var src1 = @"
+int a = G(new int[] { 1, 2 });
+int G(int[] p) { return p[1];  }
+";
+
+            var src2 = @"
+ref int32 a = ref G1(new int[] { 1, 2 });
+ref int G1(int[] p) { return ref p[2]; }
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [int G(int[] p) { return p[1];  }]@36 -> [ref int G1(int[] p) { return ref p[2]; }]@47",
+                "Update [int a = G(new int[] { 1, 2 })]@4 -> [ref int32 a = ref G1(new int[] { 1, 2 })]@4",
+                "Update [a = G(new int[] { 1, 2 })]@8 -> [a = ref G1(new int[] { 1, 2 })]@14");
+        }
+
+        [Fact]
+        public void Ref_Delete()
+        {
+            var src1 = @"
+ref int a = ref G(new int[] { 1, 2 });
+ref int G(int[] p) { return ref p[1];  }
+";
+
+            var src2 = @"
+int32 a = G1(new int[] { 1, 2 });
+int G1(int[] p) { return p[2]; }
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [ref int G(int[] p) { return ref p[1];  }]@44 -> [int G1(int[] p) { return p[2]; }]@39",
+                "Update [ref int a = ref G(new int[] { 1, 2 })]@4 -> [int32 a = G1(new int[] { 1, 2 })]@4",
+                "Update [a = ref G(new int[] { 1, 2 })]@12 -> [a = G1(new int[] { 1, 2 })]@10");
+        }
+
+        #endregion
+
+        #region Tuples
+
+        [Fact]
+        public void TupleType_LocalVariables()
+        {
+            var src1 = @"
+(int a, string c) x = (a, string2);
+(int a, int b) y = (3, 4);
+(int a, int b, int c) z = (5, 6, 7);
+";
+
+            var src2 = @"
+(int a, int b)  x = (a, string2);
+(int a, int b, string c) z1 = (5, 6, 7);
+(int a, int b) y2 = (3, 4);
+";
+
+            var edits = GetMethodEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Reorder [(int a, int b, int c) z = (5, 6, 7);]@69 -> @39",
+                "Update [(int a, string c) x = (a, string2)]@4 -> [(int a, int b)  x = (a, string2)]@4",
+                "Update [(int a, int b, int c) z = (5, 6, 7)]@69 -> [(int a, int b, string c) z1 = (5, 6, 7)]@39",
+                "Update [z = (5, 6, 7)]@91 -> [z1 = (5, 6, 7)]@64",
+                "Update [y = (3, 4)]@56 -> [y2 = (3, 4)]@96");
+        }
+
+        [Fact]
+        public void TupleElementName()
+        {
+            var src1 = @"(int a, int b) F();";
+            var src2 = @"(int x, int b) F();";
+
+            var edits = GetTopEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [(int a, int b) F();]@0 -> [(int x, int b) F();]@0");
+        }
+
+        [Fact]
+        public void TupleInField()
+        {
+            var src1 = @"private (int, int) _x = (1, 2);";
+            var src2 = @"private (int, string) _y = (1, 2);";
+
+            var edits = GetTopEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [(int, int) _x = (1, 2)]@8 -> [(int, string) _y = (1, 2)]@8",
+                "Update [_x = (1, 2)]@19 -> [_y = (1, 2)]@22");
+        }
+
+        [Fact]
+        public void TupleInProperty()
+        {
+            var src1 = @"public (int, int) Property1 { get { return (1, 2); } }";
+            var src2 = @"public (int, string) Property2 { get { return (1, string.Empty); } }";
+
+            var edits = GetTopEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [public (int, int) Property1 { get { return (1, 2); } }]@0 -> [public (int, string) Property2 { get { return (1, string.Empty); } }]@0",
+                "Update [get { return (1, 2); }]@30 -> [get { return (1, string.Empty); }]@33");
+        }
+
+        [Fact]
+        public void TupleInDelegate()
+        {
+            var src1 = @"public delegate void EventHandler1((int, int) x);";
+            var src2 = @"public delegate void EventHandler2((int, int) y);";
+
+            var edits = GetTopEdits(src1, src2);
+
+            edits.VerifyEdits(
+                "Update [public delegate void EventHandler1((int, int) x);]@0 -> [public delegate void EventHandler2((int, int) y);]@0",
+                "Update [(int, int) x]@35 -> [(int, int) y]@35");
+        }
+
+        #endregion 
     }
 }

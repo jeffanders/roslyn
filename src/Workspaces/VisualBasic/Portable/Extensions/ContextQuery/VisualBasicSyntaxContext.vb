@@ -97,6 +97,10 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.Extensions.ContextQuery
                 isInImportsDirective:=isInImportsDirective,
                 isWithinAsyncMethod:=IsWithinAsyncMethod(targetToken, cancellationToken),
                 isPossibleTupleContext:=isPossibleTupleContext,
+<<<<<<< HEAD
+=======
+                isPatternContext:=False,
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
                 cancellationToken:=cancellationToken)
 
             Dim syntaxTree = semanticModel.SyntaxTree

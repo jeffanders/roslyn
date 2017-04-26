@@ -367,7 +367,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests.Symbols.Metadata.PE
         }
 
         // NOTE: results differ from corresponding property test.
-        [WorkItem(543263, "DevDiv")]
+        [WorkItem(543263, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543263")]
         [Fact]
         public void TestMixedAccessorModifiers()
         {
@@ -451,7 +451,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests.Symbols.Metadata.PE
         }
 
         [Fact]
-        [WorkItem(1055825)]
+        [WorkItem(1055825, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1055825")]
         public void AssociatedField()
         {
             var source = @"
@@ -460,8 +460,8 @@ public class C
     public event System.Action E;
 }
 ";
-            var reference = CreateCompilationWithMscorlib(source).EmitToImageReference();
-            var comp = CreateCompilationWithMscorlib("", new[] { reference }, TestOptions.DebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var reference = CreateStandardCompilation(source).EmitToImageReference();
+            var comp = CreateStandardCompilation("", new[] { reference }, TestOptions.DebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
 
             var type = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
             var @event = type.GetMember<PEEventSymbol>("E");
@@ -474,7 +474,7 @@ public class C
         }
 
         [Fact]
-        [WorkItem(1055825)]
+        [WorkItem(1055825, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1055825")]
         public void AssociatedField_MultipleFields()
         {
             var ilSource = @"
@@ -514,7 +514,7 @@ public class C
 } // end of class C
 ";
             var ilRef = CompileIL(ilSource);
-            var comp = CreateCompilationWithMscorlib("", new[] { ilRef }, TestOptions.DebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var comp = CreateStandardCompilation("", new[] { ilRef }, TestOptions.DebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             comp.VerifyDiagnostics();
 
             var type = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
@@ -529,7 +529,7 @@ public class C
         }
 
         [Fact]
-        [WorkItem(1055825)]
+        [WorkItem(1055825, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1055825")]
         public void AssociatedField_DuplicateEvents()
         {
             var ilSource = @"
@@ -574,7 +574,7 @@ public class C
 } // end of class C
 ";
             var ilRef = CompileIL(ilSource);
-            var comp = CreateCompilationWithMscorlib("", new[] { ilRef }, TestOptions.DebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var comp = CreateStandardCompilation("", new[] { ilRef }, TestOptions.DebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             comp.VerifyDiagnostics();
 
             var type = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("C");

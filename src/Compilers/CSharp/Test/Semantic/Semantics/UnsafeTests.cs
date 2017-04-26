@@ -93,11 +93,11 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll.WithAllowUnsafe(false)).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll.WithAllowUnsafe(false)).VerifyDiagnostics(
                 // (2,14): error CS0227: Unsafe code may only appear if compiling with /unsafe
                 Diagnostic(ErrorCode.ERR_IllegalUnsafe, "C"));
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -112,11 +112,11 @@ class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll.WithAllowUnsafe(false)).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll.WithAllowUnsafe(false)).VerifyDiagnostics(
                 // (4,17): error CS0227: Unsafe code may only appear if compiling with /unsafe
                 Diagnostic(ErrorCode.ERR_IllegalUnsafe, "Foo"));
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -132,11 +132,11 @@ class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll.WithAllowUnsafe(false)).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll.WithAllowUnsafe(false)).VerifyDiagnostics(
                 // (6,9): error CS0227: Unsafe code may only appear if compiling with /unsafe
                 Diagnostic(ErrorCode.ERR_IllegalUnsafe, "unsafe"));
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -152,7 +152,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -168,7 +168,7 @@ class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,56): error CS1629: Unsafe code may not appear in iterators
                 Diagnostic(ErrorCode.ERR_IllegalInnerUnsafe, "Foo"));
         }
@@ -187,7 +187,7 @@ class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,9): error CS1629: Unsafe code may not appear in iterators
                 Diagnostic(ErrorCode.ERR_IllegalInnerUnsafe, "unsafe"));
         }
@@ -206,12 +206,12 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,9): error CS1629: Unsafe code may not appear in iterators
                 Diagnostic(ErrorCode.ERR_IllegalInnerUnsafe, "unsafe"));
         }
 
-        [WorkItem(546657, "DevDiv")]
+        [WorkItem(546657, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546657")]
         [Fact]
         public void IteratorUnsafe5()
         {
@@ -226,7 +226,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,9): error CS1629: Unsafe code may not appear in iterators
                 Diagnostic(ErrorCode.ERR_IllegalInnerUnsafe, "unsafe"));
         }
@@ -251,7 +251,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (10,32): warning CS0067: The event 'C.Event' is never used
                 //     unsafe event System.Action Event;
                 Diagnostic(ErrorCode.WRN_UnreferencedEvent, "Event").WithArguments("C.Event"));
@@ -274,7 +274,7 @@ unsafe class C<T>
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             compilation.VerifyDiagnostics(
                 // (8,7): error CS0306: The type 'int*' may not be used as a type argument
                 Diagnostic(ErrorCode.ERR_BadTypeArgument, "int*").WithArguments("int*"),
@@ -787,7 +787,7 @@ unsafe class C<T>
 ";
 
             var withoutUnsafe = string.Format(template, "", "");
-            CreateCompilationWithMscorlib(withoutUnsafe, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(withoutUnsafe, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // CONSIDER: We should probably suppress CS0214 (like Dev10 does) because it's
                 // confusing, but we don't have a good way to do so, because we don't know that
                 // the method is an iterator until we bind the body and we certainly don't want
@@ -799,19 +799,19 @@ unsafe class C<T>
                 Diagnostic(ErrorCode.ERR_UnsafeIteratorArgType, "p"));
 
             var withUnsafeOnType = string.Format(template, "unsafe", "");
-            CreateCompilationWithMscorlib(withUnsafeOnType, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(withUnsafeOnType, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,64): error CS1637: Iterators cannot have unsafe parameters or yield types
                 Diagnostic(ErrorCode.ERR_UnsafeIteratorArgType, "p"));
 
             var withUnsafeOnMembers = string.Format(template, "", "unsafe");
-            CreateCompilationWithMscorlib(withUnsafeOnMembers, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(withUnsafeOnMembers, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,64): error CS1637: Iterators cannot have unsafe parameters or yield types
                 Diagnostic(ErrorCode.ERR_UnsafeIteratorArgType, "p"),
                 // (4,56): error CS1629: Unsafe code may not appear in iterators
                 Diagnostic(ErrorCode.ERR_IllegalInnerUnsafe, "Iterator")); //this is for putting "unsafe" on an iterator, not for the parameter type
 
             var withUnsafeOnTypeAndMembers = string.Format(template, "unsafe", "unsafe");
-            CreateCompilationWithMscorlib(withUnsafeOnTypeAndMembers, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(withUnsafeOnTypeAndMembers, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,64): error CS1637: Iterators cannot have unsafe parameters or yield types
                 Diagnostic(ErrorCode.ERR_UnsafeIteratorArgType, "p"),
                 // (4,56): error CS1629: Unsafe code may not appear in iterators
@@ -832,7 +832,7 @@ unsafe class Attr : System.Attribute
 ";
             // CONSIDER: Dev10 reports CS0214 (unsafe) and CS0182 (not a constant), but this makes
             // just as much sense.
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,6): error CS0181: Attribute constructor parameter 'i' has type 'int*', which is not a valid attribute parameter type
                 Diagnostic(ErrorCode.ERR_BadAttributeParamType, "Attr").WithArguments("i", "int*"));
         }
@@ -856,7 +856,7 @@ unsafe class Attr : System.Attribute
 ";
             // CONSIDER: Dev10 reports both CS0214 (unsafe) and CS0182 (not a constant), but this makes
             // just as much sense.
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,11): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, "Unsafe() == null"));
         }
@@ -883,7 +883,7 @@ class C<T>
     }
 }
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 // (13,22): error CS0306: The type 'int*' may not be used as a type argument
                 Diagnostic(ErrorCode.ERR_BadTypeArgument, "int*").WithArguments("int*"),
                 // (14,22): error CS0306: The type 'int**' may not be used as a type argument
@@ -899,12 +899,12 @@ unsafe enum E
     A
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (2,13): error CS0106: The modifier 'unsafe' is not valid for this item
                 Diagnostic(ErrorCode.ERR_BadMemberFlag, "E").WithArguments("unsafe"));
         }
 
-        [WorkItem(543834, "DevDiv")]
+        [WorkItem(543834, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543834")]
         [Fact]
         public void UnsafeOnDelegates()
         {
@@ -912,14 +912,14 @@ unsafe enum E
 public unsafe delegate void TestDelegate();
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll.WithAllowUnsafe(false)).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll.WithAllowUnsafe(false)).VerifyDiagnostics(
                 // (2,29): error CS0227: Unsafe code may only appear if compiling with /unsafe
                 Diagnostic(ErrorCode.ERR_IllegalUnsafe, "TestDelegate"));
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
-        [WorkItem(543835, "DevDiv")]
+        [WorkItem(543835, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543835")]
         [Fact]
         public void UnsafeOnConstField()
         {
@@ -930,11 +930,11 @@ public class Main
 }
 ";
 
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 // (4,29): error CS0106: The modifier 'unsafe' is not valid for this item
                 Diagnostic(ErrorCode.ERR_BadMemberFlag, "number").WithArguments("unsafe"));
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,29): error CS0106: The modifier 'unsafe' is not valid for this item
                 Diagnostic(ErrorCode.ERR_BadMemberFlag, "number").WithArguments("unsafe"));
         }
@@ -958,10 +958,10 @@ class C : I
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
-        [WorkItem(544417, "DevDiv")]
+        [WorkItem(544417, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544417")]
         [Fact]
         public void UnsafeCallParamArrays()
         {
@@ -1014,7 +1014,7 @@ class C : I
                 );
         }
 
-        [WorkItem(544938, "DevDiv")]
+        [WorkItem(544938, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544938")]
         [Fact]
         public void UnsafeCallOptionalParameters()
         {
@@ -1057,7 +1057,7 @@ class C : I
                 );
         }
 
-        [WorkItem(544938, "DevDiv")]
+        [WorkItem(544938, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544938")]
         [Fact]
         public void UnsafeDelegateCallParamArrays()
         {
@@ -1111,7 +1111,7 @@ class C : I
                 );
         }
 
-        [WorkItem(544938, "DevDiv")]
+        [WorkItem(544938, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544938")]
         [Fact]
         public void UnsafeDelegateCallOptionalParameters()
         {
@@ -1155,7 +1155,7 @@ class C : I
                 );
         }
 
-        [WorkItem(544938, "DevDiv")]
+        [WorkItem(544938, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544938")]
         [Fact]
         public void UnsafeObjectCreationParamArrays()
         {
@@ -1209,7 +1209,7 @@ class C : I
                 );
         }
 
-        [WorkItem(544938, "DevDiv")]
+        [WorkItem(544938, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544938")]
         [Fact]
         public void UnsafeObjectCreationOptionalParameters()
         {
@@ -1253,7 +1253,7 @@ class C : I
                 );
         }
 
-        [WorkItem(544938, "DevDiv")]
+        [WorkItem(544938, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544938")]
         [Fact]
         public void UnsafeIndexerParamArrays()
         {
@@ -1292,7 +1292,7 @@ class C : I
                 );
         }
 
-        [WorkItem(544938, "DevDiv")]
+        [WorkItem(544938, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544938")]
         [Fact]
         public void UnsafeIndexerOptionalParameters()
         {
@@ -1324,7 +1324,7 @@ class C : I
                 );
         }
 
-        [WorkItem(544938, "DevDiv")]
+        [WorkItem(544938, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544938")]
         [Fact]
         public void UnsafeAttributeParamArrays()
         {
@@ -1357,7 +1357,7 @@ class C : I
                 });
         }
 
-        [WorkItem(544938, "DevDiv")]
+        [WorkItem(544938, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544938")]
         [Fact]
         public void UnsafeAttributeOptionalParameters()
         {
@@ -1390,7 +1390,7 @@ class C : I
                 });
         }
 
-        [WorkItem(544938, "DevDiv")]
+        [WorkItem(544938, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544938")]
         [Fact]
         public void UnsafeDelegateAssignment()
         {
@@ -1432,20 +1432,20 @@ class C : I
         {
             // NOTE: ERR_UnsafeNeeded is not affected by the presence/absence of the /unsafe flag.
             var withoutUnsafe = string.Format(template, "", "");
-            CreateCompilationWithMscorlib(withoutUnsafe).VerifyDiagnostics(expectedWithoutUnsafe);
-            CreateCompilationWithMscorlib(withoutUnsafe, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expectedWithoutUnsafe);
+            CreateStandardCompilation(withoutUnsafe).VerifyDiagnostics(expectedWithoutUnsafe);
+            CreateStandardCompilation(withoutUnsafe, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expectedWithoutUnsafe);
 
             var withUnsafeOnType = string.Format(template, "unsafe", "");
-            CreateCompilationWithMscorlib(withUnsafeOnType, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expectedWithUnsafe);
+            CreateStandardCompilation(withUnsafeOnType, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expectedWithUnsafe);
 
             var withUnsafeOnMembers = string.Format(template, "", "unsafe");
-            CreateCompilationWithMscorlib(withUnsafeOnMembers, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expectedWithUnsafe);
+            CreateStandardCompilation(withUnsafeOnMembers, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expectedWithUnsafe);
 
             var withUnsafeOnTypeAndMembers = string.Format(template, "unsafe", "unsafe");
-            CreateCompilationWithMscorlib(withUnsafeOnTypeAndMembers, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expectedWithUnsafe);
+            CreateStandardCompilation(withUnsafeOnTypeAndMembers, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expectedWithUnsafe);
         }
 
-        [WorkItem(544097, "DevDiv")]
+        [WorkItem(544097, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544097")]
         [Fact]
         public void MethodCallWithNullAsPointerArg()
         {
@@ -1473,7 +1473,7 @@ class C : I
                 );
         }
 
-        [WorkItem(544097, "DevDiv")]
+        [WorkItem(544097, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544097")]
         [Fact]
         public void MethodCallWithUnsafeArgument()
         {
@@ -1529,7 +1529,7 @@ class C : I
                 );
         }
 
-        [WorkItem(544097, "DevDiv")]
+        [WorkItem(544097, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544097")]
         [Fact]
         public void IndexerAccessWithUnsafeArgument()
         {
@@ -1563,7 +1563,7 @@ class C : I
                 Diagnostic(ErrorCode.ERR_UnsafeNeeded, "int*"));
         }
 
-        [WorkItem(544097, "DevDiv")]
+        [WorkItem(544097, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544097")]
         [Fact]
         public void ConstructorInitializerWithUnsafeArgument()
         {
@@ -1592,7 +1592,7 @@ class C : I
                 );
         }
 
-        [WorkItem(544286, "DevDiv")]
+        [WorkItem(544286, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544286")]
         [Fact]
         public void UnsafeLambdaParameterType()
         {
@@ -1853,7 +1853,7 @@ No, FieldAccess 'new S().i' is not a non-moveable variable
 No, ObjectCreationExpression 'new S()' is not a non-moveable variable
 No, Conversion 'default(S).i' is not a non-moveable variable
 No, FieldAccess 'default(S).i' is not a non-moveable variable
-No, DefaultOperator 'default(S)' is not a non-moveable variable
+No, DefaultExpression 'default(S)' is not a non-moveable variable
 No, Conversion 'MakeS().i' is not a non-moveable variable
 No, FieldAccess 'MakeS().i' is not a non-moveable variable
 No, Call 'MakeS()' is not a non-moveable variable
@@ -2265,7 +2265,7 @@ Yes, Parameter 'x' is a non-moveable variable with underlying symbol 'x'
             Assert.Equal(SymbolKind.Method, binder.ContainingMemberOrLambda.Kind);
 
             var unusedDiagnostics = DiagnosticBag.GetInstance();
-            var block = binder.BindBlock(methodBody, unusedDiagnostics);
+            var block = binder.BindEmbeddedBlock(methodBody, unusedDiagnostics);
             unusedDiagnostics.Free();
 
             var builder = ArrayBuilder<string>.GetInstance();
@@ -2347,7 +2347,7 @@ class C
     int[][] f3;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var type = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
 
             Assert.True(type.GetMembers().OfType<FieldSymbol>().All(field => field.Type.IsManagedType));
@@ -2364,7 +2364,7 @@ unsafe class C
     void* f3;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var type = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
 
             Assert.True(type.GetMembers().OfType<FieldSymbol>().All(field => !field.Type.IsManagedType));
@@ -2379,7 +2379,7 @@ class C
     dynamic f1;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var type = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
 
             Assert.True(type.GetMembers().OfType<FieldSymbol>().All(field => field.Type.IsManagedType));
@@ -2396,7 +2396,7 @@ class C<T>
     Garbage f3;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var type = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
 
             Assert.True(type.GetMembers().OfType<FieldSymbol>().All(field => field.Type.IsManagedType));
@@ -2412,7 +2412,7 @@ class C<T, U> where U : struct
     U f2;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var type = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
 
             Assert.True(type.GetMembers().OfType<FieldSymbol>().All(field => field.Type.IsManagedType));
@@ -2431,7 +2431,7 @@ class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -2452,7 +2452,7 @@ class Outer
     class Inner { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var type = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("Outer");
 
             Assert.True(type.GetMembers().OfType<FieldSymbol>().All(field => field.Type.IsManagedType));
@@ -2472,7 +2472,7 @@ class Outer<T>
     class Inner { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var type = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("Outer");
 
             Assert.True(type.GetMembers().OfType<FieldSymbol>().All(field => field.Type.IsManagedType));
@@ -2490,7 +2490,7 @@ class C
     int? f4;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var type = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
 
             Assert.True(type.GetMembers().OfType<FieldSymbol>().All(field => field.Type.IsManagedType));
@@ -2519,7 +2519,7 @@ class C
     System.UIntPtr f14;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var type = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
 
             Assert.True(type.GetMembers().OfType<FieldSymbol>().All(field => !field.Type.IsManagedType));
@@ -2534,7 +2534,7 @@ class C
     void M() { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var type = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
             var method = type.GetMember<MethodSymbol>("M");
 
@@ -2567,7 +2567,7 @@ struct R<T>
     enum E { A }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var globalNamespace = compilation.GlobalNamespace;
             Assert.False(globalNamespace.GetMember<NamedTypeSymbol>("E").IsManagedType);
             Assert.False(globalNamespace.GetMember<NamedTypeSymbol>("C").GetMember<NamedTypeSymbol>("E").IsManagedType);
@@ -2604,7 +2604,7 @@ struct R<T>
     struct S { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var globalNamespace = compilation.GlobalNamespace;
             Assert.False(globalNamespace.GetMember<NamedTypeSymbol>("S").IsManagedType);
             Assert.True(globalNamespace.GetMember<NamedTypeSymbol>("P").IsManagedType);
@@ -2631,7 +2631,7 @@ struct S<T>
     struct R { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var type = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
 
             Assert.True(type.GetMembers().OfType<FieldSymbol>().All(field => field.Type.IsManagedType));
@@ -2667,7 +2667,7 @@ struct S5
     S2 s2;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var globalNamespace = compilation.GlobalNamespace;
             Assert.False(globalNamespace.GetMember<NamedTypeSymbol>("S1").IsManagedType);
             Assert.True(globalNamespace.GetMember<NamedTypeSymbol>("S2").IsManagedType);
@@ -2711,7 +2711,7 @@ struct S5
     S2 s2;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var globalNamespace = compilation.GlobalNamespace;
             Assert.False(globalNamespace.GetMember<NamedTypeSymbol>("S1").IsManagedType);
             Assert.True(globalNamespace.GetMember<NamedTypeSymbol>("S2").IsManagedType);
@@ -2750,7 +2750,7 @@ struct S5
     S2 s2 { get; set; }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var globalNamespace = compilation.GlobalNamespace;
             Assert.False(globalNamespace.GetMember<NamedTypeSymbol>("S1").IsManagedType);
             Assert.True(globalNamespace.GetMember<NamedTypeSymbol>("S2").IsManagedType);
@@ -2794,7 +2794,7 @@ struct S5
     S2 s2 { get; set; }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var globalNamespace = compilation.GlobalNamespace;
             Assert.False(globalNamespace.GetMember<NamedTypeSymbol>("S1").IsManagedType);
             Assert.True(globalNamespace.GetMember<NamedTypeSymbol>("S2").IsManagedType);
@@ -2817,7 +2817,7 @@ struct S2
     event System.Action E { add { } remove { } } // no field
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var globalNamespace = compilation.GlobalNamespace;
             Assert.True(globalNamespace.GetMember<NamedTypeSymbol>("S1").IsManagedType);
             Assert.False(globalNamespace.GetMember<NamedTypeSymbol>("S2").IsManagedType);
@@ -2830,7 +2830,7 @@ struct S2
 struct X<T> { public T t; }
 struct W<T> { X<W<W<T>>> x; }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var globalNamespace = compilation.GlobalNamespace;
             Assert.True(globalNamespace.GetMember<NamedTypeSymbol>("X").IsManagedType); // because of X.t
             Assert.True(globalNamespace.GetMember<NamedTypeSymbol>("W").IsManagedType);
@@ -2851,7 +2851,7 @@ struct R
     S s;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var globalNamespace = compilation.GlobalNamespace;
             Assert.False(globalNamespace.GetMember<NamedTypeSymbol>("S").IsManagedType);
             Assert.True(globalNamespace.GetMember<NamedTypeSymbol>("R").IsManagedType);
@@ -2871,7 +2871,7 @@ struct B { C c; }
 struct C { D d; }
 struct D { A a; }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var globalNamespace = compilation.GlobalNamespace;
             Assert.True(globalNamespace.GetMember<NamedTypeSymbol>("Q").IsManagedType);
             Assert.True(globalNamespace.GetMember<NamedTypeSymbol>("R").IsManagedType);
@@ -2884,7 +2884,7 @@ struct D { A a; }
             var text = @"
 class C { }
 ";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             Assert.False(compilation.GetSpecialType(SpecialType.System_ArgIterator).IsManagedType);
             Assert.False(compilation.GetSpecialType(SpecialType.System_RuntimeArgumentHandle).IsManagedType);
             Assert.False(compilation.GetSpecialType(SpecialType.System_TypedReference).IsManagedType);
@@ -2906,7 +2906,7 @@ public unsafe struct S2
     public int i;
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,12): error CS0208: Cannot take the address of, get the size of, or declare a pointer to a managed type ('S1')
                 //     public S1* s; //CS0523
                 Diagnostic(ErrorCode.ERR_ManagedAddr, "S1*").WithArguments("S1"));
@@ -2932,7 +2932,7 @@ public unsafe struct A
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (13,20): error CS0208: Cannot take the address of, get the size of, or declare a pointer to a managed type ('A')
                 //             public A*[,][] aa; //CS0208
                 Diagnostic(ErrorCode.ERR_ManagedAddr, "A*").WithArguments("A"),
@@ -2956,13 +2956,13 @@ public unsafe struct S
     public object o;
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,12): error CS0208: Cannot take the address of, get the size of, or declare a pointer to a managed type ('S')
                 //     public Alias* s; //CS0208
                 Diagnostic(ErrorCode.ERR_ManagedAddr, "Alias*").WithArguments("S"));
         }
 
-        [Fact]
+        [Fact()]
         public void ERR_ManagedAddr_Members()
         {
             var text = @"
@@ -2980,7 +2980,7 @@ public unsafe struct S
     public object o;
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,5): error CS0208: Cannot take the address of, get the size of, or declare a pointer to a managed type ('S')
                 //     S* M() { return M(); }
                 Diagnostic(ErrorCode.ERR_ManagedAddr, "S*").WithArguments("S"),
@@ -2999,6 +2999,19 @@ public unsafe struct S
                 // (12,12): error CS0208: Cannot take the address of, get the size of, or declare a pointer to a managed type ('S')
                 //     public S* s; //CS0208
                 Diagnostic(ErrorCode.ERR_ManagedAddr, "S*").WithArguments("S"));
+        }
+
+        [WorkItem(10195, "https://github.com/dotnet/roslyn/issues/10195")]
+        [Fact]
+        public void PointerToStructInPartialMethodSignature()
+        {
+            string text =
+@"unsafe partial struct S
+{
+    partial void M(S *p) { }
+    partial void M(S *p);
+}";
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         #endregion IsManagedType
@@ -3020,7 +3033,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -3038,7 +3051,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -3080,10 +3093,10 @@ struct S3
     public int x;
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
-        [WorkItem(529267, "DevDiv")]
+        [WorkItem(529267, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529267")]
         [Fact]
         public void AddressOfExpressionKinds_RangeVariable()
         {
@@ -3253,7 +3266,7 @@ enum Color
     Red,
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (23,14): error CS0211: Cannot take the address of the given expression
                 //         p = &1; //CS0211 (can't addr)
                 Diagnostic(ErrorCode.ERR_InvalidAddrOp, "1"),
@@ -3400,7 +3413,7 @@ public struct S
     public string s;
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,18): error CS0208: Cannot take the address of, get the size of, or declare a pointer to a managed type ('T')
                 //         var p0 = &t; //CS0208
                 Diagnostic(ErrorCode.ERR_ManagedAddr, "&t").WithArguments("T"),
@@ -3434,7 +3447,7 @@ public struct S
     public object o;
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (13,14): error CS0523: Struct member 'S.s' of type 'S' causes a cycle in the struct layout
                 //     public S s; //CS0523
                 Diagnostic(ErrorCode.ERR_StructLayoutCycle, "s").WithArguments("S.s", "S"),
@@ -3479,7 +3492,7 @@ unsafe class Derived : Base
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (17,13): error CS0212: You can only take the address of an unfixed expression inside of a fixed statement initializer
                 //         p = &instanceField; //CS0212
                 Diagnostic(ErrorCode.ERR_FixedNeeded, "&instanceField"),
@@ -3536,7 +3549,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (15,17): error CS0170: Use of possibly unassigned field 'y'
                 //         int y = s.y; //cs0170 (uninitialized)
                 Diagnostic(ErrorCode.ERR_UseDefViolationField, "s.y").WithArguments("y"));
@@ -3556,7 +3569,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,11): error CS1686: Local 'x' or its members cannot have their address taken and be used inside an anonymous method or lambda expression
                 //         M(&x, () => { x++; });
                 Diagnostic(ErrorCode.ERR_LocalCantBeFixedAndHoisted, "&x").WithArguments("x"));
@@ -3576,7 +3589,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,18): error CS1686: Local 'x' or its members cannot have their address taken and be used inside an anonymous method or lambda expression
                 //         int* p = &x;
                 Diagnostic(ErrorCode.ERR_LocalCantBeFixedAndHoisted, "&x").WithArguments("x"));
@@ -3595,7 +3608,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,28): error CS1686: Local 'x' or its members cannot have their address taken and be used inside an anonymous method or lambda expression
                 //         M(() => { int* p = &x; }); // in lambda
                 Diagnostic(ErrorCode.ERR_LocalCantBeFixedAndHoisted, "&x").WithArguments("x"));
@@ -3616,7 +3629,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,28): error CS1686: Local 'x' or its members cannot have their address taken and be used inside an anonymous method or lambda expression
                 //         M(() => { int* p = &x; }); // in lambda
                 Diagnostic(ErrorCode.ERR_LocalCantBeFixedAndHoisted, "&x").WithArguments("x"));
@@ -3638,7 +3651,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (9,18): error CS1686: Local 's' or its members cannot have their address taken and be used inside an anonymous method or lambda expression
                 //         int* p = &s.x; //before capture
                 Diagnostic(ErrorCode.ERR_LocalCantBeFixedAndHoisted, "&s.x").WithArguments("s"));
@@ -3661,7 +3674,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (11,18): error CS1686: Local 's' or its members cannot have their address taken and be used inside an anonymous method or lambda expression
                 //         int* p = &s.x; //after capture
                 Diagnostic(ErrorCode.ERR_LocalCantBeFixedAndHoisted, "&s.x").WithArguments("s"));
@@ -3682,7 +3695,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (9,28): error CS1686: Local 's' or its members cannot have their address taken and be used inside an anonymous method or lambda expression
                 //         M(() => { int* p = &s.x; }); // in lambda
                 Diagnostic(ErrorCode.ERR_LocalCantBeFixedAndHoisted, "&s.x").WithArguments("s"));
@@ -3705,7 +3718,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (9,18): error CS1686: Local 's' or its members cannot have their address taken and be used inside an anonymous method or lambda expression
                 //         int* p = &s.x; //only report the first
                 Diagnostic(ErrorCode.ERR_LocalCantBeFixedAndHoisted, "&s.x").WithArguments("s"));
@@ -3729,7 +3742,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (10,23): error CS1686: Local 'x' or its members cannot have their address taken and be used inside an anonymous method or lambda expression
                 //             int* p1 = &x;
                 Diagnostic(ErrorCode.ERR_LocalCantBeFixedAndHoisted, "&x").WithArguments("x"),
@@ -3739,7 +3752,7 @@ unsafe struct S
                 );
         }
 
-        [WorkItem(657083, "DevDiv")]
+        [WorkItem(657083, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/657083")]
         [Fact]
         public void CaptureStructWithFixedArray()
         {
@@ -3756,7 +3769,7 @@ unsafe public struct Test
         return d();
     }
 }";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 Diagnostic(ErrorCode.ERR_LocalCantBeFixedAndHoisted, "t.i").WithArguments("t")
                 );
         }
@@ -3778,7 +3791,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -3796,13 +3809,13 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,28): error CS1628: Cannot use ref or out parameter 'x' inside an anonymous method, lambda expression, or query expression
                 //             M(ref x, () => x++);
                 Diagnostic(ErrorCode.ERR_AnonDelegateCantUse, "x").WithArguments("x"));
         }
 
-        [WorkItem(543989, "DevDiv")]
+        [WorkItem(543989, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543989")]
         [Fact]
         public void AddressOfInsideAnonymousTypes()
         {
@@ -3819,13 +3832,13 @@ public class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 //(9,27): error CS0828: Cannot assign int* to anonymous type property
                 //             p1 = &x
                 Diagnostic(ErrorCode.ERR_AnonymousTypePropertyAssignedBadValue, "p1 = &x").WithArguments("int*"));
         }
 
-        [WorkItem(544537, "DevDiv")]
+        [WorkItem(544537, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544537")]
         [Fact]
         public void AddressOfStaticReadonlyFieldInsideFixed()
         {
@@ -3864,7 +3877,7 @@ unsafe class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -3901,7 +3914,7 @@ unsafe struct S
     public object o;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -3917,7 +3930,7 @@ unsafe struct S
                 Diagnostic(ErrorCode.WRN_UnassignedInternalField, "o").WithArguments("S.o", "null"));
         }
 
-        [WorkItem(544346, "DevDiv")]
+        [WorkItem(544346, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544346")]
         [Fact]
         public void AddressOfLambdaExpr1()
         {
@@ -3930,7 +3943,7 @@ unsafe class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -3955,7 +3968,7 @@ unsafe class C
             Assert.Equal(TypeKind.Error, ((PointerTypeSymbol)typeInfo.Type).PointedAtType.TypeKind);
         }
 
-        [WorkItem(544346, "DevDiv")]
+        [WorkItem(544346, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544346")]
         [Fact]
         public void AddressOfLambdaExpr2()
         {
@@ -3968,7 +3981,7 @@ unsafe class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -3993,7 +4006,7 @@ unsafe class C
             Assert.Equal(TypeKind.Error, ((PointerTypeSymbol)typeInfo.Type).PointedAtType.TypeKind);
         }
 
-        [WorkItem(544346, "DevDiv")]
+        [WorkItem(544346, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544346")]
         [Fact]
         public void AddressOfMethodGroup()
         {
@@ -4006,7 +4019,7 @@ unsafe class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -4047,7 +4060,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -4062,7 +4075,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,17): error CS0193: The * or -> operator must be applied to a pointer
                 //         int x = *null;
                 Diagnostic(ErrorCode.ERR_PtrExpected, "*null"));
@@ -4081,7 +4094,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,17): error CS0193: The * or -> operator must be applied to a pointer
                 //         int x = *p;
                 Diagnostic(ErrorCode.ERR_PtrExpected, "*p"));
@@ -4099,7 +4112,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,17): error CS0242: The operation in question is undefined on void pointers
                 //         var x = *p;
                 Diagnostic(ErrorCode.ERR_VoidError, "*p"));
@@ -4118,7 +4131,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,18): error CS0165: Use of unassigned local variable 'p'
                 //         int x = *p;
                 Diagnostic(ErrorCode.ERR_UseDefViolation, "p").WithArguments("p"));
@@ -4142,7 +4155,7 @@ unsafe class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -4179,7 +4192,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -4196,7 +4209,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -4211,7 +4224,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,20): error CS0193: The * or -> operator must be applied to a pointer
                 //         string x = null->ToString(); //Roslyn: CS0193 / Dev10: CS0023
                 Diagnostic(ErrorCode.ERR_PtrExpected, "null->ToString"));
@@ -4229,7 +4242,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,20): error CS0193: The * or -> operator must be applied to a pointer
                 //         string x = M->ToString(); //Roslyn: CS0193 / Dev10: CS0023
                 Diagnostic(ErrorCode.ERR_PtrExpected, "M->ToString"));
@@ -4247,7 +4260,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,20): error CS0193: The * or -> operator must be applied to a pointer
                 //         string x = (z => z)->ToString(); //Roslyn: CS0193 / Dev10: CS0023
                 Diagnostic(ErrorCode.ERR_PtrExpected, "(z => z)->ToString"));
@@ -4266,7 +4279,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,17): error CS0193: The * or -> operator must be applied to a pointer
                 //         int x = p->GetHashCode();
                 Diagnostic(ErrorCode.ERR_PtrExpected, "p->GetHashCode"));
@@ -4284,7 +4297,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,17): error CS0242: The operation in question is undefined on void pointers
                 //         var x = p->GetHashCode();
                 Diagnostic(ErrorCode.ERR_VoidError, "p->GetHashCode"));
@@ -4303,7 +4316,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,18): error CS0165: Use of unassigned local variable 'p'
                 //         int x = *p;
                 Diagnostic(ErrorCode.ERR_UseDefViolation, "p").WithArguments("p"));
@@ -4406,7 +4419,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (13,9): error CS0208: Cannot take the address of, get the size of, or declare a pointer to a managed type ('S')
                 //         S* p = &s; //CS0208
                 Diagnostic(ErrorCode.ERR_ManagedAddr, "S*").WithArguments("S"),
@@ -4452,7 +4465,7 @@ struct S
     public void M(int x) { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -4519,7 +4532,7 @@ struct S
     public void M(int x) { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -4578,7 +4591,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,17): error CS0443: Syntax error; value expected
                 //         S s = p[];
                 Diagnostic(ErrorCode.ERR_ValueExpected, "]"));
@@ -4596,7 +4609,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,15): error CS0196: A pointer must be indexed by only one value
                 //         S s = p[1, 2];
                 Diagnostic(ErrorCode.ERR_PtrIndexSingle, "p[1, 2]"));
@@ -4616,7 +4629,7 @@ unsafe struct S
 }
 ";
             // Dev10 gives an unhelpful syntax error.
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,21): error CS1615: Argument 1 should not be passed with the 'ref' keyword
                 //         S s = p[ref x];
                 Diagnostic(ErrorCode.ERR_BadArgExtraRef, "x").WithArguments("1", "ref"));
@@ -4636,7 +4649,7 @@ unsafe struct S
 }
 ";
             // Dev10 gives an unhelpful syntax error.
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,21): error CS1615: Argument 1 should not be passed with the 'out' keyword
                 //         S s = p[out x];
                 Diagnostic(ErrorCode.ERR_BadArgExtraRef, "x").WithArguments("1", "out"));
@@ -4655,7 +4668,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,15): error CS1742: An array access may not have a named argument specifier
                 //         S s = p[index: x];
                 Diagnostic(ErrorCode.ERR_NamedArgumentForArray, "p[index: x]"));
@@ -4673,7 +4686,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,9): error CS0242: The operation in question is undefined on void pointers
                 //         p[0] = null;
                 Diagnostic(ErrorCode.ERR_VoidError, "p"));
@@ -4702,7 +4715,7 @@ unsafe class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -4770,7 +4783,7 @@ unsafe struct S
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -4806,7 +4819,7 @@ unsafe struct S
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -4847,7 +4860,7 @@ unsafe struct S
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (10,22): error CS0266: Cannot implicitly convert type 'void*' to 'void**'. An explicit conversion exists (are you missing a cast?)
                 //         void** vv4 = vv3;
                 Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "vv3").WithArguments("void*", "void**"));
@@ -4900,7 +4913,7 @@ unsafe struct S
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -4950,7 +4963,7 @@ unsafe struct S
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -4988,7 +5001,7 @@ unsafe struct S
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,13): error CS0030: Cannot convert type 'int*' to 'bool'
                 //         b = (bool)pi;
                 Diagnostic(ErrorCode.ERR_NoExplicitConv, "(bool)pi").WithArguments("int*", "bool"),
@@ -5098,7 +5111,7 @@ unsafe struct S
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (24,14): error CS0030: Cannot convert type 'sbyte?' to 'int*'
                 //         pi = (int*)sb;
                 Diagnostic(ErrorCode.ERR_NoExplicitConv, "(int*)sb").WithArguments("sbyte?", "int*"),
@@ -5175,7 +5188,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (13,15): error CS0266: Cannot implicitly convert type 'System.Array' to 'int*[]'. An explicit conversion exists (are you missing a cast?)
                 //         api = a; //CS0266
                 Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "a").WithArguments("System.Array", "int*[]"),
@@ -5216,7 +5229,7 @@ unsafe class C
 ";
 
             // NOTE: dev10 also reports some rather silly cascading CS0266s.
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,9): error CS0306: The type 'int*' may not be used as a type argument
                 //         To(api);
                 Diagnostic(ErrorCode.ERR_BadTypeArgument, "To").WithArguments("int*"),
@@ -5248,7 +5261,7 @@ unsafe class C
 ";
 
             // NOTE: as in Dev10, there's a runtime error if you try to access an element.
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         #endregion Pointer conversion tests
@@ -5282,7 +5295,7 @@ unsafe class C
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -5331,7 +5344,7 @@ unsafe class C
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -5369,7 +5382,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,13): error CS0019: Operator '-' cannot be applied to operands of type 'int' and 'byte*'
                 //         p = i - p;
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "i - p").WithArguments("-", "int", "byte*"),
@@ -5413,7 +5426,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,13): error CS0019: Operator '-' cannot be applied to operands of type 'byte*' and 'int*'
                 //         l = b - i;
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "b - i").WithArguments("-", "byte*", "int*"),
@@ -5480,7 +5493,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,19): error CS0019: Operator '*' cannot be applied to operands of type 'byte*' and 'int'
                 //         var r01 = p * i;
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "p * i").WithArguments("*", "byte*", "int"),
@@ -5547,7 +5560,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -5568,7 +5581,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -5584,7 +5597,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,13): error CS0019: Operator '+' cannot be applied to operands of type 'int*' and 'int?'
                 //         p = p + i;
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "p + i").WithArguments("+", "int*", "int?"));
@@ -5608,7 +5621,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -5628,7 +5641,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,20): error CS0242: The operation in question is undefined on void pointers
                 //         var diff = p - p;
                 Diagnostic(ErrorCode.ERR_VoidError, "p - p"),
@@ -5666,7 +5679,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (10,13): error CS0019: Operator '-' cannot be applied to operands of type 'int' and 'void**'
                 //         p = 1 - p;
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "1 - p").WithArguments("-", "int", "void**"));
@@ -5676,7 +5689,7 @@ unsafe class C
 
         #region Pointer comparison tests
 
-        [WorkItem(546712, "DevDiv")]
+        [WorkItem(546712, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546712")]
         [Fact]
         public void PointerComparison_Null()
         {
@@ -5691,7 +5704,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -5734,7 +5747,7 @@ unsafe class C
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -5786,7 +5799,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -5830,7 +5843,7 @@ unsafe class C
 }
 ";
 
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,18): error CS0019: Operator '==' cannot be applied to operands of type 'char*' and 'int'
                 //         result = p == i;
                 Diagnostic(ErrorCode.ERR_BadBinaryOps, "p == i").WithArguments("==", "char*", "int"),
@@ -5925,7 +5938,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,20): error CS0209: The type of a local declared in a fixed statement must be a pointer type
                 //         fixed (int p = &x) //not a pointer
                 Diagnostic(ErrorCode.ERR_BadFixedInitType, "p = &x"));
@@ -5945,7 +5958,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,21): error CS0210: You must provide an initializer in a fixed or using statement declaration
                 //         fixed (int* p) //missing initializer
                 Diagnostic(ErrorCode.ERR_FixedMustInit, "p"));
@@ -5967,7 +5980,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,20): error CS0821: Implicitly-typed local variables cannot be fixed
                 //         fixed (var p = &x) //implicitly typed
                 Diagnostic(ErrorCode.ERR_ImplicitlyTypedLocalCannotBeFixed, "p = &x"));
@@ -5993,7 +6006,7 @@ class var
 {
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,20): error CS0209: The type of a local declared in a fixed statement must be a pointer type
                 //         fixed (var p = &x) //not implicitly typed
                 Diagnostic(ErrorCode.ERR_BadFixedInitType, "p = &x"));
@@ -6015,7 +6028,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,29): error CS1044: Cannot use more than one type in a for, using, fixed, or declaration statement
                 //         fixed (int* p = &x, var q = p) //multiple declarations (vs declarators)
                 Diagnostic(ErrorCode.ERR_MultiTypeInDeclaration, "var"),
@@ -6065,7 +6078,7 @@ class NotString
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,22): warning CS0649: Field 'C.n' is never assigned to, and will always have its default value null
                 //     public NotString n;
                 Diagnostic(ErrorCode.WRN_UnassignedInternalField, "n").WithArguments("C.n", "null"));
@@ -6099,7 +6112,7 @@ class NotArray
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,21): warning CS0649: Field 'C.n' is never assigned to, and will always have its default value null
                 //     public NotArray n;
                 Diagnostic(ErrorCode.WRN_UnassignedInternalField, "n").WithArguments("C.n", "null"));
@@ -6138,7 +6151,7 @@ class NotPointer
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (9,26): error CS0254: The right hand side of a fixed statement assignment may not be a cast expression
                 //         fixed (byte* p = (byte*)&x)
                 Diagnostic(ErrorCode.ERR_BadCastInFixed, "(byte*)&x"),
@@ -6177,7 +6190,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (15,42): error CS1764: Cannot use fixed local 'p' inside an anonymous method, lambda expression, or query expression
                 //             a = () => Console.WriteLine(*p);
                 Diagnostic(ErrorCode.ERR_FixedLocalInLambda, "p").WithArguments("p"),
@@ -6212,7 +6225,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (15,34): error CS0212: You can only take the address of an unfixed expression inside of a fixed statement initializer
                 //         fixed (int* px = &(p.a[*(&p.x)])) //CS0212
                 Diagnostic(ErrorCode.ERR_FixedNeeded, "&p.x"),
@@ -6235,7 +6248,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,25): error CS0213: You cannot use the fixed statement to take the address of an already fixed expression
                 //         fixed (int* p = stackalloc int[2])
                 Diagnostic(ErrorCode.ERR_FixedNotNeeded, "stackalloc int[2]"));
@@ -6262,7 +6275,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,33): error CS0213: You cannot use the fixed statement to take the address of an already fixed expression
                 //         fixed (int* q = &f, r = &q[1]) //CS0213
                 Diagnostic(ErrorCode.ERR_FixedNotNeeded, "&q[1]"),
@@ -6287,7 +6300,7 @@ class Program
 }
 ";
             // Confusing, but matches Dev10.
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,25): error CS0213: You cannot use the fixed statement to take the address of an already fixed expression
                 //         fixed (int* p = null)
                 Diagnostic(ErrorCode.ERR_FixedNotNeeded, "null"));
@@ -6307,7 +6320,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,26): error CS1660: Cannot convert lambda expression to type 'int*' because it is not a delegate type
                 //         fixed (int* p = (x => x))
                 Diagnostic(ErrorCode.ERR_AnonMethToNonDel, "x => x").WithArguments("lambda expression", "int*"));
@@ -6327,7 +6340,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,25): error CS0428: Cannot convert method group 'Main' to non-delegate type 'int*'. Did you intend to invoke the method?
                 //         fixed (int* p = Main)
                 Diagnostic(ErrorCode.ERR_MethGrpToNonDel, "Main").WithArguments("Main", "int*"));
@@ -6357,7 +6370,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (16,25): error CS0266: Cannot implicitly convert type 'char*' to 'int*'. An explicit conversion exists (are you missing a cast?)
                 //         fixed (int* p = s) //can't convert char* to int*
                 Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "s").WithArguments("char*", "int*"));
@@ -6379,7 +6392,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,26): error CS0208: Cannot take the address of, get the size of, or declare a pointer to a managed type ('string')
                 //         fixed (void* p = a)
                 Diagnostic(ErrorCode.ERR_ManagedAddr, "a").WithArguments("string"));
@@ -6409,7 +6422,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (16,25): error CS0266: Cannot implicitly convert type 'char*' to 'int*'. An explicit conversion exists (are you missing a cast?)
                 //         fixed (int* p = a) //can't convert char* to int*
                 Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "a").WithArguments("char*", "int*"));
@@ -6439,7 +6452,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (16,25): error CS0266: Cannot implicitly convert type 'char*' to 'int*'. An explicit conversion exists (are you missing a cast?)
                 //         fixed (int* p = a) //can't convert char* to int*
                 Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "a").WithArguments("char*", "int*"));
@@ -6461,7 +6474,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (8,26): error CS0208: Cannot take the address of, get the size of, or declare a pointer to a managed type ('char[]')
                 //         fixed (void* p = a) //char[]* is not a valid type
                 Diagnostic(ErrorCode.ERR_ManagedAddr, "a").WithArguments("char[]"));
@@ -6491,7 +6504,7 @@ unsafe class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -6531,7 +6544,7 @@ unsafe class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -6603,7 +6616,7 @@ unsafe class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -6670,7 +6683,7 @@ public struct S
     public string s;
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,13): error CS0208: Cannot take the address of, get the size of, or declare a pointer to a managed type ('T')
                 //         x = sizeof(T); //CS0208
                 Diagnostic(ErrorCode.ERR_ManagedAddr, "sizeof(T)").WithArguments("T"),
@@ -6764,7 +6777,7 @@ struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 // (6,22): error CS1629: Unsafe code may not appear in iterators
                 //         yield return sizeof(S);
                 Diagnostic(ErrorCode.ERR_IllegalInnerUnsafe, "sizeof(S)"));
@@ -6788,7 +6801,7 @@ unsafe struct S
 }
 ";
             // Not identical to Dev10, but same meaning.
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (9,20): error CS0118: 's' is a variable but is used like a type
                 //         i = sizeof(s);
                 Diagnostic(ErrorCode.ERR_BadSKknown, "s").WithArguments("s", "variable", "type"),
@@ -6819,7 +6832,7 @@ unsafe struct S
 }
 ";
             // Not identical to Dev10, but same meaning.
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,20): error CS1547: Keyword 'void' cannot be used in this context
                 //         i = sizeof(void);
                 Diagnostic(ErrorCode.ERR_NoVoidHere, "void"),
@@ -6861,7 +6874,7 @@ unsafe struct S
                 Diagnostic(ErrorCode.ERR_NameNotInContext, "x").WithArguments("x"));
         }
 
-        [Fact, WorkItem(529318, "DevDiv")]
+        [Fact, WorkItem(529318, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529318")]
         public void SizeOfNull()
         {
             string text = @"
@@ -6870,7 +6883,7 @@ class Program
     int F1 = sizeof(null);
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
             // (4,21): error CS1031: Type expected
             //     int F1 = sizeof(null);
             Diagnostic(ErrorCode.ERR_TypeExpected, "null"),
@@ -6932,7 +6945,7 @@ class Program
 }
 ";
             // NB: not unsafe
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -6995,7 +7008,7 @@ enum E2 : long
 }
 ";
             // NB: not unsafe
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -7056,7 +7069,7 @@ struct Outer
 }
 ";
             // NB: not unsafe
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -7133,7 +7146,7 @@ struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 // (6,17): error CS1629: Unsafe code may not appear in iterators
                 //         var p = stackalloc int[1];
                 Diagnostic(ErrorCode.ERR_IllegalInnerUnsafe, "stackalloc int[1]"));
@@ -7151,7 +7164,7 @@ unsafe struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,33): error CS0247: Cannot use a negative size with stackalloc
                 //         int* p = stackalloc int[-1];
                 Diagnostic(ErrorCode.ERR_NegativeStackAllocSize, "-1"));
@@ -7233,7 +7246,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (17,30): error CS0255: stackalloc may not be used in a catch or finally block
                 //                     int* q = stackalloc int[1]; //CS0255
                 Diagnostic(ErrorCode.ERR_StackallocInCatchFinally, "stackalloc int[1]"),
@@ -7330,7 +7343,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (17,30): error CS0255: stackalloc may not be used in a catch or finally block
                 //                     int* q = stackalloc int[1]; //CS0255
                 Diagnostic(ErrorCode.ERR_StackallocInCatchFinally, "stackalloc int[1]"),
@@ -7363,7 +7376,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,29): error CS1575: A stackalloc expression requires [] after type
                 //         int* p = stackalloc int;
                 Diagnostic(ErrorCode.ERR_BadStackAllocExpr, "int"));
@@ -7386,7 +7399,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (7,35): error CS0266: Cannot implicitly convert type 'long' to 'int'. An explicit conversion exists (are you missing a cast?)
                 //         { int* p = stackalloc int[1L]; } //CS0266 (could cast), even though constant value is fine
                 Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "1L").WithArguments("long", "int"),
@@ -7419,7 +7432,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,31): error CS1575: A stackalloc expression requires [] after type
                 //         { int* p = stackalloc int[]; }
                 Diagnostic(ErrorCode.ERR_BadStackAllocExpr, "int[]"),
@@ -7468,7 +7481,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,25): error CS1525: Invalid expression term 'stackalloc'
                 //         { var p = (int*)stackalloc int[1]; }
                 Diagnostic(ErrorCode.ERR_InvalidExprTerm, "stackalloc").WithArguments("stackalloc"),
@@ -7527,7 +7540,7 @@ unsafe class C
     int* p = stackalloc int[1];
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,14): error CS1525: Invalid expression term 'stackalloc'
                 //     int* p = stackalloc int[1];
                 Diagnostic(ErrorCode.ERR_InvalidExprTerm, "stackalloc").WithArguments("stackalloc"));
@@ -7544,7 +7557,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,21): error CS1525: Invalid expression term 'stackalloc'
                 //     void M(int* p = stackalloc int[1])
                 Diagnostic(ErrorCode.ERR_InvalidExprTerm, "stackalloc").WithArguments("stackalloc"),
@@ -7583,7 +7596,7 @@ unsafe class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -7615,7 +7628,7 @@ class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -7668,7 +7681,28 @@ class C
 
         #region PointerTypes tests
 
-        [WorkItem(543990, "DevDiv")]
+        [WorkItem(5712, "https://github.com/dotnet/roslyn/issues/5712")]
+        [Fact]
+        public void PathalogicalRefStructPtrMultiDimensionalArray()
+        {
+            var text = @"
+class C
+{
+  class Foo3 { 
+     internal struct Struct1<U> {} 
+  }
+
+  unsafe void NMethodCecilNameHelper_Parameter_AllTogether<U>(ref Foo3.Struct1<int>**[][,,] ppi) { }
+}
+";
+            CreateStandardCompilation(text, options: TestOptions.UnsafeDebugDll).VerifyDiagnostics(
+                // (8,67): error CS0208: Cannot take the address of, get the size of, or declare a pointer to a managed type ('C.Foo3.Struct1<int>')
+                //   unsafe void NMethodCecilNameHelper_Parameter_AllTogether<U>(ref Foo3.Struct1<int>**[][,,] ppi) { }
+                Diagnostic(ErrorCode.ERR_ManagedAddr, "Foo3.Struct1<int>*").WithArguments("C.Foo3.Struct1<int>").WithLocation(8, 67));
+        }
+
+
+        [WorkItem(543990, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543990")]
         [Fact]
         public void PointerTypeInVolatileField()
         {
@@ -7678,13 +7712,13 @@ unsafe class Test
 	static volatile int *px;
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,23): warning CS0169: The field 'Test.px' is never used
                 // 	static volatile int *px;
                 Diagnostic(ErrorCode.WRN_UnreferencedField, "px").WithArguments("Test.px"));
         }
 
-        [WorkItem(544003, "DevDiv")]
+        [WorkItem(544003, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544003")]
         [Fact]
         public void PointerTypesAsTypeArgs()
         {
@@ -7710,12 +7744,12 @@ class C<T> : A
                 Diagnostic(ErrorCode.WRN_UnreferencedField, "b").WithArguments("C<T>.b")
             };
 
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(expected);
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expected);
+            CreateStandardCompilation(text).VerifyDiagnostics(expected);
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expected);
         }
 
-        [WorkItem(544003, "DevDiv")]
-        [WorkItem(544232, "DevDiv")]
+        [WorkItem(544003, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544003")]
+        [WorkItem(544232, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544232")]
         [Fact]
         public void PointerTypesAsTypeArgs2()
         {
@@ -7761,12 +7795,12 @@ class C<T> : A
                 Diagnostic(ErrorCode.WRN_UnreferencedField, "c").WithArguments("C<T>.c")
             };
 
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(expected);
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expected);
+            CreateStandardCompilation(text).VerifyDiagnostics(expected);
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expected);
         }
 
-        [WorkItem(544003, "DevDiv")]
-        [WorkItem(544232, "DevDiv")]
+        [WorkItem(544003, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544003")]
+        [WorkItem(544232, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544232")]
         [Fact]
         public void PointerTypesAsTypeArgs3()
         {
@@ -7802,15 +7836,15 @@ class C<T> : A
                 Diagnostic(ErrorCode.WRN_UnreferencedField, "c").WithArguments("C<T>.c")
             };
 
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(expected);
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expected);
+            CreateStandardCompilation(text).VerifyDiagnostics(expected);
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(expected);
         }
 
         #endregion PointerTypes tests
 
         #region misc unsafe tests
 
-        [Fact, WorkItem(543988, "DevDiv")]
+        [Fact, WorkItem(543988, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543988")]
         public void UnsafeFieldInitializerInStruct()
         {
             string sourceCode = @"
@@ -7820,13 +7854,13 @@ public struct Test
 }
 ";
             var tree = Parse(sourceCode);
-            var comp = CreateCompilationWithMscorlib(tree, options: TestOptions.UnsafeReleaseDll);
+            var comp = CreateStandardCompilation(tree, options: TestOptions.UnsafeReleaseDll);
             var model = comp.GetSemanticModel(tree);
 
             model.GetDiagnostics().Verify();
         }
 
-        [Fact, WorkItem(544143, "DevDiv")]
+        [Fact, WorkItem(544143, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544143")]
         public void ConvertFromPointerToSelf()
         {
             string text = @"
@@ -7842,7 +7876,7 @@ struct C
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseExe);
+            var comp = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseExe);
             comp.VerifyDiagnostics(
                 // (4,44): error CS0556: User-defined conversion must convert to or from the enclosing type
                 //     unsafe static public implicit operator long*(C* i)
@@ -7868,7 +7902,7 @@ unsafe class C
     volatile int* p; //Spec section 18.2 specifically allows this.
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,19): warning CS0169: The field 'C.p' is never used
                 //     volatile int* p; //Spec section 18.2 specifically allows this.
                 Diagnostic(ErrorCode.WRN_UnreferencedField, "p").WithArguments("C.p"));
@@ -7890,7 +7924,7 @@ unsafe class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll);
             var tree = compilation.SyntaxTrees.Single();
             var model = compilation.GetSemanticModel(tree);
 
@@ -7901,7 +7935,7 @@ unsafe class C
             Assert.Equal(default(ForEachStatementInfo), info);
         }
 
-        [Fact, WorkItem(544336, "DevDiv")]
+        [Fact, WorkItem(544336, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544336")]
         public void PointerTypeAsDelegateParamInAnonMethod()
         {
             // It is legal to use a delegate with pointer types in a "safe" context
@@ -7917,13 +7951,13 @@ class C
 }
 ";
             var tree = Parse(sourceCode);
-            var comp = CreateCompilationWithMscorlib(tree, options: TestOptions.UnsafeReleaseDll);
+            var comp = CreateStandardCompilation(tree, options: TestOptions.UnsafeReleaseDll);
             var model = comp.GetSemanticModel(tree);
 
             model.GetDiagnostics().Verify();
         }
 
-        [Fact(Skip = "529402"), WorkItem(529402, "DevDiv")]
+        [Fact(Skip = "529402"), WorkItem(529402, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529402")]
         public void DotOperatorOnPointerTypes()
         {
             string text = @"
@@ -7936,14 +7970,14 @@ unsafe class Program
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text, options: TestOptions.ReleaseExe);
+            var comp = CreateStandardCompilation(text, options: TestOptions.ReleaseExe);
             comp.VerifyDiagnostics(
                 // (7,9): error CS0023: Operator '.' cannot be applied to operand of type 'int*'
                 //        i1.ToString();
                 Diagnostic(ErrorCode.ERR_BadUnaryOp, "i1.ToString").WithArguments(".", "int*"));
         }
 
-        [Fact, WorkItem(545028, "DevDiv")]
+        [Fact, WorkItem(545028, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545028")]
         public void PointerToEnumInGeneric()
         {
             string text = @"
@@ -7953,7 +7987,7 @@ class C<T>
     unsafe E* ptr;
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (5,15): warning CS0169: The field 'C<T>.ptr' is never used
                 //     unsafe E* ptr;
                 Diagnostic(ErrorCode.WRN_UnreferencedField, "ptr").WithArguments("C<T>.ptr"));
@@ -7976,7 +8010,7 @@ public class Test
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (9,27): error CS0244: Neither 'is' nor 'as' is valid on pointer types
                 //         Console.WriteLine(t as int*); // pointer
                 Diagnostic(ErrorCode.ERR_PointerInAsOrIs, "t as int*"),
@@ -8015,7 +8049,7 @@ public class Test
                 Diagnostic(ErrorCode.ERR_UnsafeNeeded, "base"));
         }
 
-        [WorkItem(545985, "DevDiv")]
+        [WorkItem(545985, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545985")]
         [Fact]
         public void UnboxPointer()
         {
@@ -8028,7 +8062,7 @@ class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (6,17): error CS0030: Cannot convert type 'object' to 'int*'
                 //         var x = (int*)obj;
                 Diagnostic(ErrorCode.ERR_NoExplicitConv, "(int*)obj").WithArguments("object", "int*"));
@@ -8045,7 +8079,7 @@ class C
         public fixed int FixedbuffInt[1024];
     }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact]
@@ -8068,11 +8102,11 @@ class C
     public fixed double _Type11[10];  
     }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics();
         }
 
         [Fact()]
-        [WorkItem(547030, "DevDiv")]
+        [WorkItem(547030, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/547030")]
         public void FixedBuffersUsageScenarioInRange()
         {
             var text = @"
@@ -8187,7 +8221,7 @@ class Program
         }
 
         [Fact()]
-        [WorkItem(547030, "DevDiv")]
+        [WorkItem(547030, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/547030")]
         public void FixedBuffersUsagescenarioOutOfRange()
         {
             // This should work as no range checking for unsafe code.
@@ -8327,7 +8361,7 @@ unsafe struct s
         }
 
         [Fact]
-        [WorkItem(547074, "DevDiv")]
+        [WorkItem(547074, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/547074")]
         public void FixedBufferWithNoSize()
         {
             var text = @"
@@ -8336,7 +8370,7 @@ unsafe struct S
     fixed[
 }
 ";
-            var s = CreateCompilationWithMscorlib(text).GlobalNamespace.GetMember<TypeSymbol>("S");
+            var s = CreateStandardCompilation(text).GlobalNamespace.GetMember<TypeSymbol>("S");
             foreach (var member in s.GetMembers())
             {
                 var field = member as FieldSymbol;
@@ -8348,7 +8382,7 @@ unsafe struct S
         }
 
         [Fact()]
-        [WorkItem(547030, "DevDiv")]
+        [WorkItem(547030, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/547030")]
         public void FixedBufferUsageDifferentAssemblies()
         {
             // Ensure fixed buffers work as expected when fixed buffer is created in different assembly to where it is consumed.

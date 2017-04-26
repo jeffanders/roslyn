@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -12,7 +14,7 @@ namespace Roslyn.Utilities
     /// A set that returns the inserted values in insertion order.
     /// The mutation operations are not thread-safe.
     /// </summary>
-    internal sealed class SetWithInsertionOrder<T> : IEnumerable<T>
+    internal sealed class SetWithInsertionOrder<T> : IEnumerable<T>, IReadOnlySet<T>
     {
         private HashSet<T> _set = new HashSet<T>();
         private uint _nextElementValue = 0;

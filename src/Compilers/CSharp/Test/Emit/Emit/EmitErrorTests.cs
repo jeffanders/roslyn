@@ -21,7 +21,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
     {
         #region "Mixed Error Tests"
 
-        [WorkItem(543039, "DevDiv")]
+        [WorkItem(543039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543039")]
         [Fact]
         public void BadConstantInOtherAssemblyUsedByField()
         {
@@ -31,7 +31,7 @@ public class A
     public const int x = x;
 }
 ";
-            var compilation1 = CreateCompilationWithMscorlib(source1);
+            var compilation1 = CreateStandardCompilation(source1);
             compilation1.VerifyDiagnostics(
                 // (4,22): error CS0110: The evaluation of the constant value for 'A.x' involves a circular definition
                 Diagnostic(CSharp.ErrorCode.ERR_CircConstValue, "x").WithArguments("A.x"));
@@ -50,7 +50,7 @@ public class B
             VerifyEmitDiagnostics(source2, compilation1);
         }
 
-        [WorkItem(543039, "DevDiv")]
+        [WorkItem(543039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543039")]
         [Fact]
         public void BadConstantInOtherAssemblyUsedByLocal()
         {
@@ -60,7 +60,7 @@ public class A
     public const int x = x;
 }
 ";
-            var compilation1 = CreateCompilationWithMscorlib(source1);
+            var compilation1 = CreateStandardCompilation(source1);
             compilation1.VerifyDiagnostics(
                 // (4,22): error CS0110: The evaluation of the constant value for 'A.x' involves a circular definition
                 Diagnostic(CSharp.ErrorCode.ERR_CircConstValue, "x").WithArguments("A.x"));
@@ -80,7 +80,7 @@ public class B
                 Diagnostic(ErrorCode.WRN_UnreferencedVarAssg, "y").WithArguments("y"));
         }
 
-        [WorkItem(543039, "DevDiv")]
+        [WorkItem(543039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543039")]
         [Fact]
         public void BadDefaultArgumentInOtherAssembly()
         {
@@ -92,7 +92,7 @@ public class A
     public static int Foo(int y = x) { return y; }
 }
 ";
-            var compilation1 = CreateCompilationWithMscorlib(source1);
+            var compilation1 = CreateStandardCompilation(source1);
             compilation1.VerifyDiagnostics(
                 // (4,22): error CS0110: The evaluation of the constant value for 'A.x' involves a circular definition
                 Diagnostic(CSharp.ErrorCode.ERR_CircConstValue, "x").WithArguments("A.x"));
@@ -112,7 +112,7 @@ public class B
                 verify: false);
         }
 
-        [WorkItem(543039, "DevDiv")]
+        [WorkItem(543039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543039")]
         [Fact]
         public void BadDefaultArgumentInOtherAssembly_Decimal()
         {
@@ -124,7 +124,7 @@ public class A
     public static decimal Foo(decimal y = x) { return y; }
 }
 ";
-            var compilation1 = CreateCompilationWithMscorlib(source1);
+            var compilation1 = CreateStandardCompilation(source1);
             compilation1.VerifyDiagnostics(
                 // (4,22): error CS0110: The evaluation of the constant value for 'A.x' involves a circular definition
                 Diagnostic(ErrorCode.ERR_CircConstValue, "x").WithArguments("A.x"));
@@ -144,7 +144,7 @@ public class B
                 verify: false);
         }
 
-        [WorkItem(543039, "DevDiv")]
+        [WorkItem(543039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543039")]
         [Fact]
         public void BadDefaultArgumentInOtherAssembly_UserDefinedType()
         {
@@ -159,7 +159,7 @@ public class A
     public static S Foo(S p = 42) { return p; }
 }
 ";
-            var compilation1 = CreateCompilationWithMscorlib(source1);
+            var compilation1 = CreateStandardCompilation(source1);
             compilation1.VerifyDiagnostics(
                 // (9,27): error CS1750: A value of type 'int' cannot be used as a default parameter because there are no standard conversions to type 'S'
                 //     public static S Foo(S p = 42) { return p; }
@@ -194,7 +194,7 @@ public class B
 }");
         }
 
-        [WorkItem(543039, "DevDiv")]
+        [WorkItem(543039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543039")]
         [Fact]
         public void BadReturnTypeInOtherAssembly()
         {
@@ -204,7 +204,7 @@ public class A
     public static Missing Foo() { return null; }
 }
 ";
-            var compilation1 = CreateCompilationWithMscorlib(source1);
+            var compilation1 = CreateStandardCompilation(source1);
             compilation1.VerifyDiagnostics(
                 // (4,19): error CS0246: The type or namespace name 'Missing' could not be found (are you missing a using directive or an assembly reference?)
                 Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "Missing").WithArguments("Missing"));
@@ -224,7 +224,7 @@ public class B
 
         private static void VerifyEmitDiagnostics(string source2, CSharpCompilation compilation1, params DiagnosticDescription[] expectedDiagnostics)
         {
-            var compilation2 = CreateCompilationWithMscorlib(source2, new MetadataReference[] { new CSharpCompilationReference(compilation1) });
+            var compilation2 = CreateStandardCompilation(source2, new MetadataReference[] { new CSharpCompilationReference(compilation1) });
             compilation2.VerifyDiagnostics(expectedDiagnostics);
 
             using (var executableStream = new MemoryStream())
@@ -247,21 +247,21 @@ public class B
             }
         }
 
-        [Fact, WorkItem(530211, "DevDiv")]
+        [Fact, WorkItem(530211, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530211")]
         public void ModuleNameMismatch()
         {
             var moduleSource = "class Test {}";
-            var netModule = CreateCompilationWithMscorlib(moduleSource, options: TestOptions.ReleaseModule, assemblyName: "ModuleNameMismatch");
+            var netModule = CreateStandardCompilation(moduleSource, options: TestOptions.ReleaseModule, assemblyName: "ModuleNameMismatch");
 
             var moduleMetadata = ModuleMetadata.CreateFromImage(netModule.EmitToArray());
 
             var source = @"class Module1 { }";
 
-            var compilationOK = CreateCompilationWithMscorlib(source, new MetadataReference[] { moduleMetadata.GetReference(filePath: @"R:\A\B\ModuleNameMismatch.netmodule") });
+            var compilationOK = CreateStandardCompilation(source, new MetadataReference[] { moduleMetadata.GetReference(filePath: @"R:\A\B\ModuleNameMismatch.netmodule") });
 
             CompileAndVerify(compilationOK);
 
-            var compilationError = CreateCompilationWithMscorlib(source, new MetadataReference[] { moduleMetadata.GetReference(filePath: @"R:\A\B\ModuleNameMismatch.mod") });
+            var compilationError = CreateStandardCompilation(source, new MetadataReference[] { moduleMetadata.GetReference(filePath: @"R:\A\B\ModuleNameMismatch.mod") });
 
             compilationError.VerifyDiagnostics(
                 // error CS7086: Module name 'ModuleNameMismatch.netmodule' stored in 'ModuleNameMismatch.mod' must match its filename.
@@ -293,11 +293,42 @@ public class A
             //It could eliminate 'em all, but doesn't.
             var warnOpts = new System.Collections.Generic.Dictionary<string, ReportDiagnostic>();
             warnOpts.Add(MessageProvider.Instance.GetIdForErrorCode((int)ErrorCode.WRN_UnreferencedVarAssg), ReportDiagnostic.Suppress);
-            var compilation1 = CreateCompilationWithMscorlib(builder.ToString(), null, TestOptions.DebugDll.WithSpecificDiagnosticOptions(warnOpts));
+            var compilation1 = CreateStandardCompilation(builder.ToString(), null, TestOptions.DebugDll.WithSpecificDiagnosticOptions(warnOpts));
             compilation1.VerifyEmitDiagnostics(
                 // (4,23): error CS0204: Only 65534 locals, including those generated by the compiler, are allowed
                 //     public static int Main ()
                 Diagnostic(ErrorCode.ERR_TooManyLocals, "Main"));
+        }
+
+        [Fact, WorkItem(8287, "https://github.com/dotnet/roslyn/issues/8287")]
+        public void ToManyUserStrings()
+        {
+            var builder = new System.Text.StringBuilder();
+            builder.Append(@"
+public class A
+{
+    public static void Main ()
+        {
+");
+            for (int i = 0; i < 11; i++)
+            {
+                builder.Append("System.Console.WriteLine(\"");
+                builder.Append((char)('A' + i), 1000000);
+                builder.Append("\");");
+                builder.AppendLine();
+            }
+
+            builder.Append(@"
+        }
+}
+");
+
+            var compilation = CreateStandardCompilation(builder.ToString());
+
+            compilation.VerifyEmitDiagnostics(
+    // error CS8103: Combined length of user strings used by the program exceeds allowed limit. Try to decrease use of string literals.
+    Diagnostic(ErrorCode.ERR_TooManyUserStrings).WithLocation(1, 1)
+                );
         }
 
         #endregion

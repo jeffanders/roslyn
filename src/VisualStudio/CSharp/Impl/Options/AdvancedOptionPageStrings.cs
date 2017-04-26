@@ -62,6 +62,18 @@ namespace Microsoft.VisualStudio.LanguageServices.CSharp.Options
         public static string Option_at_the_end
             => ServicesVSResources.at_the_end;
 
+<<<<<<< HEAD
+=======
+        public static string Option_When_generating_properties
+            => ServicesVSResources.When_generating_properties;
+
+        public static string Option_prefer_auto_properties
+            => ServicesVSResources.prefer_auto_properties;
+
+        public static string Option_prefer_throwing_properties
+            => ServicesVSResources.prefer_throwing_properties;
+
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
         public static string Option_GenerateXmlDocCommentsForTripleSlash
         {
             get { return CSharpVSResources.Generate_XML_documentation_comments_for; }

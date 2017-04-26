@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis.CodeGeneration;
 using Microsoft.CodeAnalysis.Editing;
+using Microsoft.CodeAnalysis.ImplementType;
 using Microsoft.CodeAnalysis.LanguageServices;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Shared.Utilities;
@@ -25,16 +26,27 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                 bool generateAbstractly,
                 bool useExplicitInterfaceSymbol,
                 string memberName,
+                ImplementTypePropertyGenerationBehavior propertyGenerationBehavior,
                 CancellationToken cancellationToken)
             {
                 var factory = this.Document.GetLanguageService<SyntaxGenerator>();
                 var attributesToRemove = AttributesToRemove(compilation);
 
+<<<<<<< HEAD
                 var getAccessor = GenerateGetAccessor(compilation, property, accessibility, generateAbstractly,
                     useExplicitInterfaceSymbol, attributesToRemove, cancellationToken);
 
                 var setAccessor = GenerateSetAccessor(compilation, property, accessibility,
                     generateAbstractly, useExplicitInterfaceSymbol, attributesToRemove, cancellationToken);
+=======
+                var getAccessor = GenerateGetAccessor(
+                    compilation, property, accessibility, generateAbstractly, useExplicitInterfaceSymbol,
+                    propertyGenerationBehavior, attributesToRemove, cancellationToken);
+
+                var setAccessor = GenerateSetAccessor(
+                    compilation, property, accessibility, generateAbstractly, useExplicitInterfaceSymbol,
+                    propertyGenerationBehavior, attributesToRemove, cancellationToken);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
 
                 var syntaxFacts = Document.GetLanguageService<ISyntaxFactsService>();
                 var parameterNames = NameGenerator.EnsureUniqueness(
@@ -73,14 +85,56 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                 Accessibility accessibility,
                 bool generateAbstractly,
                 bool useExplicitInterfaceSymbol,
+<<<<<<< HEAD
+=======
+                ImplementTypePropertyGenerationBehavior propertyGenerationBehavior,
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
                 INamedTypeSymbol[] attributesToRemove,
                 CancellationToken cancellationToken)
             {
                 if (property.SetMethod == null)
+<<<<<<< HEAD
+=======
                 {
                     return null;
                 }
 
+                if (property.GetMethod == null)
+                {
+                    // Can't have an auto-prop with just a setter.
+                    propertyGenerationBehavior = ImplementTypePropertyGenerationBehavior.PreferThrowingProperties;
+                }
+
+                var setMethod = property.SetMethod.RemoveInaccessibleAttributesAndAttributesOfTypes(
+                     this.State.ClassOrStructType,
+                     attributesToRemove);
+
+                return CodeGenerationSymbolFactory.CreateAccessorSymbol(
+                    setMethod,
+                    attributes: default(ImmutableArray<AttributeData>),
+                    accessibility: accessibility,
+                    explicitInterfaceSymbol: useExplicitInterfaceSymbol ? property.SetMethod : null,
+                    statements: GetSetAccessorStatements(
+                        compilation, property, generateAbstractly, propertyGenerationBehavior, cancellationToken));
+            }
+
+            private IMethodSymbol GenerateGetAccessor(
+                Compilation compilation,
+                IPropertySymbol property,
+                Accessibility accessibility,
+                bool generateAbstractly,
+                bool useExplicitInterfaceSymbol,
+                ImplementTypePropertyGenerationBehavior propertyGenerationBehavior,
+                INamedTypeSymbol[] attributesToRemove,
+                CancellationToken cancellationToken)
+            {
+                if (property.GetMethod == null)
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
+                {
+                    return null;
+                }
+
+<<<<<<< HEAD
                 var setMethod = property.SetMethod.RemoveInaccessibleAttributesAndAttributesOfTypes(
                      this.State.ClassOrStructType,
                      attributesToRemove);
@@ -107,6 +161,8 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                     return null;
                 }
 
+=======
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
                 var getMethod = property.GetMethod.RemoveInaccessibleAttributesAndAttributesOfTypes(
                      this.State.ClassOrStructType,
                      attributesToRemove);
@@ -116,13 +172,22 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                     attributes: default(ImmutableArray<AttributeData>),
                     accessibility: accessibility,
                     explicitInterfaceSymbol: useExplicitInterfaceSymbol ? property.GetMethod : null,
+<<<<<<< HEAD
                     statements: GetGetAccessorStatements(compilation, property, generateAbstractly, cancellationToken));
+=======
+                    statements: GetGetAccessorStatements(
+                        compilation, property, generateAbstractly, propertyGenerationBehavior, cancellationToken));
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
 
             private ImmutableArray<SyntaxNode> GetSetAccessorStatements(
                 Compilation compilation,
                 IPropertySymbol property,
                 bool generateAbstractly,
+<<<<<<< HEAD
+=======
+                ImplementTypePropertyGenerationBehavior propertyGenerationBehavior,
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
                 CancellationToken cancellationToken)
             {
                 if (generateAbstractly)
@@ -157,13 +222,16 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                     return ImmutableArray.Create(factory.ExpressionStatement(expression));
                 }
 
-                return factory.CreateThrowNotImplementedStatementBlock(compilation);
+                return propertyGenerationBehavior == ImplementTypePropertyGenerationBehavior.PreferAutoProperties
+                    ? default(ImmutableArray<SyntaxNode>)
+                    : factory.CreateThrowNotImplementedStatementBlock(compilation);
             }
 
             private ImmutableArray<SyntaxNode> GetGetAccessorStatements(
                 Compilation compilation,
                 IPropertySymbol property,
                 bool generateAbstractly,
+                ImplementTypePropertyGenerationBehavior propertyGenerationBehavior,
                 CancellationToken cancellationToken)
             {
                 if (generateAbstractly)
@@ -196,7 +264,9 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                     return ImmutableArray.Create(factory.ReturnStatement(expression));
                 }
 
-                return factory.CreateThrowNotImplementedStatementBlock(compilation);
+                return propertyGenerationBehavior == ImplementTypePropertyGenerationBehavior.PreferAutoProperties
+                    ? default(ImmutableArray<SyntaxNode>)
+                    : factory.CreateThrowNotImplementedStatementBlock(compilation);
             }
         }
     }

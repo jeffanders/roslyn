@@ -248,7 +248,7 @@ world.";
             CompileAndVerify(source, expectedOutput: expectedOutput);
         }
 
-        [Fact, WorkItem(306), WorkItem(308)]
+        [Fact, WorkItem(306, "https://github.com/dotnet/roslyn/issues/306"), WorkItem(308, "https://github.com/dotnet/roslyn/issues/308")]
         public void DynamicInterpolation()
         {
             string source =
@@ -523,7 +523,7 @@ class Program
                 );
         }
 
-        [Fact, WorkItem(1119878, "DevDiv")]
+        [Fact, WorkItem(1119878, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1119878")]
         public void NoFillIns01()
         {
             string source =
@@ -773,7 +773,7 @@ class Program {
         IFormattable f = $""test"";
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyEmitDiagnostics(
+            CreateStandardCompilation(source).VerifyEmitDiagnostics(
                 // (5,26): error CS0518: Predefined type 'System.Runtime.CompilerServices.FormattableStringFactory' is not defined or imported
                 //         IFormattable f = $"test";
                 Diagnostic(ErrorCode.ERR_PredefinedTypeNotFound, @"$""test""").WithArguments("System.Runtime.CompilerServices.FormattableStringFactory").WithLocation(5, 26)
@@ -832,7 +832,7 @@ class Program {
         Console.WriteLine($""X = { 123 , int.MinValue }."");
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (5,42): warning CS8094: Alignment value 32768 has a magnitude greater than 32767 and may result in a large formatted string.
                 //         Console.WriteLine($"X = { 123 , (32768) }.");
                 Diagnostic(ErrorCode.WRN_AlignmentMagnitude, "32768").WithArguments("32768", "32767").WithLocation(5, 42),
@@ -848,7 +848,7 @@ class Program {
                 );
         }
 
-        [WorkItem(1097388, "DevDiv")]
+        [WorkItem(1097388, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1097388")]
         [Fact]
         public void InterpolationExpressionMustBeValue01()
         {
@@ -861,7 +861,7 @@ class Program {
         Console.WriteLine($""X = { null }."");
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (5,35): error CS0119: 'string' is a type, which is not valid in the given context
                 //         Console.WriteLine($"X = { String }.");
                 Diagnostic(ErrorCode.ERR_BadSKunknown, "String").WithArguments("string", "type").WithLocation(5, 35)
@@ -881,7 +881,7 @@ class Program {
         Console.WriteLine($""X = { Program.Main(null) }."");
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (5,35): error CS1660: Cannot convert lambda expression to type 'object' because it is not a delegate type
                 //         Console.WriteLine($"X = { x=>3 }.");
                 Diagnostic(ErrorCode.ERR_AnonMethToNonDel, "x=>3").WithArguments("lambda expression", "object").WithLocation(5, 35),
@@ -894,7 +894,7 @@ class Program {
                 );
         }
 
-        [WorkItem(1097428, "DevDiv")]
+        [WorkItem(1097428, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1097428")]
         [Fact]
         public void BadCorelib01()
         {
@@ -925,7 +925,7 @@ class Program {
             );
         }
 
-        [WorkItem(1097428, "DevDiv")]
+        [WorkItem(1097428, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1097428")]
         [Fact]
         public void BadCorelib02()
         {
@@ -1015,7 +1015,7 @@ class Program {
 }");
         }
 
-        [WorkItem(1097386, "DevDiv")]
+        [WorkItem(1097386, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1097386")]
         [Fact]
         public void Syntax01()
         {
@@ -1030,7 +1030,7 @@ class Program
         }
     } 
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 // (6,40): error CS8087: A '}' character may only be escaped by doubling '}}' in an interpolated string.
                 //         var x = $"{ Math.Abs(value: 1):\}";
                 Diagnostic(ErrorCode.ERR_EscapedCurly, @"\").WithArguments("}").WithLocation(6, 40),
@@ -1040,7 +1040,7 @@ class Program
                 );
         }
 
-        [WorkItem(1097941, "DevDiv")]
+        [WorkItem(1097941, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1097941")]
         [Fact]
         public void Syntax02()
         {
@@ -1057,7 +1057,7 @@ class C
             Assert.True(SyntaxFactory.ParseSyntaxTree(text).GetDiagnostics().Any(d => d.Severity == DiagnosticSeverity.Error));
         }
 
-        [WorkItem(1097386, "DevDiv")]
+        [WorkItem(1097386, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1097386")]
         [Fact]
         public void Syntax03()
         {
@@ -1072,14 +1072,14 @@ class Program
         }
     } 
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 // (6,18): error CS8076: Missing close delimiter '}' for interpolated expression started with '{'.
                 //         var x = $"{ Math.Abs(value: 1):}}";
                 Diagnostic(ErrorCode.ERR_UnclosedExpressionHole, @"""{").WithLocation(6, 18)
                 );
         }
 
-        [WorkItem(1099105, "DevDiv")]
+        [WorkItem(1099105, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1099105")]
         [Fact]
         public void NoUnexpandedForm()
         {
@@ -1101,7 +1101,7 @@ class Program {
 -System.String[]-");
         }
 
-        [WorkItem(1097386, "DevDiv")]
+        [WorkItem(1097386, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1097386")]
         [Fact]
         public void Dynamic01()
         {
@@ -1124,7 +1124,7 @@ class Program {
                 );
         }
 
-        [WorkItem(1099238, "DevDiv")]
+        [WorkItem(1099238, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1099238")]
         [Fact]
         public void Syntax04()
         {
@@ -1150,7 +1150,7 @@ class Program
                 );
         }
 
-        [Fact, WorkItem(1098612, "DevDiv")]
+        [Fact, WorkItem(1098612, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1098612")]
         public void MissingConversionFromFormattableStringToIFormattable()
         {
             var text =

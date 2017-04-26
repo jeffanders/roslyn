@@ -8,7 +8,9 @@ using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
 using System.Text;
 using Microsoft.CodeAnalysis.CSharp.Test.Utilities;
+using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Test.Utilities;
+using Microsoft.Metadata.Tools;
 using Roslyn.Test.MetadataUtilities;
 using Roslyn.Test.Utilities;
 using Xunit;
@@ -21,7 +23,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests.PDB
 
         private static CSharpCompilation CreateDummyCompilation(string assemblyName)
         {
-            return CreateCompilationWithMscorlib(
+            return CreateStandardCompilation(
                 "public class C { }",
                 assemblyName: assemblyName,
                 options: TestOptions.DebugDll);
@@ -363,7 +365,7 @@ namespace X
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text,
+            var compilation = CreateStandardCompilation(text,
                 assemblyName: GetUniqueName(),
                 options: TestOptions.DebugDll,
                 references: new[]
@@ -444,21 +446,21 @@ namespace X
 </symbols>");
         }
 
-        [Fact, WorkItem(1120579)]
+        [Fact, WorkItem(1120579, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1120579")]
         public void TestExternAliases2()
         {
             string source1 = @"
 namespace U.V.W {}
 ";
 
-            var compilation1 = CreateCompilationWithMscorlib(source1, options: TestOptions.DebugDll, assemblyName: "TestExternAliases2");
+            var compilation1 = CreateStandardCompilation(source1, options: TestOptions.DebugDll, assemblyName: "TestExternAliases2");
 
             string source2 = @"
 using U.V.W;
  
 class A { void M() {  } }
 ";
-            var compilation2 = CreateCompilationWithMscorlib(
+            var compilation2 = CreateStandardCompilation(
                 source2,
                 options: TestOptions.DebugDll,
                 references: new[]
@@ -492,21 +494,21 @@ class A { void M() {  } }
 ");
         }
 
-        [Fact, WorkItem(1120579)]
+        [Fact, WorkItem(1120579, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1120579")]
         public void TestExternAliases3()
         {
             string source1 = @"
 namespace U.V.W {}
 ";
 
-            var compilation1 = CreateCompilationWithMscorlib(source1, options: TestOptions.DebugDll, assemblyName: "TestExternAliases3");
+            var compilation1 = CreateStandardCompilation(source1, options: TestOptions.DebugDll, assemblyName: "TestExternAliases3");
 
             string source2 = @"
 using U.V.W;
  
 class A { void M() {  } }
 ";
-            var compilation2 = CreateCompilationWithMscorlib(
+            var compilation2 = CreateStandardCompilation(
                 source2,
                 options: TestOptions.DebugDll,
                 references: new[]
@@ -548,7 +550,7 @@ namespace N
 {
     public class C { }
 }";
-            var dummyCompilation = CreateCompilationWithMscorlib(src1, assemblyName: "A", options: TestOptions.DebugDll);
+            var dummyCompilation = CreateStandardCompilation(src1, assemblyName: "A", options: TestOptions.DebugDll);
 
             var src2 = @"
 namespace M
@@ -565,7 +567,7 @@ namespace M
         }
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(src2,
+            var compilation = CreateStandardCompilation(src2,
                 assemblyName: GetUniqueName(),
                 options: TestOptions.DebugDll,
                 references: new[]
@@ -587,8 +589,8 @@ namespace N
 }
 ";
 
-            CSharpCompilation dummyCompilation1 = CreateCompilationWithMscorlib(dummySource, assemblyName: "A", options: TestOptions.DebugDll);
-            CSharpCompilation dummyCompilation2 = CreateCompilationWithMscorlib(dummySource, assemblyName: "B", options: TestOptions.DebugDll);
+            CSharpCompilation dummyCompilation1 = CreateStandardCompilation(dummySource, assemblyName: "A", options: TestOptions.DebugDll);
+            CSharpCompilation dummyCompilation2 = CreateStandardCompilation(dummySource, assemblyName: "B", options: TestOptions.DebugDll);
 
             var text = @"
 extern alias A;
@@ -599,7 +601,7 @@ using Z = global::N;
 
 class C { void M() { } }
 ";
-            var compilation = CreateCompilationWithMscorlib(text,
+            var compilation = CreateStandardCompilation(text,
                 assemblyName: GetUniqueName(),
                 options: TestOptions.DebugDll,
                 references: new[]
@@ -649,7 +651,7 @@ class C { void M() { } }
         [Fact]
         public void TestExternAliasesInUsing()
         {
-            CSharpCompilation libComp = CreateCompilationWithMscorlib(@"
+            CSharpCompilation libComp = CreateStandardCompilation(@"
 namespace N
 {
     public class A { }
@@ -669,7 +671,7 @@ namespace N
     class B { void M() { } }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text,
+            var compilation = CreateStandardCompilation(text,
                 assemblyName: "Test",
                 options: TestOptions.DebugDll,
                 references: new[] { new CSharpCompilationReference(libComp, ImmutableArray.Create("P")) });
@@ -740,7 +742,7 @@ namespace X
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(text,
+            var compilation = CreateStandardCompilation(text,
                 assemblyName: GetUniqueName(),
                 options: TestOptions.DebugDll,
                 references: new[]
@@ -865,14 +867,14 @@ namespace X
 </symbols>");
         }
 
-        [Fact, WorkItem(913022, "DevDiv")]
+        [Fact, WorkItem(913022, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/913022")]
         public void ReferenceWithMultipleAliases()
         {
             var source1 = @"
 namespace N { public class D { } }
 namespace M { public class E { } }
 ";
-            var compilation1 = CreateCompilationWithMscorlib(source1, options: TestOptions.DebugDll);
+            var compilation1 = CreateStandardCompilation(source1, options: TestOptions.DebugDll);
 
             var source2 = @"
 extern alias A;
@@ -894,7 +896,7 @@ public class C
     }
 }";
 
-            var compilation2 = CreateCompilationWithMscorlib(source2,
+            var compilation2 = CreateStandardCompilation(source2,
                 options: TestOptions.DebugDll,
                 references: new[]
                 {
@@ -935,13 +937,13 @@ public class C
 ");
         }
 
-        [Fact, WorkItem(913022, "DevDiv")]
+        [Fact, WorkItem(913022, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/913022")]
         public void ReferenceWithGlobalAndDuplicateAliases()
         {
             var source1 = @"
 namespace N { public class D { } }
 ";
-            var compilation1 = CreateCompilationWithMscorlib(source1, options: TestOptions.DebugDll);
+            var compilation1 = CreateStandardCompilation(source1, options: TestOptions.DebugDll);
 
             var source2 = @"
 extern alias A;
@@ -957,7 +959,7 @@ public class C
     }
 }";
 
-            var compilation2 = CreateCompilationWithMscorlib(source2,
+            var compilation2 = CreateStandardCompilation(source2,
                 options: TestOptions.DebugDll,
                 references: new[]
                 {
@@ -1034,7 +1036,7 @@ namespace X
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(
+            var compilation = CreateStandardCompilation(
                 text1,
                 assemblyName: GetUniqueName(),
                 options: TestOptions.DebugDll,
@@ -1209,7 +1211,7 @@ namespace X
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(
+            var compilation = CreateStandardCompilation(
                 new string[] { text1, text2 },
                 assemblyName: GetUniqueName(),
                 options: TestOptions.DebugDll,
@@ -1690,7 +1692,7 @@ class C : I1, I2
 </symbols>");
         }
 
-        [WorkItem(692496, "DevDiv")]
+        [WorkItem(692496, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/692496")]
         [Fact]
         public void SequencePointOnUsingExpression()
         {
@@ -1750,7 +1752,7 @@ public class Outer
 }
 ";
 
-            var libRef = CreateCompilationWithMscorlib(libSource, assemblyName: "Lib").EmitToImageReference();
+            var libRef = CreateStandardCompilation(libSource, assemblyName: "Lib").EmitToImageReference();
 
             var source = @"
 using I = Outer.Inner;
@@ -1808,7 +1810,7 @@ namespace @namespace
 
 class Test { static void Main() { } }
 ";
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
 
             // As in dev12, we drop all '@'s.
             comp.VerifyPdb("Test.Main", @"
@@ -1833,12 +1835,12 @@ class Test { static void Main() { } }
 </symbols>");
         }
 
-        [WorkItem(842479, "DevDiv")]
+        [WorkItem(842479, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/842479")]
         [Fact]
         public void UsingExternAlias()
         {
             var libSource = "public class C { }";
-            var lib = CreateCompilationWithMscorlib(libSource, assemblyName: "Lib");
+            var lib = CreateStandardCompilation(libSource, assemblyName: "Lib");
             var libRef = lib.EmitToImageReference(aliases: ImmutableArray.Create("Q"));
 
             var source = @"
@@ -1857,7 +1859,7 @@ namespace N
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(source, new[] { libRef });
+            var comp = CreateStandardCompilation(source, new[] { libRef });
             comp.VerifyPdb("N.D.Main", @"
 <symbols>
   <methods>
@@ -1884,7 +1886,7 @@ namespace N
 </symbols>");
         }
 
-        [WorkItem(842478, "DevDiv")]
+        [WorkItem(842478, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/842478")]
         [Fact]
         public void AliasIncludingDynamic()
         {
@@ -1896,7 +1898,7 @@ class D
     static void Main() { }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyPdb("D.Main", @"
 <symbols>
   <methods>
@@ -1958,7 +1960,7 @@ public class Test : IDisposable
 }", TestOptions.ReleaseExe, methodName: "Test.Main");
         }
 
-        [WorkItem(546754, "DevDiv")]
+        [WorkItem(546754, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546754")]
         [Fact]
         public void ArrayType()
         {
@@ -1973,7 +1975,7 @@ public class Y<T>
   public class Z<U> {}
 }
 ";
-            var comp1 = CreateCompilationWithMscorlib(source1, options: TestOptions.DebugDll, assemblyName: "Comp1");
+            var comp1 = CreateStandardCompilation(source1, options: TestOptions.DebugDll, assemblyName: "Comp1");
 
             var source2 = @"
 using t1 = Y<W[]>;
@@ -1990,7 +1992,7 @@ public class C1
     }
 }
 ";
-            var comp2 = CreateCompilationWithMscorlib(source2, new[] { comp1.ToMetadataReference() }, options: TestOptions.DebugExe);
+            var comp2 = CreateStandardCompilation(source2, new[] { comp1.ToMetadataReference() }, options: TestOptions.DebugExe);
 
             comp2.VerifyPdb(@"
 <symbols>
@@ -2019,7 +2021,7 @@ public class C1
 </symbols>");
         }
 
-        [Fact, WorkItem(543615, "DevDiv")]
+        [Fact, WorkItem(543615, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543615")]
         public void WRN_DebugFullNameTooLong()
         {
             var text = @"
@@ -2041,7 +2043,7 @@ namespace foo
     }
 }";
 
-            var compilation = CreateCompilationWithMscorlib(text, options: TestOptions.DebugExe);
+            var compilation = CreateStandardCompilation(text, options: TestOptions.DebugExe);
 
             var exebits = new MemoryStream();
             var pdbbits = new MemoryStream();
@@ -2051,7 +2053,7 @@ namespace foo
                 Diagnostic(ErrorCode.WRN_DebugFullNameTooLong, "Main").WithArguments("AACT TSystem.Action`7[[System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Collections.Generic.Dictionary`2[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
         }
 
-        [WorkItem(1084059, "DevDiv")]
+        [WorkItem(1084059, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1084059")]
         [Fact]
         public void StaticType()
         {
@@ -2066,7 +2068,7 @@ class D
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyPdb("D.Main", @"
 <symbols>
     <methods>
@@ -2106,7 +2108,7 @@ class C
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(source, new[] { SystemCoreRef.WithAliases(new[] { "A" }), SystemDataRef });
+            var comp = CreateStandardCompilation(source, new[] { SystemCoreRef.WithAliases(new[] { "A" }), SystemDataRef });
             var v = CompileAndVerify(comp, validator: (peAssembly) =>
             {
                 var reader = peAssembly.ManifestModule.MetadataReader;
@@ -2135,6 +2137,56 @@ class C
         }
 
         [Fact]
+        public void UnusedImports_Nonexisting()
+        {
+            var source = @"
+extern alias A;
+using B;
+using X = C.D;
+using Y = A::E;
+using Z = F<int>;
+
+class C
+{
+    static void Main() 
+    {
+    }
+}
+";
+            var comp = CreateStandardCompilation(source);
+
+            comp.VerifyDiagnostics(
+                // (6,11): error CS0246: The type or namespace name 'F<>' could not be found (are you missing a using directive or an assembly reference?)
+                // using Z = F<int>;
+                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "F<int>").WithArguments("F<>").WithLocation(6, 11),
+                // (5,14): error CS0234: The type or namespace name 'E' does not exist in the namespace 'A' (are you missing an assembly reference?)
+                // using Y = A::E;
+                Diagnostic(ErrorCode.ERR_DottedTypeNameNotFoundInNS, "E").WithArguments("E", "A").WithLocation(5, 14),
+                // (4,13): error CS0426: The type name 'D' does not exist in the type 'C'
+                // using X = C.D;
+                Diagnostic(ErrorCode.ERR_DottedTypeNameNotFoundInAgg, "D").WithArguments("D", "C").WithLocation(4, 13),
+                // (2,14): error CS0430: The extern alias 'A' was not specified in a /reference option
+                // extern alias A;
+                Diagnostic(ErrorCode.ERR_BadExternAlias, "A").WithArguments("A").WithLocation(2, 14),
+                // (3,7): error CS0246: The type or namespace name 'B' could not be found (are you missing a using directive or an assembly reference?)
+                // using B;
+                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "B").WithArguments("B").WithLocation(3, 7),
+                // (5,1): hidden CS8019: Unnecessary using directive.
+                // using Y = A::E;
+                Diagnostic(ErrorCode.HDN_UnusedUsingDirective, "using Y = A::E;").WithLocation(5, 1),
+                // (3,1): hidden CS8019: Unnecessary using directive.
+                // using B;
+                Diagnostic(ErrorCode.HDN_UnusedUsingDirective, "using B;").WithLocation(3, 1),
+                // (4,1): hidden CS8019: Unnecessary using directive.
+                // using X = C.D;
+                Diagnostic(ErrorCode.HDN_UnusedUsingDirective, "using X = C.D;").WithLocation(4, 1),
+                // (6,1): hidden CS8019: Unnecessary using directive.
+                // using Z = F<int>;
+                Diagnostic(ErrorCode.HDN_UnusedUsingDirective, "using Z = F<int>;").WithLocation(6, 1)
+                );
+        }
+
+        [Fact]
         public void EmittingPdbVsNot()
         {
             string source = @"
@@ -2153,7 +2205,7 @@ class C
 }
 ";
 
-            var c = CreateCompilationWithMscorlib(source, assemblyName: "EmittingPdbVsNot", options: TestOptions.ReleaseDll);
+            var c = CreateStandardCompilation(source, assemblyName: "EmittingPdbVsNot", options: TestOptions.ReleaseDll);
 
             var peStream1 = new MemoryStream();
             var peStream2 = new MemoryStream();
@@ -2236,8 +2288,8 @@ class C
     }
 }
 ";
-            var libRef = CreateCompilationWithMscorlib(sourceLib, assemblyName: "ImportedNoPiaTypesAssemblyName").EmitToImageReference(embedInteropTypes: true);
-            var compilation = CreateCompilationWithMscorlib(source, new[] { libRef });
+            var libRef = CreateStandardCompilation(sourceLib, assemblyName: "ImportedNoPiaTypesAssemblyName").EmitToImageReference(embedInteropTypes: true);
+            var compilation = CreateStandardCompilation(source, new[] { libRef });
             var v = CompileAndVerify(compilation);
 
             v.Diagnostics.Verify(
@@ -2305,9 +2357,9 @@ class C
     }
 }
 ";
-            var libRef1 = CreateCompilationWithMscorlib(sourceLib1).EmitToImageReference();
-            var libRef2 = CreateCompilationWithMscorlib(sourceLib2, new[] { libRef1 }, assemblyName: "LibRef2").EmitToImageReference();
-            var compilation = CreateCompilationWithMscorlib(source, new[] { libRef2 });
+            var libRef1 = CreateStandardCompilation(sourceLib1).EmitToImageReference();
+            var libRef2 = CreateStandardCompilation(sourceLib2, new[] { libRef1 }, assemblyName: "LibRef2").EmitToImageReference();
+            var compilation = CreateStandardCompilation(source, new[] { libRef2 });
             var v = CompileAndVerify(compilation);
 
             v.Diagnostics.Verify(
@@ -2335,6 +2387,92 @@ class C
     </method>
   </methods>
 </symbols>");
+        }
+
+        [Fact]
+        public void ImportScopeEquality()
+        {
+            var sources = new[] { @"
+extern alias A;
+using System;
+using C = System;
+
+namespace N.M 
+{
+   using System.Collections;
+
+   class C1 { void F() {} }
+}
+
+namespace N.M 
+{
+   using System.Collections;
+
+   class C2 { void F() {} }
+}
+", @"
+extern alias A;
+using System;
+using C = System;
+
+namespace N.M 
+{
+   using System.Collections;
+
+   class C3 { void F() {} }
+}
+
+namespace N.M 
+{
+   using System.Collections.Generic;
+
+   class C4 { void F() {} }
+}
+", @"
+extern alias A;
+using System;
+using D = System;
+
+namespace N.M 
+{
+   using System.Collections;
+
+   class C5 { void F() {} }
+}
+", @"
+extern alias A;
+using System;
+
+class C6 { void F() {} }
+" };
+
+            var c = CreateStandardCompilation(sources, new[] { SystemCoreRef.WithAliases(ImmutableArray.Create("A")) });
+            var pdbStream = new MemoryStream();
+            c.EmitToArray(EmitOptions.Default.WithDebugInformationFormat(DebugInformationFormat.PortablePdb), pdbStream: pdbStream);
+            var pdbImage = pdbStream.ToImmutable();
+            using (var metadata = new PinnedMetadata(pdbImage))
+            {
+                var mdReader = metadata.Reader;
+                var writer = new StringWriter();
+                var mdVisualizer = new MetadataVisualizer(mdReader, writer);
+                mdVisualizer.WriteImportScope();
+
+                AssertEx.AssertEqualToleratingWhitespaceDifferences(@"
+ImportScope (index: 0x35, size: 36): 
+=============================================================================================
+   Parent                    Imports                                                          
+=============================================================================================
+1: nil (ImportScope)         'A' (#1) = 0x23000002 (AssemblyRef)                              
+2: 0x35000001 (ImportScope)  Extern Alias 'A' (#1), 'System' (#7)                             
+3: 0x35000001 (ImportScope)  Extern Alias 'A' (#1), 'System' (#7), 'C' (#1d) = 'System' (#7)  
+4: 0x35000003 (ImportScope)  nil                                                              
+5: 0x35000004 (ImportScope)  'System.Collections' (#27)                                       
+6: 0x35000004 (ImportScope)  'System.Collections.Generic' (#4b)                               
+7: 0x35000001 (ImportScope)  Extern Alias 'A' (#1), 'System' (#7), 'D' (#69) = 'System' (#7)  
+8: 0x35000007 (ImportScope)  nil                                                              
+9: 0x35000008 (ImportScope)  'System.Collections' (#27)    
+", writer.ToString());
+            }
         }
     }
 }

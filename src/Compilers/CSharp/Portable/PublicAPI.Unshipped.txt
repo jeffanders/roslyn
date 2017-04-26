@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *REMOVED*Microsoft.CodeAnalysis.CSharp.CSharpCompilationOptions.CSharpCompilationOptions(Microsoft.CodeAnalysis.OutputKind outputKind, string moduleName = null, string mainTypeName = null, string scriptClassName = null, System.Collections.Generic.IEnumerable<string> usings = null, Microsoft.CodeAnalysis.OptimizationLevel optimizationLevel = Microsoft.CodeAnalysis.OptimizationLevel.Debug, bool checkOverflow = false, bool allowUnsafe = false, string cryptoKeyContainer = null, string cryptoKeyFile = null, System.Collections.Immutable.ImmutableArray<byte> cryptoPublicKey = default(System.Collections.Immutable.ImmutableArray<byte>), bool? delaySign = null, Microsoft.CodeAnalysis.Platform platform = Microsoft.CodeAnalysis.Platform.AnyCpu, Microsoft.CodeAnalysis.ReportDiagnostic generalDiagnosticOption = Microsoft.CodeAnalysis.ReportDiagnostic.Default, int warningLevel = 4, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, Microsoft.CodeAnalysis.ReportDiagnostic>> specificDiagnosticOptions = null, bool concurrentBuild = true, Microsoft.CodeAnalysis.XmlReferenceResolver xmlReferenceResolver = null, Microsoft.CodeAnalysis.SourceReferenceResolver sourceReferenceResolver = null, Microsoft.CodeAnalysis.MetadataReferenceResolver metadataReferenceResolver = null, Microsoft.CodeAnalysis.AssemblyIdentityComparer assemblyIdentityComparer = null, Microsoft.CodeAnalysis.StrongNameProvider strongNameProvider = null) -> void
 *REMOVED*static Microsoft.CodeAnalysis.CSharp.SyntaxExtensions.NormalizeWhitespace(this Microsoft.CodeAnalysis.SyntaxToken token, string indentation = "    ", bool elasticTrivia = false) -> Microsoft.CodeAnalysis.SyntaxToken
 *REMOVED*static Microsoft.CodeAnalysis.CSharp.SyntaxExtensions.NormalizeWhitespace(this Microsoft.CodeAnalysis.SyntaxTriviaList list, string indentation = "    ", bool elasticTrivia = false) -> Microsoft.CodeAnalysis.SyntaxTriviaList
@@ -81,3 +82,12 @@ virtual Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor.VisitShebangDirectiveT
 virtual Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor<TResult>.VisitLoadDirectiveTrivia(Microsoft.CodeAnalysis.CSharp.Syntax.LoadDirectiveTriviaSyntax node) -> TResult
 virtual Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor<TResult>.VisitNonNullableType(Microsoft.CodeAnalysis.CSharp.Syntax.NonNullableTypeSyntax node) -> TResult
 virtual Microsoft.CodeAnalysis.CSharp.CSharpSyntaxVisitor<TResult>.VisitShebangDirectiveTrivia(Microsoft.CodeAnalysis.CSharp.Syntax.ShebangDirectiveTriviaSyntax node) -> TResult
+=======
+Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_1 = 701 -> Microsoft.CodeAnalysis.CSharp.LanguageVersion
+Microsoft.CodeAnalysis.CSharp.LanguageVersionFacts
+Microsoft.CodeAnalysis.CSharp.SyntaxKind.ConflictMarkerTrivia = 8564 -> Microsoft.CodeAnalysis.CSharp.SyntaxKind
+Microsoft.CodeAnalysis.CSharp.SyntaxKind.DefaultLiteralExpression = 8755 -> Microsoft.CodeAnalysis.CSharp.SyntaxKind
+static Microsoft.CodeAnalysis.CSharp.LanguageVersionFacts.MapSpecifiedToEffectiveVersion(this Microsoft.CodeAnalysis.CSharp.LanguageVersion version) -> Microsoft.CodeAnalysis.CSharp.LanguageVersion
+static Microsoft.CodeAnalysis.CSharp.LanguageVersionFacts.ToDisplayString(this Microsoft.CodeAnalysis.CSharp.LanguageVersion version) -> string
+static Microsoft.CodeAnalysis.CSharp.LanguageVersionFacts.TryParse(this string version, out Microsoft.CodeAnalysis.CSharp.LanguageVersion result) -> bool
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00

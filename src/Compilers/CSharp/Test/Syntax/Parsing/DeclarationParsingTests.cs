@@ -5,21 +5,20 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.Test.Utilities;
+using Microsoft.CodeAnalysis.Test.Utilities;
 using Roslyn.Test.Utilities;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Microsoft.CodeAnalysis.CSharp.UnitTests
 {
     public class DeclarationParsingTests : ParsingTests
     {
+        public DeclarationParsingTests(ITestOutputHelper output) : base(output) { }
+
         protected override SyntaxTree ParseTree(string text, CSharpParseOptions options)
         {
-            return SyntaxFactory.ParseSyntaxTree(text);
-        }
-
-        private CompilationUnitSyntax ParseFile(string text, CSharpParseOptions parseOptions = null)
-        {
-            return SyntaxFactory.ParseCompilationUnit(text, options: parseOptions);
+            return SyntaxFactory.ParseSyntaxTree(text, options);
         }
 
         [Fact]
@@ -1167,9 +1166,9 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.NotNull(file);
             Assert.Equal(1, file.Members.Count);
             Assert.Equal(text, file.ToString());
+
             var errors = file.Errors();
-            Assert.Equal(1, errors.Length);
-            Assert.Equal((int)ErrorCode.ERR_ConstraintOnlyAllowedOnGenericDecl, errors[0].Code);
+            Assert.Equal(0, errors.Length);
 
             Assert.Equal(SyntaxKind.ClassDeclaration, file.Members[0].Kind());
             var cs = (TypeDeclarationSyntax)file.Members[0];
@@ -1197,6 +1196,22 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.NotNull(cs.OpenBraceToken);
             Assert.Equal(0, cs.Members.Count);
             Assert.NotNull(cs.CloseBraceToken);
+
+            CreateStandardCompilation(text).GetDeclarationDiagnostics().Verify(
+                // (1,9): error CS0080: Constraints are not allowed on non-generic declarations
+                // class a where b : c { }
+                Diagnostic(ErrorCode.ERR_ConstraintOnlyAllowedOnGenericDecl, "where").WithLocation(1, 9));
+        }
+
+        [Fact]
+        public void TestNonGenericMethodWithTypeConstraintBound()
+        {
+            var text = "class a { void M() where b : c { } }";
+
+            CreateStandardCompilation(text).GetDeclarationDiagnostics().Verify(
+                // (1,20): error CS0080: Constraints are not allowed on non-generic declarations
+                // class a { void M() where b : c { } }
+                Diagnostic(ErrorCode.ERR_ConstraintOnlyAllowedOnGenericDecl, "where").WithLocation(1, 20));
         }
 
         [Fact]
@@ -2014,6 +2029,33 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         }
 
         [Fact]
+        public void TestDelegateWithRefReturnType()
+        {
+            var text = "delegate ref a b();";
+            var file = this.ParseFile(text);
+
+            Assert.NotNull(file);
+            Assert.Equal(1, file.Members.Count);
+            Assert.Equal(text, file.ToString());
+            Assert.Equal(0, file.Errors().Length);
+
+            Assert.Equal(SyntaxKind.DelegateDeclaration, file.Members[0].Kind());
+            var ds = (DelegateDeclarationSyntax)file.Members[0];
+            Assert.NotNull(ds.DelegateKeyword);
+            Assert.NotNull(ds.ReturnType);
+            Assert.Equal("ref a", ds.ReturnType.ToString());
+            Assert.NotNull(ds.Identifier);
+            Assert.Equal("b", ds.Identifier.ToString());
+            Assert.NotNull(ds.ParameterList.OpenParenToken);
+            Assert.False(ds.ParameterList.OpenParenToken.IsMissing);
+            Assert.Equal(0, ds.ParameterList.Parameters.Count);
+            Assert.NotNull(ds.ParameterList.CloseParenToken);
+            Assert.False(ds.ParameterList.CloseParenToken.IsMissing);
+            Assert.NotNull(ds.SemicolonToken);
+            Assert.False(ds.SemicolonToken.IsMissing);
+        }
+
+        [Fact]
         public void TestDelegateWithBuiltInReturnTypes()
         {
             TestDelegateWithBuiltInReturnType(SyntaxKind.VoidKeyword);
@@ -2458,9 +2500,15 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         }
 
         [Fact]
+<<<<<<< HEAD
         public void TestClassMethodWithNonNullableReferenceReturn()
         {
             var text = "class a { b! X() { } }";
+=======
+        public void TestClassMethodWithRefReturn()
+        {
+            var text = "class a { ref b X() { } }";
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             var file = this.ParseFile(text);
 
             Assert.NotNull(file);
@@ -2486,10 +2534,15 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.Equal(SyntaxKind.MethodDeclaration, cs.Members[0].Kind());
             var ms = (MethodDeclarationSyntax)cs.Members[0];
             Assert.Equal(0, ms.AttributeLists.Count);
+<<<<<<< HEAD
             Assert.Equal(0, ms.Modifiers.Count);
             Assert.NotNull(ms.ReturnType);
             Assert.Equal(SyntaxKind.NonNullableType, ms.ReturnType.Kind());
             Assert.Equal("b!", ms.ReturnType.ToString());
+=======
+            Assert.NotNull(ms.ReturnType);
+            Assert.Equal("ref b", ms.ReturnType.ToString());
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             Assert.NotNull(ms.Identifier);
             Assert.Equal("X", ms.Identifier.ToString());
             Assert.NotNull(ms.ParameterList.OpenParenToken);
@@ -2504,6 +2557,37 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.Equal(SyntaxKind.None, ms.SemicolonToken.Kind());
         }
 
+<<<<<<< HEAD
+=======
+        public void TestClassMethodWithRef()
+        {
+            var text = "class a { ref }";
+            var file = this.ParseFile(text);
+
+            Assert.NotNull(file);
+            Assert.Equal(1, file.Members.Count);
+            Assert.Equal(text, file.ToString());
+            Assert.Equal(1, file.Errors().Length);
+
+            Assert.Equal(SyntaxKind.ClassDeclaration, file.Members[0].Kind());
+            var cs = (TypeDeclarationSyntax)file.Members[0];
+            Assert.Equal(0, cs.AttributeLists.Count);
+            Assert.Equal(0, cs.Modifiers.Count);
+            Assert.NotNull(cs.Keyword);
+            Assert.Equal(SyntaxKind.ClassKeyword, cs.Keyword.Kind());
+            Assert.NotNull(cs.Identifier);
+            Assert.Equal("a", cs.Identifier.ToString());
+            Assert.Null(cs.BaseList);
+            Assert.Equal(0, cs.ConstraintClauses.Count);
+            Assert.NotNull(cs.OpenBraceToken);
+            Assert.NotNull(cs.CloseBraceToken);
+
+            Assert.Equal(1, cs.Members.Count);
+
+            Assert.Equal(SyntaxKind.IncompleteMember, cs.Members[0].Kind());
+        }
+
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
         private void TestClassMethodModifiers(params SyntaxKind[] modifiers)
         {
             var text = "class a { " + string.Join(" ", modifiers.Select(SyntaxFacts.GetText)) + " b X() { } }";
@@ -4048,9 +4132,15 @@ class Class1<T>{
         }
 
         [Fact]
+<<<<<<< HEAD
         public void TestClassPropertyWithNonNullableReference()
         {
             var text = "class a { b! c { get; set; } }";
+=======
+        public void TestClassPropertyWithRefReturn()
+        {
+            var text = "class a { ref b c { get; set; } }";
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             var file = this.ParseFile(text);
 
             Assert.NotNull(file);
@@ -4078,8 +4168,12 @@ class Class1<T>{
             Assert.Equal(0, ps.AttributeLists.Count);
             Assert.Equal(0, ps.Modifiers.Count);
             Assert.NotNull(ps.Type);
+<<<<<<< HEAD
             Assert.Equal(SyntaxKind.NonNullableType, ps.Type.Kind());
             Assert.Equal("b!", ps.Type.ToString());
+=======
+            Assert.Equal("ref b", ps.Type.ToString());
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             Assert.NotNull(ps.Identifier);
             Assert.Equal("c", ps.Identifier.ToString());
 
@@ -4233,7 +4327,7 @@ class Class1<T>{
         public void TestClassAutoPropertyWithInitializer()
         {
             var text = "class a { b c { get; set; } = d; }";
-            var file = this.ParseFile(text, TestOptions.ExperimentalParseOptions);
+            var file = this.ParseFile(text);
 
             Assert.NotNull(file);
             Assert.Equal(1, file.Members.Count);
@@ -4289,7 +4383,7 @@ class Class1<T>{
         public void InitializerOnNonAutoProp()
         {
             var text = "class C { int P { set {} } = 0; }";
-            var file = this.ParseFile(text, TestOptions.ExperimentalParseOptions);
+            var file = this.ParseFile(text);
 
             Assert.NotNull(file);
             Assert.Equal(0, file.Errors().Length);
@@ -4924,9 +5018,15 @@ class Class1<T>{
         }
 
         [Fact]
+<<<<<<< HEAD
         public void TestClassIndexerWithNonNullableReferenceReturnValue()
         {
             var text = "class a { b! this[c d] { get; set; } }";
+=======
+        public void TestClassIndexerWithRefReturn()
+        {
+            var text = "class a { ref b this[c d] { get; set; } }";
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             var file = this.ParseFile(text);
 
             Assert.NotNull(file);
@@ -4954,8 +5054,12 @@ class Class1<T>{
             Assert.Equal(0, ps.AttributeLists.Count);
             Assert.Equal(0, ps.Modifiers.Count);
             Assert.NotNull(ps.Type);
+<<<<<<< HEAD
             Assert.Equal(SyntaxKind.NonNullableType, ps.Type.Kind());
             Assert.Equal("b!", ps.Type.ToString());
+=======
+            Assert.Equal("ref b", ps.Type.ToString());
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             Assert.NotNull(ps.ThisKeyword);
             Assert.Equal("this", ps.ThisKeyword.ToString());
 
@@ -4992,6 +5096,7 @@ class Class1<T>{
         }
 
         [Fact]
+<<<<<<< HEAD
         public void TestClassIndexerWithNonNullableReferenceIndex()
         {
             var text = "class a { b this[c! d] { get; set; } }";
@@ -5060,6 +5165,8 @@ class Class1<T>{
         }
 
         [Fact]
+=======
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
         public void TestClassIndexerWithMultipleParameters()
         {
             var text = "class a { b this[c d, e f] { get; set; } }";
@@ -5541,7 +5648,7 @@ class Class1<T>{
             Assert.Equal((int)ErrorCode.ERR_UnexpectedGenericName, ns.Name.Errors()[0].Code);
         }
 
-        [WorkItem(537690, "DevDiv")]
+        [WorkItem(537690, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537690")]
         [Fact]
         public void TestMissingSemicolonAfterListInitializer()
         {
@@ -5559,7 +5666,7 @@ class Program {
             Assert.Equal((int)ErrorCode.ERR_SemicolonExpected, file.Errors()[0].Code);
         }
 
-        [WorkItem(539120, "DevDiv")]
+        [WorkItem(539120, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/539120")]
         [Fact]
         public void TestEscapedConstructor()
         {
@@ -5575,7 +5682,7 @@ class @class
             Assert.Equal(0, file.Errors().Length);
         }
 
-        [WorkItem(536956, "DevDiv")]
+        [WorkItem(536956, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/536956")]
         [Fact]
         public void TestAnonymousMethodWithDefaultParameter()
         {
@@ -5590,12 +5697,15 @@ class C {
             var file = this.ParseFile(text);
 
             Assert.NotNull(file);
-            Assert.Equal(1, file.Errors().Length);
+            Assert.Equal(0, file.Errors().Length);
 
-            Assert.Equal((int)ErrorCode.ERR_DefaultValueNotAllowed, file.Errors()[0].Code);
+            CreateStandardCompilation(text).VerifyDiagnostics(
+                // (5,28): error CS1065: Default values are not valid in this context.
+                //      F f = delegate (int x = 0) { };
+                Diagnostic(ErrorCode.ERR_DefaultValueNotAllowed, "=").WithLocation(5, 28));
         }
 
-        [WorkItem(537865, "DevDiv")]
+        [WorkItem(537865, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537865")]
         [Fact]
         public void RegressIfDevTrueUnicode()
         {
@@ -5616,7 +5726,7 @@ System.Console.WriteLine(""Bad, breaking change"");
             TestConditionalCompilation(text, desiredText: "Good", undesiredText: "Bad");
         }
 
-        [WorkItem(537815, "DevDiv")]
+        [WorkItem(537815, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537815")]
         [Fact]
         public void RegressLongDirectiveIdentifierDefn()
         {
@@ -5640,7 +5750,7 @@ System.Console.WriteLine(""Bad, breaking change"");
             TestConditionalCompilation(text, desiredText: "Good", undesiredText: "Bad");
         }
 
-        [WorkItem(537815, "DevDiv")]
+        [WorkItem(537815, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537815")]
         [Fact]
         public void RegressLongDirectiveIdentifierUse()
         {
@@ -5711,8 +5821,14 @@ class C
    void M(__arglist, int j)  {}
 }";
 
-            TestError(text1, ErrorCode.ERR_ParamsLast);
-            TestError(text2, ErrorCode.ERR_VarargsLast);
+            CreateStandardCompilation(text1).VerifyDiagnostics(
+                // (4,11): error CS0231: A params parameter must be the last parameter in a formal parameter list
+                //    void M(params int[] i, int j)  {}
+                Diagnostic(ErrorCode.ERR_ParamsLast, "params int[] i").WithLocation(4, 11));
+            CreateStandardCompilation(text2).VerifyDiagnostics(
+                // (4,11): error CS0257: An __arglist parameter must be the last parameter in a formal parameter list
+                //    void M(__arglist, int j)  {}
+                Diagnostic(ErrorCode.ERR_VarargsLast, "__arglist").WithLocation(4, 11));
         }
 
         [Fact]
@@ -5860,6 +5976,274 @@ class C
                 }
                 N(SyntaxKind.EndOfFileToken);
             }
+        }
+
+        [Fact]
+        public void TupleArgument01()
+        {
+            var text = @"
+class C1
+{
+    static (T, T) Test1<T>(int a, (byte, byte) arg0)
+    {
+        return default((T, T));
+    }
+
+    static (T, T) Test2<T>(ref (byte, byte) arg0)
+    {
+        return default((T, T));
+    }
+}
+";
+            var file = this.ParseFile(text, parseOptions: TestOptions.Regular);
+            Assert.Equal(0, file.Errors().Length);
+        }
+
+        [Fact]
+        public void TupleArgument02()
+        {
+            var text = @"
+class C1
+{
+    static (T, T) Test3<T>((byte, byte) arg0)
+    {
+        return default((T, T));
+    }
+
+    (T, T) Test3<T>((byte a, byte b)[] arg0)
+    {
+        return default((T, T));
+    }
+}
+";
+            var file = this.ParseFile(text, parseOptions: TestOptions.Regular);
+            Assert.Equal(0, file.Errors().Length);
+        }
+
+        [Fact]
+        [WorkItem(13578, "https://github.com/dotnet/roslyn/issues/13578")]
+        [CompilerTrait(CompilerFeature.ExpressionBody)]
+        public void ExpressionBodiedCtorDtorProp()
+        {
+            UsingTree(@"
+class C
+{
+    C() : base() => M();
+    C() => M();
+    ~C() => M();
+    int P { set => M(); }
+}
+");
+
+            N(SyntaxKind.CompilationUnit);
+            {
+                N(SyntaxKind.ClassDeclaration);
+                {
+                    N(SyntaxKind.ClassKeyword);
+                    N(SyntaxKind.IdentifierToken);
+                    N(SyntaxKind.OpenBraceToken);
+                    N(SyntaxKind.ConstructorDeclaration);
+                    {
+                        N(SyntaxKind.IdentifierToken);
+                        N(SyntaxKind.ParameterList);
+                        {
+                            N(SyntaxKind.OpenParenToken);
+                            N(SyntaxKind.CloseParenToken);
+                        }
+                        N(SyntaxKind.BaseConstructorInitializer);
+                        {
+                            N(SyntaxKind.ColonToken);
+                            N(SyntaxKind.BaseKeyword);
+                            N(SyntaxKind.ArgumentList);
+                            {
+                                N(SyntaxKind.OpenParenToken);
+                                N(SyntaxKind.CloseParenToken);
+                            }
+                        }
+                        N(SyntaxKind.ArrowExpressionClause);
+                        {
+                            N(SyntaxKind.EqualsGreaterThanToken);
+                            N(SyntaxKind.InvocationExpression);
+                            {
+                                N(SyntaxKind.IdentifierName);
+                                {
+                                    N(SyntaxKind.IdentifierToken);
+                                }
+                                N(SyntaxKind.ArgumentList);
+                                {
+                                    N(SyntaxKind.OpenParenToken);
+                                    N(SyntaxKind.CloseParenToken);
+                                }
+                            }
+                        }
+                        N(SyntaxKind.SemicolonToken);
+                    }
+                    N(SyntaxKind.ConstructorDeclaration);
+                    {
+                        N(SyntaxKind.IdentifierToken);
+                        N(SyntaxKind.ParameterList);
+                        {
+                            N(SyntaxKind.OpenParenToken);
+                            N(SyntaxKind.CloseParenToken);
+                        }
+                        N(SyntaxKind.ArrowExpressionClause);
+                        {
+                            N(SyntaxKind.EqualsGreaterThanToken);
+                            N(SyntaxKind.InvocationExpression);
+                            {
+                                N(SyntaxKind.IdentifierName);
+                                {
+                                    N(SyntaxKind.IdentifierToken);
+                                }
+                                N(SyntaxKind.ArgumentList);
+                                {
+                                    N(SyntaxKind.OpenParenToken);
+                                    N(SyntaxKind.CloseParenToken);
+                                }
+                            }
+                        }
+                        N(SyntaxKind.SemicolonToken);
+                    }
+                    N(SyntaxKind.DestructorDeclaration);
+                    {
+                        N(SyntaxKind.TildeToken);
+                        N(SyntaxKind.IdentifierToken);
+                        N(SyntaxKind.ParameterList);
+                        {
+                            N(SyntaxKind.OpenParenToken);
+                            N(SyntaxKind.CloseParenToken);
+                        }
+                        N(SyntaxKind.ArrowExpressionClause);
+                        {
+                            N(SyntaxKind.EqualsGreaterThanToken);
+                            N(SyntaxKind.InvocationExpression);
+                            {
+                                N(SyntaxKind.IdentifierName);
+                                {
+                                    N(SyntaxKind.IdentifierToken);
+                                }
+                                N(SyntaxKind.ArgumentList);
+                                {
+                                    N(SyntaxKind.OpenParenToken);
+                                    N(SyntaxKind.CloseParenToken);
+                                }
+                            }
+                        }
+                        N(SyntaxKind.SemicolonToken);
+                    }
+                    N(SyntaxKind.PropertyDeclaration);
+                    {
+                        N(SyntaxKind.PredefinedType);
+                        {
+                            N(SyntaxKind.IntKeyword);
+                        }
+                        N(SyntaxKind.IdentifierToken);
+                        N(SyntaxKind.AccessorList);
+                        {
+                            N(SyntaxKind.OpenBraceToken);
+                            N(SyntaxKind.SetAccessorDeclaration);
+                            {
+                                N(SyntaxKind.SetKeyword);
+                                N(SyntaxKind.ArrowExpressionClause);
+                                {
+                                    N(SyntaxKind.EqualsGreaterThanToken);
+                                    N(SyntaxKind.InvocationExpression);
+                                    {
+                                        N(SyntaxKind.IdentifierName);
+                                        {
+                                            N(SyntaxKind.IdentifierToken);
+                                        }
+                                        N(SyntaxKind.ArgumentList);
+                                        {
+                                            N(SyntaxKind.OpenParenToken);
+                                            N(SyntaxKind.CloseParenToken);
+                                        }
+                                    }
+                                }
+                                N(SyntaxKind.SemicolonToken);
+                            }
+                            N(SyntaxKind.CloseBraceToken);
+                        }
+                    }
+                    N(SyntaxKind.CloseBraceToken);
+                }
+                N(SyntaxKind.EndOfFileToken);
+            }
+        }
+
+
+        [Fact]
+        public void ParseOutVar()
+        {
+            var tree = UsingTree(@"
+class C
+{
+    void Foo()
+    {
+        M(out var x);
+    }
+}", options: TestOptions.Regular.WithTuplesFeature());
+            N(SyntaxKind.CompilationUnit);
+            {
+                N(SyntaxKind.ClassDeclaration);
+                {
+                    N(SyntaxKind.ClassKeyword);
+                    N(SyntaxKind.IdentifierToken, "C");
+                    N(SyntaxKind.OpenBraceToken);
+                    N(SyntaxKind.MethodDeclaration);
+                    {
+                        N(SyntaxKind.PredefinedType);
+                        {
+                            N(SyntaxKind.VoidKeyword);
+                        }
+                        N(SyntaxKind.IdentifierToken, "Foo");
+                        N(SyntaxKind.ParameterList);
+                        {
+                            N(SyntaxKind.OpenParenToken);
+                            N(SyntaxKind.CloseParenToken);
+                        }
+                        N(SyntaxKind.Block);
+                        {
+                            N(SyntaxKind.OpenBraceToken);
+                            N(SyntaxKind.ExpressionStatement);
+                            {
+                                N(SyntaxKind.InvocationExpression);
+                                {
+                                    N(SyntaxKind.IdentifierName);
+                                    {
+                                        N(SyntaxKind.IdentifierToken, "M");
+                                    }
+                                    N(SyntaxKind.ArgumentList);
+                                    {
+                                        N(SyntaxKind.OpenParenToken);
+                                        N(SyntaxKind.Argument);
+                                        {
+                                            N(SyntaxKind.OutKeyword);
+                                            N(SyntaxKind.DeclarationExpression);
+                                            {
+                                                N(SyntaxKind.IdentifierName);
+                                                {
+                                                    N(SyntaxKind.IdentifierToken, "var");
+                                                }
+                                                N(SyntaxKind.SingleVariableDesignation);
+                                                {
+                                                    N(SyntaxKind.IdentifierToken, "x");
+                                                }
+                                            }
+                                        }
+                                        N(SyntaxKind.CloseParenToken);
+                                    }
+                                }
+                                N(SyntaxKind.SemicolonToken);
+                            }
+                            N(SyntaxKind.CloseBraceToken);
+                        }
+                    }
+                    N(SyntaxKind.CloseBraceToken);
+                }
+                N(SyntaxKind.EndOfFileToken);
+            }
+            EOF();
         }
     }
 }

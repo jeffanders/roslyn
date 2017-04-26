@@ -182,7 +182,7 @@ namespace N1 {
 
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var n1 = global.GetMembers("N1").Single() as NamespaceSymbol;
 
@@ -226,7 +226,7 @@ namespace N1 {
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var n1 = global.GetMembers("N1").Single() as NamespaceSymbol;
             var c1 = n1.GetTypeMembers("C1").Single() as NamedTypeSymbol;
@@ -252,7 +252,7 @@ class C1 {
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             var model = comp.GetSemanticModel(tree);
             var global = comp.GlobalNamespace;
             int posA1 = text.IndexOf("a1", StringComparison.Ordinal);
@@ -279,7 +279,7 @@ class C1 {
             }
         }
 
-        [WorkItem(543829, "DevDiv")]
+        [WorkItem(543829, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543829")]
         [Fact]
         public void AnonymousTypeSymbolWithExplicitNew()
         {
@@ -295,7 +295,7 @@ class C1 {
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             var model = comp.GetSemanticModel(tree);
             var global = comp.GlobalNamespace;
 
@@ -401,7 +401,7 @@ namespace N1.N2 {
 
 namespace System {}
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var system = global.GetMembers("System").Single() as NamespaceSymbol;
             var n1 = global.GetMembers("N1").Single() as NamespaceSymbol;
@@ -441,7 +441,7 @@ namespace N1 {
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var n1 = global.GetMembers("N1").Single() as NamespaceSymbol;
             var c1 = n1.GetTypeMembers("C1").Single() as NamedTypeSymbol;
@@ -508,7 +508,7 @@ namespace N1 {
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var n1 = global.GetMembers("N1").Single() as NamespaceSymbol;
             var c1 = n1.GetTypeMembers("C1").Single() as NamedTypeSymbol;
@@ -597,7 +597,7 @@ class C1
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             CheckDeclaringSyntax<VariableDeclaratorSyntax>(comp, tree, "loc1", SymbolKind.Local);
             CheckDeclaringSyntax<VariableDeclaratorSyntax>(comp, tree, "loc2", SymbolKind.Local);
             CheckDeclaringSyntax<VariableDeclaratorSyntax>(comp, tree, "loc3", SymbolKind.Local);
@@ -632,7 +632,7 @@ class C1
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             CheckDeclaringSyntax<LabeledStatementSyntax>(comp, tree, "lab1", SymbolKind.Label);
             CheckDeclaringSyntax<LabeledStatementSyntax>(comp, tree, "lab2", SymbolKind.Label);
             CheckDeclaringSyntax<LabeledStatementSyntax>(comp, tree, "lab3", SymbolKind.Label);
@@ -658,7 +658,7 @@ namespace N1
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             CheckDeclaringSyntax<UsingDirectiveSyntax>(comp, tree, "ConsoleAlias", SymbolKind.Alias);
             CheckDeclaringSyntax<UsingDirectiveSyntax>(comp, tree, "ListOfIntAlias", SymbolKind.Alias);
             CheckDeclaringSyntax<UsingDirectiveSyntax>(comp, tree, "FooAlias", SymbolKind.Alias);
@@ -684,7 +684,7 @@ class C
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             CheckDeclaringSyntax<QueryClauseSyntax>(comp, tree, "range1", SymbolKind.RangeVariable);
             CheckDeclaringSyntax<QueryClauseSyntax>(comp, tree, "range2", SymbolKind.RangeVariable);
             CheckDeclaringSyntax<QueryContinuationSyntax>(comp, tree, "range3", SymbolKind.RangeVariable);
@@ -713,10 +713,52 @@ class C
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             CheckLambdaDeclaringSyntax<ParenthesizedLambdaExpressionSyntax>(comp, tree, "/*1*/");
             CheckLambdaDeclaringSyntax<SimpleLambdaExpressionSyntax>(comp, tree, "/*2*/");
             CheckLambdaDeclaringSyntax<AnonymousMethodExpressionSyntax>(comp, tree, "/*3*/");
+        }
+
+        /// <summary>
+        /// Symbol location order should be preserved when trees
+        /// are replaced in the compilation.
+        /// </summary>
+        [WorkItem(11015, "https://github.com/dotnet/roslyn/issues/11015")]
+        [Fact]
+        public void PreserveLocationOrderOnReplaceSyntaxTree()
+        {
+            var source0 = Parse("namespace N { partial class C { } } namespace N0 { } class C0 { }");
+            var source1 = Parse("namespace N { partial class C { } } namespace N1 { } class C1 { }");
+            var source2 = Parse("namespace N { struct S { } }");
+            var source3 = Parse("namespace N { partial class C { } } namespace N3 { } class C3 { }");
+            var comp0 = CreateStandardCompilation(new[] { source0, source1, source2, source3 });
+            comp0.VerifyDiagnostics();
+            Assert.Equal(new[] { source0, source1, source2, source3 }, comp0.SyntaxTrees);
+
+            // Location order of partial class should match SyntaxTrees order.
+            var locations = comp0.GetMember<NamedTypeSymbol>("N.C").Locations;
+            Assert.Equal(new[] { source0, source1, source3 }, locations.Select(l => l.SourceTree));
+
+            // AddSyntaxTrees will add to the end.
+            var source4 = Parse("namespace N { partial class C { } } namespace N4 { } class C4 { }");
+            var comp1 = comp0.AddSyntaxTrees(source4);
+            locations = comp1.GetMember<NamedTypeSymbol>("N.C").Locations;
+            Assert.Equal(new[] { source0, source1, source3, source4 }, locations.Select(l => l.SourceTree));
+
+            // ReplaceSyntaxTree should preserve location order.
+            var comp2 = comp0.ReplaceSyntaxTree(source1, source4);
+            locations = comp2.GetMember<NamedTypeSymbol>("N.C").Locations;
+            Assert.Equal(new[] { source0, source4, source3 }, locations.Select(l => l.SourceTree));
+
+            // NamespaceNames and TypeNames do not match SyntaxTrees order.
+            // This is expected.
+            Assert.Equal(new[] { "", "N3", "N0", "N", "", "N4", "N" }, comp2.Declarations.NamespaceNames.ToArray());
+            Assert.Equal(new[] { "C3", "C0", "S", "C", "C4", "C" }, comp2.Declarations.TypeNames.ToArray());
+
+            // RemoveSyntaxTrees should preserve order of remaining trees.
+            var comp3 = comp2.RemoveSyntaxTrees(source0);
+            locations = comp3.GetMember<NamedTypeSymbol>("N.C").Locations;
+            Assert.Equal(new[] { source4, source3 }, locations.Select(l => l.SourceTree));
         }
     }
 }

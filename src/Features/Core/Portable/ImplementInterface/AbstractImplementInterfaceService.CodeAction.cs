@@ -176,10 +176,21 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                 var compilation = await result.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
 
                 var isComImport = unimplementedMembers.Any(t => t.Item1.IsComImport);
+<<<<<<< HEAD
+=======
+                var options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
+                var propertyGenerationBehavior = options.GetOption(ImplementTypeOptions.PropertyGenerationBehavior);
+
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
                 var memberDefinitions = GenerateMembers(
-                    compilation,
-                    unimplementedMembers,
-                    cancellationToken);
+                    compilation, unimplementedMembers, propertyGenerationBehavior, cancellationToken);
+
+                // Only group the members in the destination if the user wants that *and* 
+                // it's not a ComImport interface.  Member ordering in ComImport interfaces 
+                // matters, so we don't want to much with them.
+                var insertionBehavior = options.GetOption(ImplementTypeOptions.InsertionBehavior);
+                var groupMembers = !isComImport &&
+                    insertionBehavior == ImplementTypeInsertionBehavior.WithOtherMembersOfTheSameKind;
 
                 // Only group the members in the destination if the user wants that *and* 
                 // it's not a ComImport interface.  Member ordering in ComImport interfaces 
@@ -203,6 +214,10 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
             private ImmutableArray<ISymbol> GenerateMembers(
                 Compilation compilation,
                 ImmutableArray<(INamedTypeSymbol type, ImmutableArray<ISymbol> members)> unimplementedMembers,
+<<<<<<< HEAD
+=======
+                ImplementTypePropertyGenerationBehavior propertyGenerationBehavior,
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
                 CancellationToken cancellationToken)
             {
                 // As we go along generating members we may end up with conflicts.  For example, say
@@ -229,7 +244,9 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
 
                     foreach (var unimplementedInterfaceMember in unimplementedInterfaceMembers)
                     {
-                        var member = GenerateMember(compilation, unimplementedInterfaceMember, implementedVisibleMembers, cancellationToken);
+                        var member = GenerateMember(
+                            compilation, unimplementedInterfaceMember, implementedVisibleMembers, 
+                            propertyGenerationBehavior, cancellationToken);
                         if (member != null)
                         {
                             implementedMembers.Add(member);
@@ -272,6 +289,7 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                 Compilation compilation,
                 ISymbol member,
                 List<ISymbol> implementedVisibleMembers,
+                ImplementTypePropertyGenerationBehavior propertyGenerationBehavior,
                 CancellationToken cancellationToken)
             {
                 // First check if we already generate a member that matches the member we want to
@@ -308,7 +326,9 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                 var syntaxFacts = Document.GetLanguageService<ISyntaxFactsService>();
                 var addUnsafe = member.IsUnsafe() && !syntaxFacts.IsUnsafeContext(State.Location);
 
-                return GenerateMember(compilation, member, memberName, generateInvisibleMember, generateAbstractly, addNew, addUnsafe, cancellationToken);
+                return GenerateMember(
+                    compilation, member, memberName, generateInvisibleMember, generateAbstractly,
+                    addNew, addUnsafe, propertyGenerationBehavior, cancellationToken);
             }
 
             private bool GenerateInvisibleMember(ISymbol member, string memberName)
@@ -376,6 +396,7 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                 bool generateAbstractly,
                 bool addNew,
                 bool addUnsafe,
+                ImplementTypePropertyGenerationBehavior propertyGenerationBehavior,
                 CancellationToken cancellationToken)
             {
                 var factory = this.Document.GetLanguageService<SyntaxGenerator>();
@@ -386,20 +407,41 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                     ? Accessibility.Public
                     : Accessibility.Private;
 
-                if (member.Kind == SymbolKind.Method)
+                switch (member)
                 {
-                    var method = (IMethodSymbol)member;
+                    case IMethodSymbol method:
+                        return GenerateMethod(compilation, method, accessibility, modifiers, generateAbstractly, useExplicitInterfaceSymbol, memberName, cancellationToken);
 
-                    return GenerateMethod(compilation, method, accessibility, modifiers, generateAbstractly, useExplicitInterfaceSymbol, memberName, cancellationToken);
-                }
-                else if (member.Kind == SymbolKind.Property)
-                {
-                    var property = (IPropertySymbol)member;
+                    case IPropertySymbol property:
+                        return GenerateProperty(compilation, property, accessibility, modifiers, generateAbstractly, useExplicitInterfaceSymbol, memberName, propertyGenerationBehavior, cancellationToken);
 
-                    return GenerateProperty(compilation, property, accessibility, modifiers, generateAbstractly, useExplicitInterfaceSymbol, memberName, cancellationToken);
+                    case IEventSymbol @event:
+                        var accessor = CodeGenerationSymbolFactory.CreateAccessorSymbol(
+                            attributes: default(ImmutableArray<AttributeData>),
+                            accessibility: Accessibility.NotApplicable,
+                            statements: factory.CreateThrowNotImplementedStatementBlock(compilation));
+
+                        return CodeGenerationSymbolFactory.CreateEventSymbol(
+                            @event,
+                            accessibility: accessibility,
+                            modifiers: modifiers,
+                            explicitInterfaceSymbol: useExplicitInterfaceSymbol ? @event : null,
+                            name: memberName,
+                            addMethod: GetAddOrRemoveMethod(generateInvisibly, accessor, memberName, factory.AddEventHandler),
+                            removeMethod: GetAddOrRemoveMethod(generateInvisibly, accessor, memberName, factory.RemoveEventHandler));
                 }
-                else if (member.Kind == SymbolKind.Event)
+
+                return null;
+            }
+
+            private IMethodSymbol GetAddOrRemoveMethod(bool generateInvisibly,
+                                                       IMethodSymbol accessor,
+                                                       string memberName,
+                                                       Func<SyntaxNode, SyntaxNode, SyntaxNode> createAddOrRemoveHandler)
+            {
+                if (ThroughMember != null)
                 {
+<<<<<<< HEAD
                     var @event = (IEventSymbol)member;
 
                     var accessor = CodeGenerationSymbolFactory.CreateAccessorSymbol(
@@ -415,9 +457,20 @@ namespace Microsoft.CodeAnalysis.ImplementInterface
                         name: memberName,
                         addMethod: GetAddOrRemoveMethod(generateInvisibly, accessor, memberName, factory.AddEventHandler),
                         removeMethod: GetAddOrRemoveMethod(generateInvisibly, accessor, memberName, factory.RemoveEventHandler));
+=======
+                    var factory = Document.GetLanguageService<SyntaxGenerator>();
+                    var throughExpression = CreateThroughExpression(factory);
+                    var statement = factory.ExpressionStatement(createAddOrRemoveHandler(
+                        factory.MemberAccessExpression(throughExpression, memberName), factory.IdentifierName("value")));
+
+                    return CodeGenerationSymbolFactory.CreateAccessorSymbol(
+                           attributes: default(ImmutableArray<AttributeData>),
+                           accessibility: Accessibility.NotApplicable,
+                           statements: ImmutableArray.Create(statement));
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
                 }
 
-                return null;
+                return generateInvisibly ? accessor : null;
             }
 
             private IMethodSymbol GetAddOrRemoveMethod(bool generateInvisibly,

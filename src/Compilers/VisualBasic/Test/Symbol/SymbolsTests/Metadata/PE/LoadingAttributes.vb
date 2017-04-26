@@ -741,7 +741,7 @@ End Class]]>
         End Sub
 
         ''' Did not Skip the test - will remove the explicit cast (from IMethodSymbol to MethodSymbol) once this bug is fixed
-        <WorkItem(528029, "DevDiv")>
+        <WorkItem(528029, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528029")>
         <Fact>
         Public Sub TestInteropAttributesInterface()
 
@@ -808,7 +808,7 @@ End Class]]>
             Assert.Equal(32, attrSym.CommonConstructorArguments(0).Value)
         End Sub
 
-        <WorkItem(539942, "DevDiv")>
+        <WorkItem(539942, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/539942")>
         <Fact>
         Public Sub TestInteropAttributesDelegate()
 
@@ -1032,7 +1032,7 @@ End Class]]>
 
         End Sub
 
-        <WorkItem(539965, "DevDiv")>
+        <WorkItem(539965, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/539965")>
         <Fact>
         Public Sub TestAttributesOnTypeParameters()
 
@@ -1129,7 +1129,7 @@ End Class]]>
         '    // Explicit NotImpl
         '    // ushort IFoo<T, ushort>.Method(T t) { return 0; }
         '}
-        <WorkItem(539965, "DevDiv")>
+        <WorkItem(539965, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/539965")>
         <Fact>
         Public Sub TestAttributesMultiples()
 
@@ -1240,7 +1240,7 @@ End Class]]>
 
 #Region "Regression"
 
-        <WorkItem(539995, "DevDiv")>
+        <WorkItem(539995, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/539995")>
         <Fact>
         Public Sub TestAttributesAssemblyVersionValue()
 
@@ -1269,7 +1269,7 @@ End Class]]>
 
         End Sub
 
-        <WorkItem(539996, "DevDiv")>
+        <WorkItem(539996, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/539996")>
         <Fact>
         Public Sub TestAttributesWithTypeOfInternalClass()
 
@@ -1301,7 +1301,7 @@ End Class]]>
 
         End Sub
 
-        <WorkItem(539999, "DevDiv")>
+        <WorkItem(539999, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/539999")>
         <Fact>
         Public Sub TestAttributesStaticInstanceCtors()
 
@@ -1334,7 +1334,7 @@ End Class]]>
 
         End Sub
 
-        <WorkItem(540000, "DevDiv")>
+        <WorkItem(540000, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540000")>
         <Fact>
         Public Sub TestAttributesOverloadedCtors()
 
@@ -1376,7 +1376,7 @@ End Class]]>
 
 #End Region
 
-        <WorkItem(530209, "DevDiv")>
+        <WorkItem(530209, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530209")>
         <Fact>
         Public Sub Bug530209()
 
@@ -1556,6 +1556,52 @@ End Class
             Assert.Equal(m1.Parameters(1).ExplicitDefaultValue, #1/1/2013#)
             Assert.Empty(m1.Parameters(1).GetAttributes())
             Assert.Equal("System.Runtime.CompilerServices.DateTimeConstantAttribute(634925952000000000)", m1.Parameters(1).GetCustomAttributesToEmit(context).Single().ToString())
+        End Sub
+
+        <Fact>
+        <WorkItem(18092, "https://github.com/dotnet/roslyn/issues/18092")>
+        Public Sub ForwardedSystemType()
+
+            Dim ilSource = <![CDATA[
+.class extern forwarder System.Type
+{
+  .assembly extern mscorlib
+}
+
+.class public auto ansi beforefieldinit MyAttribute
+       extends [mscorlib]System.Attribute
+{
+  .method public hidebysig specialname rtspecialname 
+          instance void  .ctor(class [mscorlib]System.Type val) cil managed
+  {
+    // Code size       9 (0x9)
+    .maxstack  8
+    IL_0000:  ldarg.0
+    IL_0001:  call       instance void [mscorlib]System.Attribute::.ctor()
+    IL_0006:  nop
+    IL_0007:  nop
+    IL_0008:  ret
+  } // end of method MyAttribute::.ctor
+
+} // end of class MyAttribute
+]]>.Value
+
+
+            Dim c = CompilationUtils.CreateCompilationWithCustomILSource(
+<compilation>
+    <file name="a.vb"><![CDATA[
+<MyAttribute(GetType(MyAttribute))>
+Class Test
+End Class
+    ]]></file>
+</compilation>, ilSource)
+
+            Const expected = "MyAttribute(GetType(MyAttribute))"
+            Assert.Equal(expected, c.GetTypeByMetadataName("Test").GetAttributes().Single().ToString())
+
+            CompileAndVerify(c, symbolValidator:=Sub(m)
+                                                     Assert.Equal(expected, m.GlobalNamespace.GetTypeMember("Test").GetAttributes().Single().ToString())
+                                                 End Sub)
         End Sub
 
     End Class

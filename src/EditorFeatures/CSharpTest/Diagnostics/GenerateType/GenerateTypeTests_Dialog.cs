@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.GenerateType;
 using Roslyn.Test.Utilities;
@@ -368,7 +366,7 @@ typeKind: TypeKind.Enum,
 isNewFile: false);
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeWithDefaultEnum_DefaultNamespace()
         {
@@ -404,7 +402,7 @@ typeKind: TypeKind.Enum,
 isNewFile: false);
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeWithDefaultEnum_DefaultNamespace_NotSimpleName()
         {
@@ -480,14 +478,13 @@ expected: @"namespace A.B
     {
     }
 }",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: false,
 existingFilename: "Test2.cs");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeInExistingEmptyFile_Usings_Folders()
         {
@@ -515,7 +512,6 @@ expected: @"namespace outer.inner
     {
     }
 }",
-isLine: false,
 checkIfUsingsIncluded: true,
 expectedTextWithUsings: @"
 using outer.inner;
@@ -533,7 +529,7 @@ isNewFile: false,
 existingFilename: "Test2.cs");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeInExistingEmptyFile_Usings_DefaultNamespace()
         {
@@ -561,7 +557,6 @@ expected: @"namespace ConsoleApplication
     {
     }
 }",
-isLine: false,
 defaultNamespace: "ConsoleApplication",
 checkIfUsingsIncluded: true,
 expectedTextWithUsings: @"
@@ -580,7 +575,7 @@ isNewFile: false,
 existingFilename: "Test2.cs");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeInExistingEmptyFile_Usings_Folders_DefaultNamespace()
         {
@@ -608,7 +603,6 @@ expected: @"namespace ConsoleApplication.outer.inner
     {
     }
 }",
-isLine: false,
 defaultNamespace: "ConsoleApplication",
 checkIfUsingsIncluded: true,
 expectedTextWithUsings: @"
@@ -627,7 +621,7 @@ isNewFile: false,
 existingFilename: "Test2.cs");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeInExistingEmptyFile_NoUsings_Folders_NotSimpleName()
         {
@@ -659,7 +653,6 @@ expected: @"namespace A.B
     {
     }
 }",
-isLine: false,
 checkIfUsingsNotIncluded: true,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
@@ -697,15 +690,14 @@ expected: @"namespace A.B
     {
     }
 }",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
-newFileFolderContainers: Array.Empty<string>(),
+newFileFolderContainers: ImmutableArray<string>.Empty,
 newFileName: "Test2.cs");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateType_UsingsNotNeeded_InNewFile_InFolder()
         {
@@ -737,16 +729,15 @@ expected: @"namespace outer.inner
     {
     }
 }",
-isLine: false,
 checkIfUsingsNotIncluded: true,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 newFileName: "Test2.cs");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateType_UsingsNeeded_InNewFile_InFolder()
         {
@@ -782,15 +773,14 @@ class Program
         Foo f;
     }
 }",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 newFileName: "Test2.cs");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateType_UsingsNotNeeded_InNewFile_InFolder_NotSimpleName()
         {
@@ -819,16 +809,15 @@ expected: @"namespace A.B
     {
     }
 }",
-isLine: false,
 checkIfUsingsNotIncluded: true,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 newFileName: "Test2.cs");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateType_UsingsNeeded_InNewFile_InFolder_DefaultNamespace()
         {
@@ -865,15 +854,14 @@ class Program
         Foo f;
     }
 }",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 newFileName: "Test2.cs");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateType_UsingsNotNeeded_InNewFile_InFolder_DefaultNamespace()
         {
@@ -914,15 +902,14 @@ namespace ConsoleApplication.outer
         }
     }
 }",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
-newFileFolderContainers: new string[] { "outer" },
+newFileFolderContainers: ImmutableArray.Create("outer"),
 newFileName: "Test2.cs");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateType_UsingsNotNeeded_InNewFile_InFolder_DefaultNamespace_NotSimpleName()
         {
@@ -965,15 +952,14 @@ class Program
 namespace A.B
 {
 }",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
-newFileFolderContainers: new string[] { "outer" },
+newFileFolderContainers: ImmutableArray.Create("outer"),
 newFileName: "Test2.cs");
         }
 
-        [WorkItem(898452)]
+        [WorkItem(898452, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/898452")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateType_InValidFolderNameNotMadeNamespace()
         {
@@ -1005,7 +991,6 @@ expected: @"namespace ConsoleApplication
     {
     }
 }",
-isLine: false,
 checkIfUsingsIncluded: true,
 expectedTextWithUsings: @"
 using ConsoleApplication;
@@ -1027,7 +1012,7 @@ accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
 areFoldersValidIdentifiers: false,
-newFileFolderContainers: new string[] { "123", "456" },
+newFileFolderContainers: ImmutableArray.Create("123", "456"),
 newFileName: "Test2.cs");
         }
 
@@ -1068,7 +1053,6 @@ expected: @"namespace A.B
     {
     }
 }",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: false,
@@ -1076,7 +1060,7 @@ existingFilename: "Test2.cs",
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoSameLanguageDifferentProjectExistingFile()
         {
@@ -1118,7 +1102,6 @@ namespace A
         }
     }
 }",
-isLine: false,
 checkIfUsingsNotIncluded: true,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
@@ -1127,7 +1110,7 @@ existingFilename: "Test2.cs",
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoSameLanguageDifferentProjectExistingFile_Usings_Folders()
         {
@@ -1169,7 +1152,6 @@ namespace outer.inner
     {
     }
 }",
-isLine: false,
 checkIfUsingsIncluded: true,
 expectedTextWithUsings: @"
 using outer.inner;
@@ -1220,16 +1202,15 @@ expected: @"namespace A.B
     {
     }
 }",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
 newFileName: "Test2.cs",
-newFileFolderContainers: Array.Empty<string>(),
+newFileFolderContainers: ImmutableArray<string>.Empty,
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoSameLanguageDifferentProjectNewFile_Folders_Usings()
         {
@@ -1267,16 +1248,15 @@ class Program
         Foo f;
     }
 }",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
 newFileName: "Test2.cs",
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoSameLanguageDifferentProjectNewFile_Folders_NoUsings_NotSimpleName()
         {
@@ -1307,17 +1287,16 @@ expected: @"namespace A.B
     {
     }
 }",
-isLine: false,
 checkIfUsingsNotIncluded: true,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
 newFileName: "Test2.cs",
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoSameLanguageDifferentProjectNewFile_Folders_Usings_DefaultNamespace()
         {
@@ -1356,16 +1335,15 @@ class Program
         Foo f;
     }
 }",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
 newFileName: "Test2.cs",
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoSameLanguageDifferentProjectNewFile_Folders_NoUsings_NotSimpleName_DefaultNamespace()
         {
@@ -1396,14 +1374,13 @@ expected: @"namespace A.B
     {
     }
 }",
-isLine: false,
 defaultNamespace: "ConsoleApplication",
 checkIfUsingsNotIncluded: true,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Interface,
 isNewFile: true,
 newFileName: "Test2.cs",
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 projectName: "Assembly2");
         }
         #endregion
@@ -1438,16 +1415,15 @@ expected: @"Namespace Global.A.B
     End Class
 End Namespace
 ",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Class,
 isNewFile: true,
 newFileName: "Test2.vb",
-newFileFolderContainers: Array.Empty<string>(),
+newFileFolderContainers: ImmutableArray<string>.Empty,
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoDifferentLanguageNewFile_Folders_Usings()
         {
@@ -1473,7 +1449,6 @@ expected: @"Namespace outer.inner
     End Class
 End Namespace
 ",
-isLine: false,
 checkIfUsingsIncluded: true,
 expectedTextWithUsings: @"
 using outer.inner;
@@ -1489,11 +1464,11 @@ accessibility: Accessibility.Public,
 typeKind: TypeKind.Class,
 isNewFile: true,
 newFileName: "Test2.vb",
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoDifferentLanguageNewFile_Folders_NoUsings_NotSimpleName()
         {
@@ -1523,17 +1498,16 @@ expected: @"Namespace Global.A.B
     End Class
 End Namespace
 ",
-isLine: false,
 checkIfUsingsNotIncluded: true,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Class,
 isNewFile: true,
 newFileName: "Test2.vb",
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoDifferentLanguageNewFile_Folders_Usings_RootNamespace()
         {
@@ -1560,7 +1534,6 @@ expected: @"Namespace outer.inner
     End Class
 End Namespace
 ",
-isLine: false,
 checkIfUsingsIncluded: true,
 expectedTextWithUsings: @"
 using BarBaz.outer.inner;
@@ -1576,11 +1549,11 @@ accessibility: Accessibility.Public,
 typeKind: TypeKind.Class,
 isNewFile: true,
 newFileName: "Test2.vb",
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoDifferentLanguageNewFile_Folders_NoUsings_NotSimpleName_RootNamespace()
         {
@@ -1611,17 +1584,16 @@ expected: @"Namespace Global.A.B
     End Class
 End Namespace
 ",
-isLine: false,
 checkIfUsingsNotIncluded: true,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Class,
 isNewFile: true,
 newFileName: "Test2.vb",
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoDifferentLanguageNewFile_Folders_NoUsings_NotSimpleName_RootNamespace_ProjectReference()
         {
@@ -1657,18 +1629,17 @@ expected: @"Namespace A.B
     End Class
 End Namespace
 ",
-isLine: false,
 defaultNamespace: "ConsoleApplication",
 checkIfUsingsNotIncluded: true,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Class,
 isNewFile: true,
 newFileName: "Test3.vb",
-newFileFolderContainers: new string[] { "outer", "inner" },
+newFileFolderContainers: ImmutableArray.Create("outer", "inner"),
 projectName: "Assembly2");
         }
 
-        [WorkItem(858826)]
+        [WorkItem(858826, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/858826")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoDifferentLanguageNewFileAdjustFileExtension()
         {
@@ -1698,16 +1669,15 @@ expected: @"Namespace Global.A.B
     End Class
 End Namespace
 ",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Class,
 isNewFile: true,
 newFileName: "Test2.vb",
-newFileFolderContainers: Array.Empty<string>(),
+newFileFolderContainers: ImmutableArray<string>.Empty,
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoDifferentLanguageExistingEmptyFile()
         {
@@ -1739,7 +1709,6 @@ expected: @"Namespace Global.A.B
     End Class
 End Namespace
 ",
-isLine: false,
 checkIfUsingsNotIncluded: true,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Class,
@@ -1748,7 +1717,7 @@ existingFilename: "Test2.vb",
 projectName: "Assembly2");
         }
 
-        [WorkItem(850101)]
+        [WorkItem(850101, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/850101")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeIntoDifferentLanguageExistingEmptyFile_Usings_Folder()
         {
@@ -1776,7 +1745,6 @@ expected: @"Namespace outer.inner
     End Class
 End Namespace
 ",
-isLine: false,
 checkIfUsingsIncluded: true,
 expectedTextWithUsings: @"
 using outer.inner;
@@ -1832,7 +1800,6 @@ Namespace Global.A.B
     End Class
 End Namespace
 ",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Class,
 isNewFile: false,
@@ -1884,7 +1851,6 @@ Namespace Global
         End Namespace
     End Namespace
 End Namespace",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Class,
 isNewFile: false,
@@ -1892,8 +1858,8 @@ existingFilename: "Test2.vb",
 projectName: "Assembly2");
         }
 
-        [WorkItem(861362)]
-        [WorkItem(869593)]
+        [WorkItem(861362, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/861362")]
+        [WorkItem(869593, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/869593")]
         [WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateModuleFromCSharpToVisualBasicInTypeContext()
         {
@@ -1923,20 +1889,19 @@ expected: @"Namespace Global.A
     End Module
 End Namespace
 ",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Module,
 isNewFile: true,
 newFileName: "Test2.vb",
-newFileFolderContainers: Array.Empty<string>(),
+newFileFolderContainers: ImmutableArray<string>.Empty,
 projectName: "Assembly2",
 assertGenerateTypeDialogOptions: new GenerateTypeDialogOptions(false, TypeKindOptions.Class | TypeKindOptions.Structure | TypeKindOptions.Module));
         }
 
         #endregion
         #region Bugfix 
-        [WorkItem(861462)]
-        [WorkItem(873066)]
+        [WorkItem(861462, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/861462")]
+        [WorkItem(873066, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/873066")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeWithProperAccessibilityAndTypeKind_1()
         {
@@ -1960,7 +1925,7 @@ isNewFile: false,
 assertGenerateTypeDialogOptions: new GenerateTypeDialogOptions(true, TypeKindOptions.BaseList, false));
         }
 
-        [WorkItem(861462)]
+        [WorkItem(861462, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/861462")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeWithProperAccessibilityAndTypeKind_2()
         {
@@ -1983,7 +1948,7 @@ isNewFile: false,
 assertGenerateTypeDialogOptions: new GenerateTypeDialogOptions(true, TypeKindOptions.Interface, false));
         }
 
-        [WorkItem(861462)]
+        [WorkItem(861462, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/861462")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeWithProperAccessibilityAndTypeKind_3()
         {
@@ -2006,7 +1971,7 @@ isNewFile: false,
 assertGenerateTypeDialogOptions: new GenerateTypeDialogOptions(true, TypeKindOptions.Interface, false));
         }
 
-        [WorkItem(861362)]
+        [WorkItem(861362, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/861362")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeInMemberAccessExpression()
         {
@@ -2037,7 +2002,7 @@ isNewFile: false,
 assertGenerateTypeDialogOptions: new GenerateTypeDialogOptions(false, TypeKindOptions.MemberAccessWithNamespace));
         }
 
-        [WorkItem(861362)]
+        [WorkItem(861362, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/861362")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeInMemberAccessExpressionInNamespace()
         {
@@ -2075,7 +2040,7 @@ isNewFile: false,
 assertGenerateTypeDialogOptions: new GenerateTypeDialogOptions(false, TypeKindOptions.MemberAccessWithNamespace));
         }
 
-        [WorkItem(861600)]
+        [WorkItem(861600, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/861600")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeWithoutEnumForGenericsInMemberAccess()
         {
@@ -2114,7 +2079,7 @@ isNewFile: false,
 assertGenerateTypeDialogOptions: new GenerateTypeDialogOptions(false, TypeKindOptions.Class | TypeKindOptions.Structure));
         }
 
-        [WorkItem(861600)]
+        [WorkItem(861600, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/861600")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeWithoutEnumForGenericsInNameContext()
         {
@@ -2153,7 +2118,7 @@ isNewFile: false,
 assertGenerateTypeDialogOptions: new GenerateTypeDialogOptions(false, TypeKindOptions.Class | TypeKindOptions.Structure | TypeKindOptions.Interface | TypeKindOptions.Delegate));
         }
 
-        [WorkItem(861600)]
+        [WorkItem(861600, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/861600")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeInMemberAccessWithNSForModule()
         {
@@ -2191,7 +2156,7 @@ isNewFile: false,
 assertGenerateTypeDialogOptions: new GenerateTypeDialogOptions(false, TypeKindOptions.MemberAccessWithNamespace));
         }
 
-        [WorkItem(861600)]
+        [WorkItem(861600, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/861600")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeInMemberAccessWithGlobalNSForModule()
         {
@@ -2222,7 +2187,7 @@ isNewFile: false,
 assertGenerateTypeDialogOptions: new GenerateTypeDialogOptions(false, TypeKindOptions.MemberAccessWithNamespace));
         }
 
-        [WorkItem(861600)]
+        [WorkItem(861600, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/861600")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateTypeInMemberAccessWithoutNS()
         {
@@ -2243,8 +2208,8 @@ typeName: "Bar",
 isMissing: true);
         }
 
-        [WorkItem(876202)]
-        [WorkItem(883531)]
+        [WorkItem(876202, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/876202")]
+        [WorkItem(883531, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/883531")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateType_NoParameterLessConstructorForStruct()
         {
@@ -2503,7 +2468,7 @@ isNewFile: false,
 assertGenerateTypeDialogOptions: new GenerateTypeDialogOptions(false, TypeKindOptions.Class | TypeKindOptions.Structure | TypeKindOptions.Delegate));
         }
 
-        [WorkItem(872935)]
+        [WorkItem(872935, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/872935")]
         [Fact(Skip = "872935"), Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateDelegateType_ObjectCreationExpression_SimpleLambdaEmpty()
         {
@@ -2951,16 +2916,15 @@ expected: @"Namespace Global.A.B
     Public Delegate Sub Foo()
 End Namespace
 ",
-isLine: false,
 accessibility: Accessibility.Public,
 typeKind: TypeKind.Delegate,
 isNewFile: true,
 newFileName: "Test2.vb",
-newFileFolderContainers: Array.Empty<string>(),
+newFileFolderContainers: ImmutableArray<string>.Empty,
 projectName: "Assembly2");
         }
 
-        [WorkItem(860210)]
+        [WorkItem(860210, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/860210")]
         [Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateType)]
         public async Task GenerateDelegateType_NoInfo()
         {

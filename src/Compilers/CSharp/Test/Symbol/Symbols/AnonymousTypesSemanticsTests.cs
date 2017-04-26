@@ -682,7 +682,7 @@ public class ClassA
             Assert.Equal("System.Type System.Object.GetType()", syms[index++]);
         }
 
-        [WorkItem(543189, "DevDiv")]
+        [WorkItem(543189, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543189")]
         [Fact()]
         public void CheckAnonymousTypeAsConstValue()
         {
@@ -692,14 +692,14 @@ public class A
     const int i = /*<bind>*/(new {a = 2}).a/*</bind>*/;
 }";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             var tuple = GetBindingNodeAndModel<ExpressionSyntax>(comp);
             var info = tuple.Item2.GetSymbolInfo(tuple.Item1);
             Assert.NotNull(info.Symbol);
             Assert.Equal("<anonymous type: int a>.a", info.Symbol.ToDisplayString());
         }
 
-        [WorkItem(546416, "DevDiv")]
+        [WorkItem(546416, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546416")]
         [ClrOnlyFact]
         public void TestAnonymousTypeInsideGroupBy_Queryable()
         {
@@ -727,7 +727,7 @@ public class Program
 }", additionalRefs: new[] { SystemCoreRef }).VerifyDiagnostics();
         }
 
-        [WorkItem(546416, "DevDiv")]
+        [WorkItem(546416, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546416")]
         [ClrOnlyFact]
         public void TestAnonymousTypeInsideGroupBy_Enumerable()
         {
@@ -756,7 +756,7 @@ public class Program
 }", additionalRefs: new[] { SystemCoreRef }).VerifyDiagnostics();
         }
 
-        [WorkItem(546416, "DevDiv")]
+        [WorkItem(546416, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546416")]
         [ClrOnlyFact]
         public void TestAnonymousTypeInsideGroupBy_Enumerable2()
         {
@@ -866,12 +866,7 @@ public class Program
             var intervals = ExtractTextIntervals(ref source);
             Assert.Equal(expectedIntervals, intervals.Count);
 
-            var compilation = GetCompilationForEmit(
-                new[] { source },
-                new MetadataReference[] { },
-                TestOptions.ReleaseDll,
-                TestOptions.Regular
-            );
+            var compilation = Compile(source);
 
             compilation.VerifyDiagnostics(diagnostics);
 
@@ -911,7 +906,7 @@ public class Program
 
         private CSharpCompilation Compile(string source)
         {
-            return GetCompilationForEmit(
+            return (CSharpCompilation)GetCompilationForEmit(
                 new[] { source },
                 new MetadataReference[] { },
                 TestOptions.ReleaseDll,

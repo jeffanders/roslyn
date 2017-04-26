@@ -24,7 +24,7 @@ class A {
     void M(int x) {}
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var a = global.GetTypeMembers("A", 0).Single();
             var m = a.GetMembers("M").Single() as MethodSymbol;
@@ -42,18 +42,18 @@ class A {
         public void NoParameterlessCtorForStruct()
         {
             var text = "struct A { A() {} }";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             Assert.Equal(1, comp.GetDeclarationDiagnostics().Count());
         }
 
-        [WorkItem(537194, "DevDiv")]
+        [WorkItem(537194, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537194")]
         [Fact]
         public void DefaultCtor1()
         {
             Action<string, string, int, Accessibility?> check =
                 (source, className, ctorCount, accessibility) =>
                 {
-                    var comp = CreateCompilationWithMscorlib(source);
+                    var comp = CreateStandardCompilation(source);
                     var global = comp.GlobalNamespace;
                     var a = global.GetTypeMembers(className, 0).Single();
                     var ctors = a.InstanceConstructors; // Note, this only returns *instance* constructors.
@@ -88,7 +88,7 @@ class A {
             check(@"internal class A { static A(int x) {} }", "A", 1, doNotCheckAccessibility);
         }
 
-        [WorkItem(537345, "DevDiv")]
+        [WorkItem(537345, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537345")]
         [Fact]
         public void Ctor1()
         {
@@ -98,7 +98,7 @@ class A {
     A(int x) {}
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var a = global.GetTypeMembers("A", 0).Single();
             var m = a.InstanceConstructors.Single();
@@ -123,7 +123,7 @@ class A {
     void M<T>(int x) {}
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var a = global.GetTypeMembers("A", 0).Single();
             var m = a.GetMembers("M").Single() as MethodSymbol;
@@ -150,7 +150,7 @@ interface B {
     void M2() {}
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var a = global.GetTypeMembers("A", 0).Single();
             var m1 = a.GetMembers("M1").Single() as MethodSymbol;
@@ -172,7 +172,7 @@ public class MyList<T>
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var mylist = global.GetTypeMembers("MyList", 1).Single();
             var t1 = mylist.TypeParameters[0];
@@ -194,7 +194,7 @@ public partial class A {
   partial void M() {}
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var a = global.GetTypeMembers("A", 0).Single();
             var m = a.GetMembers("M");
@@ -211,7 +211,7 @@ public class A {
   public string M(int x);
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var a = global.GetTypeMembers("A", 0).Single();
             var m = a.GetMembers("M").Single() as MethodSymbol;
@@ -227,7 +227,7 @@ public interface A {
   T M<T>(T t);
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var a = global.GetTypeMembers("A", 0).Single();
             var m = a.GetMembers("M").Single() as MethodSymbol;
@@ -244,7 +244,7 @@ public interface A {
   void M(ref A refp, out long outp) { }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var a = global.GetTypeMembers("A", 0).Single();
             var m = a.GetMembers("M").Single() as MethodSymbol;
@@ -276,6 +276,33 @@ public interface A {
         }
 
         [Fact]
+        public void RefReturn()
+        {
+            var text =
+@"public class A
+{
+    ref int M(ref int i)
+    {
+        return ref i;
+    }
+}
+";
+
+            var comp = CreateCompilationWithMscorlib45(text);
+            var global = comp.GlobalNamespace;
+            var a = global.GetTypeMembers("A", 0).Single();
+            var m = a.GetMembers("M").Single() as MethodSymbol;
+            Assert.Equal(RefKind.Ref, m.RefKind);
+            Assert.Equal(TypeKind.Struct, m.ReturnType.TypeKind);
+            Assert.False(m.ReturnType.IsReferenceType);
+            Assert.True(m.ReturnType.IsValueType);
+            var p1 = m.Parameters[0];
+            Assert.Equal(RefKind.Ref, p1.RefKind);
+
+            Assert.Equal("ref System.Int32 A.M(ref System.Int32 i)", m.ToTestDisplayString());
+        }
+
+        [Fact]
         public void BothKindsOfCtors()
         {
             var text =
@@ -285,7 +312,7 @@ public interface A {
     public static Test() {}
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var classTest = comp.GlobalNamespace.GetTypeMembers("Test", 0).Single();
             var members = classTest.GetMembers();
             Assert.Equal(2, members.Length);
@@ -304,7 +331,7 @@ public interface A {
     }
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var classTest = comp.GlobalNamespace.GetTypeMembers("Test", 0).Single();
             var method = classTest.GetMembers("MethodWithRefOutArray").Single() as MethodSymbol;
             Assert.Equal(classTest, method.ContainingSymbol);
@@ -368,7 +395,7 @@ namespace NS.NS1
   }
 }";
 
-            var comp = CreateCompilationWithMscorlib(new[] { text1, text2 });
+            var comp = CreateStandardCompilation(new[] { text1, text2 });
             Assert.Equal(0, comp.GetDeclarationDiagnostics().Count());
             var ns = comp.GlobalNamespace.GetMembers("NS").Single() as NamespaceSymbol;
             var ns1 = ns.GetMembers("NS1").Single() as NamespaceSymbol;
@@ -426,6 +453,7 @@ namespace N1  {
         public virtual void M3(ulong p1, out ulong p2) { p2 = p1; }
         public virtual object M4(params object[] ary) { return null; }
         public static void M5<T>(T t) { }
+        public abstract ref int M6(ref int i);
     }
 }
 ";
@@ -438,11 +466,12 @@ namespace N1.N2  {
         public sealed override void M3(ulong p1, out ulong p2) { p2 = p1; }
         public override object M4(params object[] ary) { return null; }
         public static new void M5<T>(T t) { }
+        public override ref int M6(ref int i) { return ref i; }
     }
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(new[] { text, text1, text2 });
+            var comp = CreateCompilationWithMscorlib45(new[] { text, text1, text2 });
             Assert.Equal(0, comp.GetDiagnostics().Count());
             var ns = comp.GlobalNamespace.GetMembers("N1").Single() as NamespaceSymbol;
             var ns1 = ns.GetMembers("N2").Single() as NamespaceSymbol;
@@ -450,7 +479,7 @@ namespace N1.N2  {
             #region "Bbc"
             var type1 = ns1.GetTypeMembers("Bbc", 0).Single() as NamedTypeSymbol;
             var mems = type1.GetMembers();
-            Assert.Equal(6, mems.Length);
+            Assert.Equal(7, mems.Length);
             // var sorted = mems.Orderby(m => m.Name).ToArray();
             var sorted = (from m in mems
                           orderby m.Name
@@ -498,6 +527,13 @@ namespace N1.N2  {
             Assert.False(m5.IsSealed);
             Assert.False(m5.IsVirtual);
             Assert.True(m5.IsStatic);
+
+            var m6 = sorted[6] as MethodSymbol;
+            Assert.Equal("M6", m6.Name);
+            Assert.False(m6.IsAbstract);
+            Assert.True(m6.IsOverride);
+            Assert.False(m6.IsSealed);
+            Assert.False(m6.IsVirtual);
             #endregion
 
             #region "Abc"
@@ -505,7 +541,7 @@ namespace N1.N2  {
             Assert.Equal("Abc", type2.Name);
             mems = type2.GetMembers();
 
-            Assert.Equal(7, mems.Length);
+            Assert.Equal(8, mems.Length);
             sorted = (from m in mems
                       orderby m.Name
                       select m).ToArray();
@@ -557,10 +593,16 @@ namespace N1.N2  {
             Assert.False(m5.IsVirtual);
             Assert.True(m5.IsStatic);
 
+            m6 = sorted[7] as MethodSymbol;
+            Assert.Equal("M6", m6.Name);
+            Assert.True(m6.IsAbstract);
+            Assert.False(m6.IsOverride);
+            Assert.False(m6.IsSealed);
+            Assert.False(m6.IsVirtual);
             #endregion
         }
 
-        [WorkItem(537752, "DevDiv")]
+        [WorkItem(537752, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537752")]
         [Fact]
         public void AbstractVirtualMethodsCrossComps()
         {
@@ -582,6 +624,7 @@ namespace N1  {
         public virtual void M3(ulong p1, out ulong p2) { p2 = p1; }
         public virtual object M4(params object[] ary) { return null; }
         public static void M5<T>(T t) { }
+        public abstract ref int M6(ref int i);
     }
 }
 ";
@@ -594,20 +637,21 @@ namespace N1.N2  {
         public sealed override void M3(ulong p1, out ulong p2) { p2 = p1; }
         public override object M4(params object[] ary) { return null; }
         public static new void M5<T>(T t) { }
+        public override ref int M6(ref int i) { return ref i; }
     }
 }
 ";
 
-            var comp1 = CreateCompilationWithMscorlib(text);
+            var comp1 = CreateCompilationWithMscorlib45(text);
             var compRef1 = new CSharpCompilationReference(comp1);
 
-            var comp2 = CreateCompilationWithMscorlib(new string[] { text1 }, new List<MetadataReference>() { compRef1 }, assemblyName: "Test2");
+            var comp2 = CreateCompilationWithMscorlib45(new string[] { text1 }, new List<MetadataReference>() { compRef1 }, assemblyName: "Test2");
             //Compilation.Create(outputName: "Test2", options: CompilationOptions.Default,
             //                    syntaxTrees: new SyntaxTree[] { SyntaxTree.ParseCompilationUnit(text1) },
             //                    references: new MetadataReference[] { compRef1, GetCorlibReference() });
             var compRef2 = new CSharpCompilationReference(comp2);
 
-            var comp = CreateCompilationWithMscorlib(new string[] { text2 }, new List<MetadataReference>() { compRef1, compRef2 }, assemblyName: "Test3");
+            var comp = CreateCompilationWithMscorlib45(new string[] { text2 }, new List<MetadataReference>() { compRef1, compRef2 }, assemblyName: "Test3");
             //Compilation.Create(outputName: "Test3", options: CompilationOptions.Default,
             //                        syntaxTrees: new SyntaxTree[] { SyntaxTree.ParseCompilationUnit(text2) },
             //                        references: new MetadataReference[] { compRef1, compRef2, GetCorlibReference() });
@@ -628,7 +672,7 @@ namespace N1.N2  {
             #region "Bbc"
             var type1 = ns1.GetTypeMembers("Bbc", 0).Single() as NamedTypeSymbol;
             var mems = type1.GetMembers();
-            Assert.Equal(6, mems.Length);
+            Assert.Equal(7, mems.Length);
             // var sorted = mems.Orderby(m => m.Name).ToArray();
             var sorted = (from m in mems
                           orderby m.Name
@@ -676,13 +720,20 @@ namespace N1.N2  {
             Assert.False(m5.IsSealed);
             Assert.False(m5.IsVirtual);
             Assert.True(m5.IsStatic);
+
+            var m6 = sorted[6] as MethodSymbol;
+            Assert.Equal("M6", m6.Name);
+            Assert.False(m6.IsAbstract);
+            Assert.True(m6.IsOverride);
+            Assert.False(m6.IsSealed);
+            Assert.False(m6.IsVirtual);
             #endregion
 
             #region "Abc"
             var type2 = type1.BaseType;
             Assert.Equal("Abc", type2.Name);
             mems = type2.GetMembers();
-            Assert.Equal(7, mems.Length);
+            Assert.Equal(8, mems.Length);
             sorted = (from m in mems
                       orderby m.Name
                       select m).ToArray();
@@ -737,6 +788,12 @@ namespace N1.N2  {
             Assert.False(m5.IsVirtual);
             Assert.True(m5.IsStatic);
 
+            m6 = sorted[7] as MethodSymbol;
+            Assert.Equal("M6", m6.Name);
+            Assert.True(m6.IsAbstract);
+            Assert.False(m6.IsOverride);
+            Assert.False(m6.IsSealed);
+            Assert.False(m6.IsVirtual);
             #endregion
         }
 
@@ -784,7 +841,7 @@ namespace NS  {
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(new[] { text, text1, text2 });
+            var comp = CreateStandardCompilation(new[] { text, text1, text2 });
             // Not impl errors
             // Assert.Equal(0, comp.GetDiagnostics().Count());
 
@@ -831,7 +888,7 @@ namespace NS  {
             Assert.Equal("void NS.A.Overloads(NS.A p)", m1.ToTestDisplayString());
         }
 
-        [WorkItem(537752, "DevDiv")]
+        [WorkItem(537752, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537752")]
         [Fact]
         public void OverloadMethodsCrossComps()
         {
@@ -874,16 +931,16 @@ namespace NS  {
 }
 ";
 
-            var comp1 = CreateCompilationWithMscorlib(text);
+            var comp1 = CreateStandardCompilation(text);
             var compRef1 = new CSharpCompilationReference(comp1);
 
-            var comp2 = CreateCompilationWithMscorlib(new string[] { text1 }, new List<MetadataReference>() { compRef1 }, assemblyName: "Test2");
+            var comp2 = CreateStandardCompilation(new string[] { text1 }, new List<MetadataReference>() { compRef1 }, assemblyName: "Test2");
             //Compilation.Create(outputName: "Test2", options: CompilationOptions.Default,
             //                    syntaxTrees: new SyntaxTree[] { SyntaxTree.ParseCompilationUnit(text1) },
             //                    references: new MetadataReference[] { compRef1, GetCorlibReference() });
             var compRef2 = new CSharpCompilationReference(comp2);
 
-            var comp = CreateCompilationWithMscorlib(new string[] { text2 }, new List<MetadataReference>() { compRef1, compRef2 }, assemblyName: "Test3");
+            var comp = CreateStandardCompilation(new string[] { text2 }, new List<MetadataReference>() { compRef1, compRef2 }, assemblyName: "Test3");
             //Compilation.Create(outputName: "Test3", options: CompilationOptions.Default,
             //                        syntaxTrees: new SyntaxTree[] { SyntaxTree.ParseCompilationUnit(text2) },
             //                        references: new MetadataReference[] { compRef1, compRef2, GetCorlibReference() });
@@ -940,7 +997,7 @@ namespace NS  {
             Assert.Equal("void NS.A.Overloads(NS.A p)", m1.ToTestDisplayString());
         }
 
-        [WorkItem(537754, "DevDiv")]
+        [WorkItem(537754, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537754")]
         [Fact]
         public void PartialMethodsCrossTrees()
         {
@@ -992,7 +1049,7 @@ namespace NS
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(new[] { text, text1, text2 });
+            var comp = CreateStandardCompilation(new[] { text, text1, text2 });
             Assert.Equal(0, comp.GetDiagnostics().Count());
 
             var ns = comp.GlobalNamespace.GetMembers("NS").Single() as NamespaceSymbol;
@@ -1065,7 +1122,7 @@ namespace NS
             #endregion
         }
 
-        [WorkItem(537755, "DevDiv")]
+        [WorkItem(537755, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537755")]
         [Fact]
         public void PartialMethodsWithRefParams()
         {
@@ -1086,7 +1143,7 @@ namespace NS
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             Assert.Equal(0, comp.GetDiagnostics().Count());
 
             var ns = comp.GlobalNamespace.GetMembers("NS").Single() as NamespaceSymbol;
@@ -1154,7 +1211,7 @@ public class DerivedClass : Interface3Derived
   }
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
 
             var derivedClass = (NamedTypeSymbol)comp.SourceModule.GlobalNamespace.GetMembers("DerivedClass")[0];
             var members = derivedClass.GetMembers();
@@ -1182,7 +1239,7 @@ public class C : B<int, long>
 {
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
 
             var classB = (NamedTypeSymbol)comp.GlobalNamespace.GetMembers("B").Single();
 
@@ -1228,7 +1285,7 @@ public class C : B<int, long>
 
         #region Regressions
 
-        [WorkItem(527149, "DevDiv")]
+        [WorkItem(527149, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/527149")]
         [Fact]
         public void MethodWithParamsInParameters()
         {
@@ -1244,7 +1301,7 @@ public class C : B<int, long>
             Assert.Equal("void C.F1(params System.Int32[missing][] a)", f1.ToTestDisplayString());
         }
 
-        [WorkItem(537352, "DevDiv")]
+        [WorkItem(537352, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537352")]
         [Fact]
         public void Arglist()
         {
@@ -1256,14 +1313,14 @@ public class C : B<int, long>
                    }
                 }";
 
-            var comp = CreateCompilationWithMscorlib(code);
+            var comp = CreateStandardCompilation(code);
             NamedTypeSymbol nts = comp.Assembly.GlobalNamespace.GetTypeMembers()[0];
             Assert.Equal("AA", nts.ToTestDisplayString());
             Assert.Empty(comp.GetDeclarationDiagnostics());
             Assert.Equal("System.Int32 AA.Method1(__arglist)", nts.GetMembers("Method1").Single().ToTestDisplayString());
         }
 
-        [WorkItem(537877, "DevDiv")]
+        [WorkItem(537877, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537877")]
         [Fact]
         public void ExpImpInterfaceWithGlobal()
         {
@@ -1291,7 +1348,7 @@ namespace N2
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             Assert.Equal(0, comp.GetDeclarationDiagnostics().Count());
 
             var ns = comp.GlobalNamespace.GetMembers("N2").Single() as NamespaceSymbol;
@@ -1302,7 +1359,7 @@ namespace N2
             Assert.Equal("System.Int32 N1.I1.Method()", em1.ToTestDisplayString());
         }
 
-        [WorkItem(537877, "DevDiv")]
+        [WorkItem(537877, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537877")]
         [Fact]
         public void BaseInterfaceNameWithAlias()
         {
@@ -1329,7 +1386,7 @@ namespace N2
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             Assert.Equal(0, comp.GetDeclarationDiagnostics().Count());
 
             var n2 = comp.GlobalNamespace.GetMembers("N2").Single() as NamespaceSymbol;
@@ -1338,7 +1395,7 @@ namespace N2
             Assert.Equal("N1.I1", bt.ToTestDisplayString());
         }
 
-        [WorkItem(538209, "DevDiv")]
+        [WorkItem(538209, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538209")]
         [Fact]
         public void ParameterAccessibility01()
         {
@@ -1373,11 +1430,11 @@ class MyClass
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             Assert.Equal(0, comp.GetDeclarationDiagnostics().Count());
         }
 
-        [WorkItem(537877, "DevDiv")]
+        [WorkItem(537877, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537877")]
         [Fact]
         public void MethodsWithSameSigDiffReturnType()
         {
@@ -1394,7 +1451,7 @@ class Test
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
 
             var test = comp.GlobalNamespace.GetTypeMembers("Test").Single() as NamedTypeSymbol;
             var members = test.GetMembers("M1");
@@ -1422,7 +1479,7 @@ class B : A
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
 
             var a = comp.GlobalNamespace.GetTypeMembers("A").Single() as NamedTypeSymbol;
             var b = comp.GlobalNamespace.GetTypeMembers("B").Single() as NamedTypeSymbol;
@@ -1434,7 +1491,7 @@ class B : A
         }
         #endregion
 
-        [WorkItem(537401, "DevDiv")]
+        [WorkItem(537401, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537401")]
         [Fact]
         public void MethodEscapedIdentifier()
         {
@@ -1447,7 +1504,7 @@ class C1 : @int, @void
     override @int @float(@int @in) { return null; }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(Parse(text));
+            var comp = CreateStandardCompilation(Parse(text));
             NamedTypeSymbol c1 = (NamedTypeSymbol)comp.SourceModule.GlobalNamespace.GetMembers("C1").Single();
             // Per explanation from NGafter:
             //
@@ -1492,7 +1549,7 @@ class C : I
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(Parse(text));
+            var comp = CreateStandardCompilation(Parse(text));
 
             var globalNamespace = comp.GlobalNamespace;
 
@@ -1535,7 +1592,7 @@ class F : System.IFormattable
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(Parse(text));
+            var comp = CreateStandardCompilation(Parse(text));
 
             var globalNamespace = comp.GlobalNamespace;
             var systemNamespace = (NamespaceSymbol)globalNamespace.GetMembers("System").Single();
@@ -1567,6 +1624,53 @@ class F : System.IFormattable
         }
 
         [Fact]
+        public void ExplicitInterfaceImplementationRef()
+        {
+            string text = @"
+interface I
+{
+    ref int Method(ref int i);
+}
+
+class C : I
+{
+    ref int I.Method(ref int i) { return ref i; }
+}
+";
+
+            var comp = CreateCompilationWithMscorlib45(text);
+
+            var globalNamespace = comp.GlobalNamespace;
+
+            var @interface = (NamedTypeSymbol)globalNamespace.GetTypeMembers("I").Single();
+            Assert.Equal(TypeKind.Interface, @interface.TypeKind);
+
+            var interfaceMethod = (MethodSymbol)@interface.GetMembers("Method").Single();
+            Assert.Equal(RefKind.Ref, interfaceMethod.RefKind);
+
+            var @class = (NamedTypeSymbol)globalNamespace.GetTypeMembers("C").Single();
+            Assert.Equal(TypeKind.Class, @class.TypeKind);
+            Assert.True(@class.Interfaces.Contains(@interface));
+
+            var classMethod = (MethodSymbol)@class.GetMembers("I.Method").Single();
+            Assert.Equal(MethodKind.ExplicitInterfaceImplementation, classMethod.MethodKind);
+            Assert.Equal(RefKind.Ref, classMethod.RefKind);
+
+            var explicitImpl = classMethod.ExplicitInterfaceImplementations.Single();
+            Assert.Equal(interfaceMethod, explicitImpl);
+
+            var typeDef = (Cci.ITypeDefinition)@class;
+            var module = new PEAssemblyBuilder((SourceAssemblySymbol)@class.ContainingAssembly, EmitOptions.Default, OutputKind.DynamicallyLinkedLibrary,
+                GetDefaultModulePropertiesForSerialization(), SpecializedCollections.EmptyEnumerable<ResourceDescription>());
+            var context = new EmitContext(module, null, new DiagnosticBag());
+            var explicitOverride = typeDef.GetExplicitImplementationOverrides(context).Single();
+            Assert.Equal(@class, explicitOverride.ContainingType);
+            Assert.Equal(classMethod, explicitOverride.ImplementingMethod);
+            Assert.Equal(interfaceMethod, explicitOverride.ImplementedMethod);
+            context.Diagnostics.Verify();
+        }
+
+        [Fact]
         public void ExplicitInterfaceImplementationGeneric()
         {
             string text = @"
@@ -1584,7 +1688,7 @@ class IC : Namespace.I<int>
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(Parse(text));
+            var comp = CreateStandardCompilation(Parse(text));
 
             var globalNamespace = comp.GlobalNamespace;
             var systemNamespace = (NamespaceSymbol)globalNamespace.GetMembers("Namespace").Single();
@@ -1637,7 +1741,7 @@ class C
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(Parse(text));
+            var comp = CreateStandardCompilation(Parse(text));
 
             var @class = (NamedTypeSymbol)comp.GlobalNamespace.GetTypeMembers("C").Single();
 
@@ -1682,7 +1786,7 @@ class C
     static C() { }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics();
 
             var staticConstructor = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("C").GetMember<MethodSymbol>(WellKnownMemberNames.StaticConstructorName);
@@ -1702,7 +1806,7 @@ class C
     static int f = 1; //initialized in implicit static constructor
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics(
                 // (4,16): warning CS0414: The field 'C.f' is assigned but its value is never used
                 //     static int f = 1; //initialized in implicit static constructor
@@ -1717,7 +1821,7 @@ class C
             Assert.Equal(SpecialType.System_Void, staticConstructor.ReturnType.SpecialType);
         }
 
-        [WorkItem(541834, "DevDiv")]
+        [WorkItem(541834, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541834")]
         [Fact]
         public void AccessorMethodAccessorOverriding()
         {
@@ -1737,7 +1841,7 @@ public class C : B
     public override int P { get; set; }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics();
 
             var globalNamespace = comp.GlobalNamespace;
@@ -1761,7 +1865,7 @@ public class C : B
             context.Diagnostics.Verify();
         }
 
-        [WorkItem(541834, "DevDiv")]
+        [WorkItem(541834, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541834")]
         [Fact]
         public void MethodAccessorMethodOverriding()
         {
@@ -1781,7 +1885,7 @@ public class C : B
     public override int get_P() { return 0; }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics();
 
             var globalNamespace = comp.GlobalNamespace;
@@ -1805,7 +1909,7 @@ public class C : B
             context.Diagnostics.Verify();
         }
 
-        [WorkItem(543444, "DevDiv")]
+        [WorkItem(543444, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543444")]
         [Fact]
         public void BadArityInOperatorDeclaration()
         {
@@ -1820,7 +1924,7 @@ class B
     public static B operator *(B x) { return null; }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics(
                 // (3,33): error CS1020: Overloadable binary operator expected
                 // public static bool operator true(A x, A y) { return false; }
@@ -1834,7 +1938,7 @@ class B
             );
         }
 
-        [WorkItem(779441, "DevDiv")]
+        [WorkItem(779441, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/779441")]
         [Fact]
         public void UserDefinedOperatorLocation()
         {
@@ -1848,14 +1952,14 @@ public class C
             var keywordPos = source.IndexOf('+');
             var parenPos = source.IndexOf('(');
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             var symbol = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("C").GetMembers(WellKnownMemberNames.UnaryPlusOperatorName).Single();
             var span = symbol.Locations.Single().SourceSpan;
             Assert.Equal(keywordPos, span.Start);
             Assert.Equal(parenPos, span.End);
         }
 
-        [WorkItem(779441, "DevDiv")]
+        [WorkItem(779441, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/779441")]
         [Fact]
         public void UserDefinedConversionLocation()
         {
@@ -1869,13 +1973,13 @@ public class C
             var keywordPos = source.IndexOf("string", StringComparison.Ordinal);
             var parenPos = source.IndexOf('(');
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             var symbol = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("C").GetMembers(WellKnownMemberNames.ExplicitConversionName).Single();
             var span = symbol.Locations.Single().SourceSpan;
             Assert.Equal(keywordPos, span.Start);
             Assert.Equal(parenPos, span.End);
         }
-        [WorkItem(787708, "DevDiv")]
+        [WorkItem(787708, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/787708")]
         [Fact]
         public void PartialAsyncMethodInTypeWithAttributes()
         {
@@ -1896,13 +2000,13 @@ partial class C
     async partial void M() { }
 }
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
               // (15,24): warning CS1998: This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.
               //     async partial void M() { }
               Diagnostic(ErrorCode.WRN_AsyncLacksAwaits, "M"));
         }
 
-        [WorkItem(910100, "DevDiv")]
+        [WorkItem(910100, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/910100")]
         [Fact]
         public void SubstitutedParameterEquality()
         {
@@ -1912,7 +2016,7 @@ class C
     void M<T>(T t) { }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             var type = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
             var method = type.GetMember<MethodSymbol>("M");
 
@@ -1927,7 +2031,7 @@ class C
             Assert.NotSame(substitutedParameter1, substitutedParameter2);
         }
 
-        [WorkItem(910100, "DevDiv")]
+        [WorkItem(910100, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/910100")]
         [Fact]
         public void ReducedExtensionMethodParameterEquality()
         {
@@ -1937,7 +2041,7 @@ static class C
     static void M(this int i, string s) { }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             var type = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
             var method = type.GetMember<MethodSymbol>("M");
 
@@ -1950,6 +2054,70 @@ static class C
             var extensionParameter2 = reducedMethod2.Parameters.Single();
             Assert.Equal(extensionParameter1, extensionParameter2);
             Assert.NotSame(extensionParameter1, extensionParameter2);
+        }
+
+        [Fact]
+        public void RefReturningVoidMethod()
+        {
+            var source = @"
+static class C
+{
+    static ref void M() { }
+}
+";
+
+            CreateCompilationWithMscorlib45(source).VerifyDiagnostics(
+                // (4,16): error CS1547: Keyword 'void' cannot be used in this context
+                //     static ref void M() { }
+                Diagnostic(ErrorCode.ERR_NoVoidHere, "void").WithLocation(4, 16)
+                );
+        }
+
+        [Fact]
+        public void RefReturningVoidMethodNested()
+        {
+            var source = @"
+static class C
+{
+    static void Main()
+    {
+        ref void M() { }
+    }
+}
+";
+
+            var parseOptions = TestOptions.Regular;
+            CreateCompilationWithMscorlib45(source, parseOptions: parseOptions).VerifyDiagnostics(
+                // (6,13): error CS1547: Keyword 'void' cannot be used in this context
+                //         ref void M() { }
+                Diagnostic(ErrorCode.ERR_NoVoidHere, "void").WithLocation(6, 13),
+                // (6,18): warning CS0168: The variable 'M' is declared but never used
+                //         ref void M() { }
+                Diagnostic(ErrorCode.WRN_UnreferencedVar, "M").WithArguments("M").WithLocation(6, 18)
+                );
+        }
+
+        [Fact]
+        public void RefReturningAsyncMethod()
+        {
+            var source = @"
+static class C
+{
+    static async ref int M() { }
+}
+";
+
+            CreateCompilationWithMscorlib45(source).VerifyDiagnostics(
+                // (4,18): error CS1073: Unexpected token 'ref'
+                //     static async ref int M() { }
+                Diagnostic(ErrorCode.ERR_UnexpectedToken, "ref").WithArguments("ref").WithLocation(4, 18),
+                // (4,26): warning CS1998: This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.
+                //     static async ref int M() { }
+                Diagnostic(ErrorCode.WRN_AsyncLacksAwaits, "M").WithLocation(4, 26),
+                // (4,26): error CS0161: 'C.M()': not all code paths return a value
+                //     static async ref int M() { }
+                Diagnostic(ErrorCode.ERR_ReturnExpected, "M").WithArguments("C.M()").WithLocation(4, 26)
+                );
         }
     }
 }

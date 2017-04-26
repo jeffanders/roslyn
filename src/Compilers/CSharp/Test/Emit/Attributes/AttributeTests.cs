@@ -25,7 +25,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         [Fact]
         public void TestAssemblyAttributes()
         {
-            var source = CreateCompilationWithMscorlib(@"
+            var source = CreateStandardCompilation(@"
 using System;
 using System.Runtime.CompilerServices;
 
@@ -62,7 +62,7 @@ class C
             CompileAndVerify(source, sourceSymbolValidator: attributeValidator, symbolValidator: null);
         }
 
-        [WorkItem(984896)]
+        [WorkItem(984896, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/984896")]
         [Fact]
         public void TestAssemblyAttributesErr()
         {
@@ -94,7 +94,7 @@ public unsafe partial class A : C, I
         }
 
 
-        [Fact, WorkItem(545326, "DevDiv")]
+        [Fact, WorkItem(545326, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545326")]
         public void TestAssemblyAttributes_Bug13670()
         {
             var source = @"
@@ -123,7 +123,7 @@ public class Base
         [Fact]
         public void TestAssemblyAttributesReflection()
         {
-            var compilation = CreateCompilationWithMscorlib(@"
+            var compilation = CreateStandardCompilation(@"
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -194,7 +194,7 @@ class C
         [Fact]
         public void TestAttributesOnClassDefinedInClass()
         {
-            var compilation = CreateCompilationWithMscorlib(@"
+            var compilation = CreateStandardCompilation(@"
 using System;
 using System.Runtime.CompilerServices;
 
@@ -219,7 +219,7 @@ class C
         [Fact]
         public void TestAttributesOnClassWithConstantDefinedInClass()
         {
-            var compilation = CreateCompilationWithMscorlib(@"
+            var compilation = CreateStandardCompilation(@"
 using System;
 [Attr(Foo.p)]
 class Foo
@@ -243,7 +243,7 @@ class C
         [Fact]
         public void TestAttributeEmit()
         {
-            var compilation = CreateCompilationWithMscorlib(@"
+            var compilation = CreateStandardCompilation(@"
 using System;
 public enum e1
 {
@@ -302,7 +302,7 @@ class C
         [Fact]
         public void TestAttributesOnClassProperty()
         {
-            var compilation = CreateCompilationWithMscorlib(@"
+            var compilation = CreateStandardCompilation(@"
 using System;
 public class A
 {
@@ -331,11 +331,11 @@ class C
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null);
         }
 
-        [WorkItem(688268, "DevDiv")]
+        [WorkItem(688268, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/688268")]
         [Fact]
         public void Bug688268()
         {
-            var compilation = CreateCompilationWithMscorlib(@"
+            var compilation = CreateStandardCompilation(@"
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -420,7 +420,7 @@ public class A
             var references = new[] { MetadataReference.CreateFromImage(TestResources.SymbolsTests.Metadata.MDTestAttributeDefLib.AsImmutableOrNull()) };
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, references, options: opt);
+            var compilation = CreateStandardCompilation(source, references, options: opt);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -608,7 +608,7 @@ public class Test
     public event System.Action E10 { [return: JJ(0)] add { } remove { } } //on return (after .param[0])
 }
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (15,6): error CS1729: 'AA' does not contain a constructor that takes 1 arguments
                 //     [AA(0)] //in event decl
                 Diagnostic(ErrorCode.ERR_BadCtorArgCount, "AA(0)").WithArguments("AA", "1"),
@@ -677,7 +677,7 @@ public class Test
     }
 }
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (10,22): error CS1729: 'AA' does not contain a constructor that takes 1 arguments
                 //     public int this[[AA(0)]int x]
                 Diagnostic(ErrorCode.ERR_BadCtorArgCount, "AA(0)").WithArguments("AA", "1"),
@@ -829,7 +829,7 @@ class C
 
     public delegate int Delegate2 ([ParamAttribute4(0)]int p1 = 0, [param: ParamAttribute5(0)]params int[] p2);
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (13,6): error CS1729: 'TypeAttribute' does not contain a constructor that takes 1 arguments
                 Diagnostic(ErrorCode.ERR_BadCtorArgCount, "TypeAttribute(0)").WithArguments("TypeAttribute", "1"),
                 // (15,33): error CS1729: 'TypeParamAttribute' does not contain a constructor that takes 1 arguments
@@ -965,7 +965,7 @@ namespace AttributeTest
 
             var references = new[] { MetadataReference.CreateFromImage(TestResources.SymbolsTests.Metadata.AttributeTestDef01.AsImmutableOrNull()) };
 
-            var compilation = CreateCompilationWithMscorlib(source, references, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, references, options: TestOptions.ReleaseDll);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -1040,7 +1040,7 @@ namespace AttributeTest
             var references = new[] { MetadataReference.CreateFromImage(TestResources.SymbolsTests.Metadata.AttributeTestDef01) };
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, references, options: opt);
+            var compilation = CreateStandardCompilation(source, references, options: opt);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -1082,7 +1082,7 @@ namespace AttributeTest
             var references = new[] { MetadataReference.CreateFromImage(TestResources.SymbolsTests.Metadata.AttributeTestDef01.AsImmutableOrNull()) };
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, references, options: opt);
+            var compilation = CreateStandardCompilation(source, references, options: opt);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -1099,7 +1099,7 @@ namespace AttributeTest
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null);
         }
 
-        [WorkItem(688007, "DevDiv")]
+        [WorkItem(688007, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/688007")]
         [Fact]
         public void Bug688007a()
         {
@@ -1130,7 +1130,7 @@ partial class CDoc
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
 
             var globalNs = compilation.GlobalNamespace;
             var cDoc = globalNs.GetTypeMember("CDoc");
@@ -1143,7 +1143,7 @@ partial class CDoc
             CompileAndVerify(compilation).VerifyDiagnostics();
         }
 
-        [WorkItem(688007, "DevDiv")]
+        [WorkItem(688007, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/688007")]
         [Fact]
         public void Bug688007b()
         {
@@ -1178,7 +1178,7 @@ partial class CDoc
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
 
             var globalNs = compilation.GlobalNamespace;
             var cDoc = globalNs.GetTypeMember("CDoc");
@@ -1191,7 +1191,7 @@ partial class CDoc
             CompileAndVerify(compilation).VerifyDiagnostics();
         }
 
-        [WorkItem(688007, "DevDiv")]
+        [WorkItem(688007, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/688007")]
         [Fact]
         public void Bug688007c()
         {
@@ -1230,7 +1230,7 @@ partial class CDoc
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
 
             var globalNs = compilation.GlobalNamespace;
             var cDoc = globalNs.GetTypeMember("CDoc");
@@ -1243,7 +1243,7 @@ partial class CDoc
             CompileAndVerify(compilation).VerifyDiagnostics();
         }
 
-        [WorkItem(688007, "DevDiv")]
+        [WorkItem(688007, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/688007")]
         [Fact]
         public void Bug688007d()
         {
@@ -1282,7 +1282,7 @@ partial class CDoc
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
 
             var globalNs = compilation.GlobalNamespace;
             var cDoc = globalNs.GetTypeMember("CDoc");
@@ -1316,7 +1316,7 @@ namespace AttributeTest
             var references = new[] { MetadataReference.CreateFromImage(TestResources.SymbolsTests.Metadata.AttributeTestDef01.AsImmutableOrNull()) };
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, references, options: opt);
+            var compilation = CreateStandardCompilation(source, references, options: opt);
 
             Action<ModuleSymbol> sourceAttributeValidator = (ModuleSymbol m) =>
             {
@@ -1435,7 +1435,7 @@ namespace AttributeTest
                 });
         }
 
-        [Fact, WorkItem(531385, "DevDiv")]
+        [Fact, WorkItem(531385, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/531385")]
         public void TestAttributesWithParamArrayInCtor3()
         {
             string source = @"
@@ -1453,7 +1453,7 @@ namespace AttributeTest
             var references = new[] { MetadataReference.CreateFromImage(TestResources.SymbolsTests.Metadata.AttributeTestDef01.AsImmutableOrNull()) };
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, references, options: opt);
+            var compilation = CreateStandardCompilation(source, references, options: opt);
 
             Action<ModuleSymbol> sourceAttributeValidator = (ModuleSymbol m) =>
             {
@@ -1499,7 +1499,7 @@ namespace AttributeTest
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -1545,7 +1545,7 @@ namespace AttributeTest
             var references = new[] { MetadataReference.CreateFromImage(TestResources.SymbolsTests.Metadata.AttributeTestDef01.AsImmutableOrNull()) };
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, references, options: opt);
+            var compilation = CreateStandardCompilation(source, references, options: opt);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -1559,7 +1559,7 @@ namespace AttributeTest
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null);
         }
 
-        [WorkItem(541058, "DevDiv")]
+        [WorkItem(541058, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541058")]
         [Fact]
         public void TestAttributesWithTypeof()
         {
@@ -1579,7 +1579,7 @@ public class MyAttribute : Attribute
             CompileAndVerify(source);
         }
 
-        [WorkItem(541071, "DevDiv")]
+        [WorkItem(541071, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541071")]
         [Fact]
         public void TestAttributesWithParams()
         {
@@ -1652,7 +1652,7 @@ namespace AttributeTest
             var references = new[] { MetadataReference.CreateFromImage(TestResources.SymbolsTests.Metadata.AttributeTestDef01.AsImmutableOrNull()) };
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, references, options: opt);
+            var compilation = CreateStandardCompilation(source, references, options: opt);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -1706,7 +1706,7 @@ namespace AttributeTest
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null);
         }
 
-        [WorkItem(541397, "DevDiv")]
+        [WorkItem(541397, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541397")]
         [Fact]
         public void TestAttributeWithSameNameAsTypeParameter()
         {
@@ -1726,7 +1726,7 @@ namespace AttributeTest
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -1748,7 +1748,7 @@ namespace AttributeTest
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null);
         }
 
-        [WorkItem(541615, "DevDiv")]
+        [WorkItem(541615, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541615")]
         [Fact]
         public void TestAttributeWithVarIdentifierName()
         {
@@ -1766,7 +1766,7 @@ namespace AttributeTest
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -1785,7 +1785,7 @@ namespace AttributeTest
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null);
         }
 
-        [WorkItem(541505, "DevDiv")]
+        [WorkItem(541505, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541505")]
         [Fact]
         public void AttributeArgumentBind_PropertyWithSameName()
         {
@@ -1812,7 +1812,7 @@ namespace AttributeTest
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -1830,7 +1830,7 @@ namespace AttributeTest
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null);
         }
 
-        [WorkItem(541709, "DevDiv")]
+        [WorkItem(541709, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541709")]
         [Fact]
         public void AttributeOnSynthesizedParameterSymbol()
         {
@@ -1863,7 +1863,7 @@ namespace AttributeTest
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -1915,7 +1915,7 @@ namespace AttributeTest
         [Fact]
         public void TestAttributeStringForEnumTypedConstant()
         {
-            var source = CreateCompilationWithMscorlib(@"
+            var source = CreateStandardCompilation(@"
 using System;
 namespace AttributeTest
 {
@@ -2001,7 +2001,7 @@ namespace AttributeTest
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2044,7 +2044,7 @@ namespace AttributeTest
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2068,7 +2068,7 @@ namespace AttributeTest
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null, expectedOutput: expectedOutput);
         }
 
-        [WorkItem(541864, "DevDiv")]
+        [WorkItem(541864, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541864")]
         [Fact]
         public void Bug_8769_TestAttributesWithNamedConstructorArguments()
         {
@@ -2088,7 +2088,7 @@ namespace AttributeTest
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2133,7 +2133,7 @@ namespace AttributeTest
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2157,7 +2157,7 @@ namespace AttributeTest
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null, expectedOutput: expectedOutput);
         }
 
-        [WorkItem(541861, "DevDiv")]
+        [WorkItem(541861, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541861")]
         [Fact]
         public void Bug_8768_TestAttributesWithOptionalConstructorArguments()
         {
@@ -2177,7 +2177,7 @@ namespace AttributeTest
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2198,7 +2198,7 @@ namespace AttributeTest
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null, expectedOutput: expectedOutput);
         }
 
-        [WorkItem(541854, "DevDiv")]
+        [WorkItem(541854, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541854")]
         [Fact]
         public void Bug8761_StringArrayArgument()
         {
@@ -2219,7 +2219,7 @@ public class A : Attribute
             CompileAndVerify(source, expectedOutput: "");
         }
 
-        [WorkItem(541856, "DevDiv")]
+        [WorkItem(541856, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541856")]
         [Fact]
         public void Bug8763_NullInArrayInitializer()
         {
@@ -2247,7 +2247,7 @@ public class B
             CompileAndVerify(source, expectedOutput: "");
         }
 
-        [WorkItem(541856, "DevDiv")]
+        [WorkItem(541856, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541856")]
         [Fact]
         public void AttributeArrayTypeArgument()
         {
@@ -2326,7 +2326,7 @@ public class I
             CompileAndVerify(source, expectedOutput: "");
         }
 
-        [WorkItem(541859, "DevDiv")]
+        [WorkItem(541859, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541859")]
         [Fact]
         public void Bug8766_AttributeCtorOverloadResolution()
         {
@@ -2351,7 +2351,7 @@ public class A : Attribute
             CompileAndVerify(source, expectedOutput: "int");
         }
 
-        [WorkItem(541876, "DevDiv")]
+        [WorkItem(541876, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541876")]
         [Fact]
         public void Bug8771_AttributeArgumentNameBinding()
         {
@@ -2379,7 +2379,7 @@ class B
         typeof(C<>).GetGenericArguments()[0].GetCustomAttributes(false);
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2407,7 +2407,7 @@ class B
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null, expectedOutput: expectedOutput);
         }
 
-        [WorkItem(546380, "DevDiv")]
+        [WorkItem(546380, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546380")]
         [Fact]
         public void AttributeWithNestedUnboundGenericType()
         {
@@ -2435,7 +2435,7 @@ public class Program
         
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2453,7 +2453,7 @@ public class Program
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: attributeValidator);
         }
 
-        [WorkItem(546380, "DevDiv")]
+        [WorkItem(546380, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546380")]
         [Fact]
         public void AttributeWithUnboundGenericType()
         {
@@ -2477,7 +2477,7 @@ class Program
     {
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2494,7 +2494,7 @@ class Program
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: attributeValidator);
         }
 
-        [WorkItem(542223, "DevDiv")]
+        [WorkItem(542223, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542223")]
         [Fact]
         public void AttributeArgumentAsEnumFromMetadata()
         {
@@ -2521,7 +2521,7 @@ class Program
             Assert.Equal("Bar", ca.Type.Name);
         }
 
-        [WorkItem(542318, "DevDiv")]
+        [WorkItem(542318, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542318")]
         [Fact]
         public void AttributeWithDaysOfWeekArgument()
         {
@@ -2573,7 +2573,7 @@ public class A : Attribute
     }
 }";
 
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2614,7 +2614,7 @@ public class A : Attribute
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null, expectedOutput: expectedOutput);
         }
 
-        [WorkItem(542534, "DevDiv")]
+        [WorkItem(542534, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542534")]
         [Fact]
         public void AttributeOnDefiningPartialMethodDeclaration()
         {
@@ -2638,7 +2638,7 @@ partial class Program
             CompileAndVerify(source, expectedOutput: "1");
         }
 
-        [WorkItem(542534, "DevDiv")]
+        [WorkItem(542534, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542534")]
         [Fact]
         public void AttributeOnDefiningPartialMethodDeclaration_02()
         {
@@ -2679,7 +2679,7 @@ partial class Program
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(new[] { source1, source2 }, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(new[] { source1, source2 }, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2725,7 +2725,7 @@ partial class Program
             Assert.Equal(1, param.GetAttributes(e2Class).Count());
         }
 
-        [WorkItem(542533, "DevDiv")]
+        [WorkItem(542533, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542533")]
         [Fact]
         public void AttributesInMultiplePartialDeclarations_Type()
         {
@@ -2748,7 +2748,7 @@ class C
     }
 }";
 
-            var compilation = CreateCompilationWithMscorlib(new[] { source1, source2 }, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(new[] { source1, source2 }, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2766,7 +2766,7 @@ class C
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null, expectedOutput: "");
         }
 
-        [WorkItem(542533, "DevDiv")]
+        [WorkItem(542533, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542533")]
         [Fact]
         public void AttributesInMultiplePartialDeclarations_TypeParam()
         {
@@ -2784,7 +2784,7 @@ class C
     public static void Main() {}
 }";
 
-            var compilation = CreateCompilationWithMscorlib(new[] { source1, source2 }, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(new[] { source1, source2 }, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2803,7 +2803,7 @@ class C
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null, expectedOutput: "");
         }
 
-        [WorkItem(542550, "DevDiv")]
+        [WorkItem(542550, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542550")]
         [Fact]
         public void Bug9824()
         {
@@ -2821,7 +2821,7 @@ public class GClass<T> where T : Attribute
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2838,7 +2838,7 @@ public class GClass<T> where T : Attribute
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null);
         }
 
-        [WorkItem(543135, "DevDiv")]
+        [WorkItem(543135, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543135")]
         [Fact]
         public void AttributeAndDefaultValueArguments_01()
         {
@@ -2859,7 +2859,7 @@ class C
     }
 }";
 
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2885,7 +2885,7 @@ class C
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null, expectedOutput: expectedOutput);
         }
 
-        [WorkItem(543135, "DevDiv")]
+        [WorkItem(543135, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543135")]
         [Fact]
         public void AttributeAndDefaultValueArguments_02()
         {
@@ -2917,7 +2917,7 @@ class C
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2957,7 +2957,7 @@ class C
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null, expectedOutput: expectedOutput);
         }
 
-        [WorkItem(529044, "DevDiv")]
+        [WorkItem(529044, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529044")]
         [Fact]
         public void AttributeNameLookup()
         {
@@ -2979,7 +2979,7 @@ public class Test
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -2995,7 +2995,7 @@ public class Test
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: null, expectedOutput: "");
         }
 
-        [WorkItem(542003, "DevDiv")]
+        [WorkItem(542003, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542003")]
         [Fact]
         public void Bug8956_NullArgumentToSystemTypeParam()
         {
@@ -3037,7 +3037,7 @@ public struct S
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             var global = comp.SourceModule.GlobalNamespace;
             var typesym = global.GetMember("S") as NamedTypeSymbol;
             Assert.NotNull(typesym);
@@ -3052,7 +3052,7 @@ public struct S
             Assert.True(etsym.HasSpecialName);
         }
 
-        [WorkItem(546277, "DevDiv")]
+        [WorkItem(546277, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546277")]
         [Fact]
         public void TestArrayTypeInAttributeArgument()
         {
@@ -3091,7 +3091,7 @@ public class C5 {}
 public class C6 {}
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             Action<ModuleSymbol> attributeValidator = (ModuleSymbol m) =>
             {
@@ -3152,7 +3152,7 @@ public class C6 {}
             CompileAndVerify(compilation, sourceSymbolValidator: attributeValidator, symbolValidator: attributeValidator);
         }
 
-        [WorkItem(546621, "DevDiv")]
+        [WorkItem(546621, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546621")]
         [Fact]
         public void TestUnicodeAttributeArgument_Bug16353()
         {
@@ -3175,7 +3175,7 @@ class C
             CompileAndVerify(source, expectedOutput: "True");
         }
 
-        [WorkItem(546621, "DevDiv")]
+        [WorkItem(546621, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546621")]
         [Fact]
         public void TestUnicodeAttributeArgumentsStrings()
         {
@@ -3298,7 +3298,7 @@ public class C
         }
 
         [Fact]
-        [WorkItem(546896, "DevDiv")]
+        [WorkItem(546896, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546896")]
         public void MissingTypeInSignature()
         {
             string lib1 = @"
@@ -3324,13 +3324,13 @@ class D : C
 }
 ";
 
-            var c1 = CreateCompilationWithMscorlib(lib1);
+            var c1 = CreateStandardCompilation(lib1);
             var r1 = c1.EmitToImageReference();
 
-            var c2 = CreateCompilationWithMscorlib(lib2, references: new[] { r1 });
+            var c2 = CreateStandardCompilation(lib2, references: new[] { r1 });
             var r2 = c2.EmitToImageReference();
 
-            var cm = CreateCompilationWithMscorlib(main, new[] { r2 });
+            var cm = CreateStandardCompilation(main, new[] { r2 });
             cm.VerifyDiagnostics();
 
             var model = cm.GetSemanticModel(cm.SyntaxTrees[0]);
@@ -3346,7 +3346,7 @@ class D : C
         }
 
         [Fact]
-        [WorkItem(569089, "DevDiv")]
+        [WorkItem(569089, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/569089")]
         public void NullArrays()
         {
             var source = @"
@@ -3427,8 +3427,8 @@ class C
             });
         }
 
-        [WorkItem(121)]
-        [Fact(Skip = "121")]
+        [WorkItem(121, "https://github.com/dotnet/roslyn/issues/121")]
+        [Fact]
         public void Bug_AttributeOnWrongGenericParameter()
         {
             var source = @"
@@ -3509,28 +3509,30 @@ class A
             // It does not go on to produce the other errors.
 
             compilation.VerifyDiagnostics(
-    // (33,2): error CS0246: The type or namespace name 'XDoesNotExist' could not be found (are you missing a using directive or an assembly reference?)
-    // [XDoesNotExist()]
-    Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "XDoesNotExist").WithArguments("XDoesNotExist").WithLocation(33, 2),
-    // (34,2): error CS0181: Attribute constructor parameter 'd' has type 'decimal', which is not a valid attribute parameter type
-    // [X(1m)]
-    Diagnostic(ErrorCode.ERR_BadAttributeParamType, "X").WithArguments("d", "decimal").WithLocation(34, 2),
-    // (35,2): error CS0181: Attribute constructor parameter 'd' has type 'decimal', which is not a valid attribute parameter type
-    // [X(1)]
-    Diagnostic(ErrorCode.ERR_BadAttributeParamType, "X").WithArguments("d", "decimal").WithLocation(35, 2),
-    // (37,2): error CS0121: The call is ambiguous between the following methods or properties: 'XAttribute.XAttribute(ref int)' and 'XAttribute.XAttribute(e1)'
-    // [X(A.dyn)]
-    Diagnostic(ErrorCode.ERR_AmbigCall, "X(A.dyn)").WithArguments("XAttribute.XAttribute(ref int)", "XAttribute.XAttribute(e1)").WithLocation(37, 2),
-    // (38,2): error CS0181: Attribute constructor parameter 'd' has type 'decimal', which is not a valid attribute parameter type
-    // [X(m.NotAConstant() + 2)]
-    Diagnostic(ErrorCode.ERR_BadAttributeParamType, "X").WithArguments("d", "decimal").WithLocation(38, 2)
-                );
+                // (33,2): error CS0246: The type or namespace name 'XDoesNotExistAttribute' could not be found (are you missing a using directive or an assembly reference?)
+                // [XDoesNotExist()]
+                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "XDoesNotExist").WithArguments("XDoesNotExistAttribute").WithLocation(33, 2),
+                // (33,2): error CS0246: The type or namespace name 'XDoesNotExist' could not be found (are you missing a using directive or an assembly reference?)
+                // [XDoesNotExist()]
+                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "XDoesNotExist").WithArguments("XDoesNotExist").WithLocation(33, 2),
+                // (34,2): error CS0181: Attribute constructor parameter 'd' has type 'decimal', which is not a valid attribute parameter type
+                // [X(1m)]
+                Diagnostic(ErrorCode.ERR_BadAttributeParamType, "X").WithArguments("d", "decimal").WithLocation(34, 2),
+                // (35,2): error CS0181: Attribute constructor parameter 'd' has type 'decimal', which is not a valid attribute parameter type
+                // [X(1)]
+                Diagnostic(ErrorCode.ERR_BadAttributeParamType, "X").WithArguments("d", "decimal").WithLocation(35, 2),
+                // (37,2): error CS0121: The call is ambiguous between the following methods or properties: 'XAttribute.XAttribute(ref int)' and 'XAttribute.XAttribute(e1)'
+                // [X(A.dyn)]
+                Diagnostic(ErrorCode.ERR_AmbigCall, "X(A.dyn)").WithArguments("XAttribute.XAttribute(ref int)", "XAttribute.XAttribute(e1)").WithLocation(37, 2),
+                // (38,2): error CS0181: Attribute constructor parameter 'd' has type 'decimal', which is not a valid attribute parameter type
+                // [X(m.NotAConstant() + 2)]
+                Diagnostic(ErrorCode.ERR_BadAttributeParamType, "X").WithArguments("d", "decimal").WithLocation(38, 2));
         }
 
         [Fact]
         public void AttributeNamedArgumentErrors1()
         {
-            var compilation = CreateCompilationWithMscorlib(@"
+            var compilation = CreateStandardCompilation(@"
 using System;
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
 class XAttribute : Attribute
@@ -3594,7 +3596,7 @@ class A
             string source = @"
 using CustomAttribute;
 [Base(1)]
-[BaseAttribute(""SOS"")]
+[@BaseAttribute(""SOS"")]
 static class AttributeMod
 {
     [Derived('Q')]
@@ -3611,17 +3613,21 @@ static class AttributeMod
             var references = new[] { MetadataReference.CreateFromImage(TestResources.SymbolsTests.Metadata.AttributeTestDef01.AsImmutableOrNull()) };
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, references, options: opt);
+            var compilation = CreateStandardCompilation(source, references, options: opt);
 
             compilation.VerifyDiagnostics(
                 // (4,2): error CS0579: Duplicate 'BaseAttribute' attribute
-                Diagnostic(ErrorCode.ERR_DuplicateAttribute, @"BaseAttribute").WithArguments("BaseAttribute"),
+                // [@BaseAttribute("SOS")]
+                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "@BaseAttribute").WithArguments("BaseAttribute").WithLocation(4, 2),
                 // (7,6): error CS0592: Attribute 'Derived' is not valid on this declaration type. It is only valid on 'struct, method, parameter' declarations.
-                Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "Derived").WithArguments("Derived", "struct, method, parameter"),
+                //     [Derived('Q')]
+                Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "Derived").WithArguments("Derived", "struct, method, parameter").WithLocation(7, 6),
                 // (8,6): error CS0579: Duplicate 'Derived' attribute
-                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "Derived").WithArguments("Derived"),
+                //     [Derived('C')]
+                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "Derived").WithArguments("Derived").WithLocation(8, 6),
                 // (13,6): error CS0579: Duplicate 'Base' attribute
-                Diagnostic(ErrorCode.ERR_DuplicateAttribute, @"Base").WithArguments("Base"));
+                //     [Base("")]
+                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "Base").WithArguments("Base").WithLocation(13, 6));
         }
 
         [Fact]
@@ -3649,7 +3655,7 @@ class Class3 { }
 class Class4 { }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (10,2): error CS1614: 'X' is ambiguous between 'X' and 'XAttribute'; use either '@X' or 'XAttribute'
@@ -3676,11 +3682,12 @@ class Class2 { }
 class Class3 { }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
-                // (13,2): error CS0246: The type or namespace name '@X' could not be found (are you missing a using directive or an assembly reference?)
-                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "@X").WithArguments("@X"));
+                // (13,2): error CS0246: The type or namespace name 'X' could not be found (are you missing a using directive or an assembly reference?)
+                // [@X]                // Error: No attribute named X
+                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "@X").WithArguments("X").WithLocation(13, 2));
         }
 
         [Fact]
@@ -3709,7 +3716,7 @@ class X
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (13,8): error CS0416: 'T': an attribute argument cannot use type parameters
@@ -3733,7 +3740,7 @@ class X
                 );
         }
 
-        [WorkItem(540924, "DevDiv")]
+        [WorkItem(540924, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540924")]
         [Fact]
         public void AttributeEnumsAsAttributeParameters()
         {
@@ -3758,11 +3765,11 @@ public class MainClass
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics();
         }
 
-        [WorkItem(768798, "DevDiv")]
+        [WorkItem(768798, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/768798")]
         [Fact(Skip = "768798")]
         public void AttributeInvalidTargetSpecifier()
         {
@@ -3778,14 +3785,14 @@ class X
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (6,2): warning CS0657: 'method' is not a valid attribute location for this declaration. Valid attribute locations for this declaration are 'type'. All attributes in this block will be ignored.
                 Diagnostic(ErrorCode.WRN_AttributeLocationOnBadDeclaration, "method").WithArguments("method", "type"));
         }
 
-        [WorkItem(768798, "DevDiv")]
+        [WorkItem(768798, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/768798")]
         [Fact(Skip = "768798")]
         public void AttributeInvalidTargetSpecifierOnInvalidAttribute()
         {
@@ -3797,7 +3804,7 @@ class X
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(/*CS0657, CS0246*/);
         }
@@ -3818,7 +3825,7 @@ class A
 class B
 {
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (4,6): error CS0592: Attribute 'AttributeUsage' is not valid on this declaration type. It is only valid on 'class' declarations.
                 Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "AttributeUsage").WithArguments("AttributeUsage", "class").WithLocation(4, 6),
@@ -3847,7 +3854,7 @@ public class Test
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (3,39): error CS0643: 'AllowMultiple' duplicate named attribute argument
@@ -3856,7 +3863,7 @@ public class Test
                 Diagnostic(ErrorCode.ERR_NoCorrespondingArgument, "AttributeUsage(AllowMultiple = true, AllowMultiple = false)").WithArguments("validOn", "System.AttributeUsageAttribute.AttributeUsageAttribute(System.AttributeTargets)").WithLocation(3, 2));
         }
 
-        [WorkItem(541059, "DevDiv")]
+        [WorkItem(541059, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541059")]
         [Fact]
         public void AttributeUsageIsNull()
         {
@@ -3875,13 +3882,13 @@ public class Foo
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 Diagnostic(ErrorCode.ERR_BadArgType, "null").WithArguments("1", "<null>", "System.AttributeTargets"));
         }
 
-        [WorkItem(541072, "DevDiv")]
+        [WorkItem(541072, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541072")]
         [Fact]
         public void AttributeContainsGeneric()
         {
@@ -3895,7 +3902,7 @@ class Foo<T>
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (2,2): error CS0404: Cannot apply attribute class 'Foo<T>' because it is generic
                 // [Foo<int>]
@@ -3922,7 +3929,7 @@ public class Foo
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (4,17): error CS1503: Argument 1: cannot convert from '<null>' to 'System.AttributeTargets'
@@ -3946,7 +3953,7 @@ class Foo<T>
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (2,2): error CS0404: Cannot apply attribute class 'Foo<T>' because it is generic
@@ -3954,7 +3961,7 @@ class Foo<T>
                 Diagnostic(ErrorCode.ERR_AttributeCantBeGeneric, "Foo<int>").WithArguments("Foo<T>").WithLocation(2, 2));
         }
 
-        [WorkItem(541423, "DevDiv")]
+        [WorkItem(541423, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541423")]
         [Fact]
         public void ErrorsInMultipleSyntaxTrees()
         {
@@ -3972,7 +3979,7 @@ class B : Attribute
             var source2 =
 @"[module: B]";
 
-            var compilation = CreateCompilationWithMscorlib(new[] { source1, source2 });
+            var compilation = CreateStandardCompilation(new[] { source1, source2 });
             compilation.VerifyDiagnostics(
                 // (2,10): error CS0592: Attribute 'A' is not valid on this declaration type. It is only valid on 'class' declarations.
                 Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "A").WithArguments("A", "class").WithLocation(2, 10),
@@ -3980,7 +3987,7 @@ class B : Attribute
                 Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "B").WithArguments("B", "method").WithLocation(1, 10));
         }
 
-        [WorkItem(542533, "DevDiv")]
+        [WorkItem(542533, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542533")]
         [Fact]
         public void ErrorsInMultipleSyntaxTrees_TypeParam()
         {
@@ -4000,7 +4007,7 @@ class Gen<[A] T> {}
             var source2 =
 @"class Gen2<[B] T> {}";
 
-            var compilation = CreateCompilationWithMscorlib(new[] { source1, source2 });
+            var compilation = CreateStandardCompilation(new[] { source1, source2 });
             compilation.VerifyDiagnostics(
                 // (11,12): error CS0592: Attribute 'A' is not valid on this declaration type. It is only valid on 'class' declarations.
                 // class Gen<[A] T> {}
@@ -4010,7 +4017,7 @@ class Gen<[A] T> {}
                 Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "B").WithArguments("B", "method").WithLocation(1, 13));
         }
 
-        [WorkItem(541423, "DevDiv")]
+        [WorkItem(541423, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541423")]
         [Fact]
         public void ErrorsInMultiplePartialDeclarations()
         {
@@ -4032,7 +4039,7 @@ partial class C
 partial class C
 {
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (10,2): error CS0592: Attribute 'A' is not valid on this declaration type. It is only valid on 'struct' declarations.
                 Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "A").WithArguments("A", "struct").WithLocation(10, 2),
@@ -4040,7 +4047,7 @@ partial class C
                 Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "B").WithArguments("B", "method").WithLocation(14, 2));
         }
 
-        [WorkItem(542533, "DevDiv")]
+        [WorkItem(542533, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542533")]
         [Fact]
         public void ErrorsInMultiplePartialDeclarations_TypeParam()
         {
@@ -4061,7 +4068,7 @@ partial class Gen<[A] T>
 partial class Gen<[B] T>
 {
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (11,20): error CS0592: Attribute 'A' is not valid on this declaration type. It is only valid on 'struct' declarations.
                 // partial class Gen<[A] T>
@@ -4071,7 +4078,7 @@ partial class Gen<[B] T>
                 Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "B").WithArguments("B", "method").WithLocation(14, 20));
         }
 
-        [WorkItem(541505, "DevDiv")]
+        [WorkItem(541505, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541505")]
         [Fact]
         public void AttributeArgumentError_CS0120()
         {
@@ -4095,7 +4102,7 @@ class F
   public int test;
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (16,6): error CS0120: An object reference is required for the non-static field, method, or property 'F.ProtectionLevel'
                 //   [A(ProtectionLevel.Privacy)]
@@ -4109,7 +4116,7 @@ class F
                 );
         }
 
-        [Fact, WorkItem(541427, "DevDiv")]
+        [Fact, WorkItem(541427, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541427")]
         public void AttributeTargetsString()
         {
             var source = @"
@@ -4118,7 +4125,7 @@ using System;
 [A] class C { }
 ";
 
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
     // (3,2): error CS0592: Attribute 'A' is not valid on this declaration type. It is only valid on 'assembly, module, struct, enum, constructor, method, property, indexer, field, event, interface, parameter, delegate, return, type parameter' declarations.
     // [A] class C { }
     Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "A").WithArguments("A", "assembly, module, struct, enum, constructor, method, property, indexer, field, event, interface, parameter, delegate, return, type parameter")
@@ -4134,13 +4141,13 @@ using System;
 [AttributeUsage(AttributeTargets.Assembly)]
 class Attr: Attribute { public Attr(){} }";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (3,10): error CS0592: Attribute 'Attr' is not valid on this declaration type. It is only valid on 'assembly' declarations.
                 Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "Attr").WithArguments("Attr", "assembly"));
         }
 
-        [WorkItem(541259, "DevDiv")]
+        [WorkItem(541259, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541259")]
         [Fact]
         public void CS0182_NonConstantArrayCreationAttributeArgument()
         {
@@ -4167,7 +4174,7 @@ class A : Attribute
     public A(object x) { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (3,16): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 // [A(new int[1] {Program.f})]
@@ -4183,7 +4190,7 @@ class A : Attribute
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, "new A[0]"));
         }
 
-        [WorkItem(541753, "DevDiv")]
+        [WorkItem(541753, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541753")]
         [Fact]
         public void CS0182_NestedArrays()
         {
@@ -4204,14 +4211,14 @@ class A : Attribute
     public A(object x) { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (4,4): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 // [A(new int[][] { new int[] { 1 } })]
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, "new int[][] { new int[] { 1 } }").WithLocation(4, 4));
         }
 
-        [WorkItem(541849, "DevDiv")]
+        [WorkItem(541849, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541849")]
         [Fact]
         public void CS0182_MultidimensionalArrays()
         {
@@ -4232,14 +4239,14 @@ class Program
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (8,2): error CS0181: Attribute constructor parameter 'x' has type 'int[][*,*]', which is not a valid attribute parameter type
                 // [My]
                 Diagnostic(ErrorCode.ERR_BadAttributeParamType, "My").WithArguments("x", "int[][*,*]").WithLocation(8, 2));
         }
 
-        [WorkItem(541858, "DevDiv")]
+        [WorkItem(541858, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541858")]
         [Fact]
         public void AttributeDefaultValueArgument()
         {
@@ -4264,7 +4271,7 @@ namespace AttributeTest
             var compilation = CompileAndVerify(source, expectedOutput: "");
         }
 
-        [WorkItem(541858, "DevDiv")]
+        [WorkItem(541858, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541858")]
         [Fact]
         public void CS0416_GenericAttributeDefaultValueArgument()
         {
@@ -4289,7 +4296,7 @@ public class C<T>
     public enum E2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (14,12): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 //     [A(X = default(E))]
@@ -4299,7 +4306,7 @@ public class C<T>
                 Diagnostic(ErrorCode.ERR_AttrArgWithTypeVars, "typeof(E2)").WithArguments("C<T>.E2").WithLocation(17, 12));
         }
 
-        [WorkItem(541615, "DevDiv")]
+        [WorkItem(541615, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541615")]
         [Fact]
         public void CS0246_VarAttributeIdentifier()
         {
@@ -4310,8 +4317,11 @@ class Program
     public static void Main() {}
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
+                // (2,2): error CS0246: The type or namespace name 'varAttribute' could not be found (are you missing a using directive or an assembly reference?)
+                // [var()]
+                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "var").WithArguments("varAttribute").WithLocation(2, 2),
                 // (2,2): error CS0246: The type or namespace name 'var' could not be found (are you missing a using directive or an assembly reference?)
                 // [var()]
                 Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "var").WithArguments("var").WithLocation(2, 2));
@@ -4347,7 +4357,7 @@ namespace AttributeTest
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (7,27): error CS1016: Named attribute argument expected
                 //     [A(3, z: 5, X = 6, y: 1)]
@@ -4366,7 +4376,7 @@ namespace AttributeTest
                 Diagnostic(ErrorCode.ERR_NamedArgumentSpecificationBeforeFixedArgument, "1").WithLocation(8, 17));
         }
 
-        [WorkItem(541877, "DevDiv")]
+        [WorkItem(541877, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541877")]
         [Fact]
         public void Bug8772_TestDelegateAttributeNameBinding()
         {
@@ -4392,7 +4402,7 @@ class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (11,8): error CS1503: Argument 1: cannot convert from 'method group' to 'int'
@@ -4435,7 +4445,7 @@ namespace TestNamespace_01
     public class Test2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (23,6): error CS1614: 'Description' is ambiguous between 'ValidWithoutSuffix.Description' and 'ValidWithSuffix.DescriptionAttribute'; use either '@Description' or 'DescriptionAttribute'
@@ -4479,7 +4489,7 @@ namespace TestNamespace_02
     public class Test2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (30,6): error CS0104: 'DescriptionAttribute' is an ambiguous reference between 'ValidWithSuffix.DescriptionAttribute' and 'ValidWithSuffix_And_ValidWithoutSuffix.DescriptionAttribute'
@@ -4523,7 +4533,7 @@ namespace TestNamespace_03
     public class Test2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics();
         }
@@ -4573,7 +4583,7 @@ namespace TestNamespace_04
     public class Test2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (36,6): error CS0104: 'Description' is an ambiguous reference between 'ValidWithSuffix_And_ValidWithoutSuffix.Description' and 'ValidWithoutSuffix.Description'
@@ -4616,7 +4626,7 @@ namespace TestNamespace_05
     public class Test2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (23,6): error CS0616: 'InvalidWithoutSuffix.Description' is not an attribute class
@@ -4663,7 +4673,7 @@ namespace TestNamespace_06
     public class Test2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (27,6): error CS0104: 'Description' is an ambiguous reference between 'InvalidWithSuffix.DescriptionAttribute' and 'InvalidWithSuffix_And_InvalidWithoutSuffix.DescriptionAttribute'
@@ -4710,7 +4720,7 @@ namespace TestNamespace_07
     public class Test2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (30,6): error CS0616: 'InvalidWithSuffix_And_InvalidWithoutSuffix.DescriptionAttribute' is not an attribute class
@@ -4766,7 +4776,7 @@ namespace TestNamespace_08
     public class Test2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (36,6): error CS0104: 'Description' is an ambiguous reference between 'InvalidWithSuffix_And_InvalidWithoutSuffix.Description' and 'InvalidWithoutSuffix.Description' 
@@ -4817,7 +4827,7 @@ namespace TestNamespace_09
     public class Test2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (31,6): error CS0104: 'Description' is an ambiguous reference between 'InvalidWithSuffix_But_ValidWithoutSuffix.Description' and 'InvalidWithoutSuffix_But_ValidWithSuffix.Description'
@@ -4857,7 +4867,7 @@ namespace TestNamespace_10
     public class Test { public static void Main() {} }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (23,6): error CS0104: 'Description' is an ambiguous reference between 'InvalidWithoutSuffix.Description' and 'ValidWithoutSuffix.Description'
@@ -4897,7 +4907,7 @@ namespace TestNamespace_11
     public class Test2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (23,6): error CS0104: 'Description' is an ambiguous reference between 'InvalidWithSuffix.DescriptionAttribute' and 'ValidWithSuffix.DescriptionAttribute'
@@ -4944,7 +4954,7 @@ namespace TestNamespace_12
     public class Test2 { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (30,6): error CS0104: 'DescriptionAttribute' is an ambiguous reference between 'InvalidWithSuffix.DescriptionAttribute' and 'InvalidWithoutSuffix_But_ValidWithSuffix.DescriptionAttribute'
@@ -4964,12 +4974,12 @@ using AAttribute = A2;
 class A1 : System.Attribute { }
 class A2 : System.Attribute { }
 [A]class C { }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (5,2): error CS1614: 'A' is ambiguous between 'A2' and 'A1'; use either '@A' or 'AAttribute'
                 Diagnostic(ErrorCode.ERR_AmbiguousAttribute, "A").WithArguments("A", "A1", "A2").WithLocation(5, 2));
         }
 
-        [WorkItem(542279, "DevDiv")]
+        [WorkItem(542279, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542279")]
         [Fact]
         public void MethodSignatureAttributes()
         {
@@ -4989,7 +4999,7 @@ class C
         return null;
     }
 }";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 // (8,16): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, "new B()").WithLocation(8, 16),
                 // (10,12): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
@@ -5010,7 +5020,7 @@ public class A : Attribute
 [A(new object[] { default(E), default(E) })]
 class C<T, U> { public enum E {} }";
 
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (7,31): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 // [A(new object[] { default(E), default(E) })]
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, "default(E)").WithLocation(7, 31),
@@ -5030,13 +5040,13 @@ public class A : Attribute
   const decimal y = new decimal();
 }";
 
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (2,8): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 // [A(X = new decimal())]
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, "new decimal()").WithLocation(2, 8));
         }
 
-        [WorkItem(542533, "DevDiv")]
+        [WorkItem(542533, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542533")]
         [Fact]
         public void DuplicateAttributeOnTypeParameterOfPartialClass()
         {
@@ -5048,14 +5058,14 @@ partial class C<[A][A] T> { }
 ";
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, null, options: opt);
+            var compilation = CreateStandardCompilation(source, null, options: opt);
 
             compilation.VerifyDiagnostics(
                 // (4,2): error CS0579: Duplicate 'A' attribute
                 Diagnostic(ErrorCode.ERR_DuplicateAttribute, @"A").WithArguments("A"));
         }
 
-        [WorkItem(542486, "DevDiv")]
+        [WorkItem(542486, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542486")]
         [Fact]
         public void MethodParameterScope()
         {
@@ -5080,7 +5090,7 @@ class C
     static void Main() { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (11,8): error CS0103: The name 'qq' does not exist in the current context
@@ -5105,7 +5115,7 @@ class C
             }
         }
 
-        [WorkItem(542486, "DevDiv")]
+        [WorkItem(542486, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542486")]
         [Fact]
         public void MethodTypeParameterScope()
         {
@@ -5125,7 +5135,7 @@ class C
     static void Main() { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (11,15): error CS0246: The type or namespace name 'T' could not be found (are you missing a using directive or an assembly reference?)
@@ -5145,7 +5155,7 @@ class C
             Assert.Equal(CandidateReason.None, info.CandidateReason);
         }
 
-        [WorkItem(542625, "DevDiv")]
+        [WorkItem(542625, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542625")]
         [Fact]
         public void DuplicateAttributeOnPartialMethod()
         {
@@ -5166,7 +5176,7 @@ partial class C
 ";
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, null, options: opt);
+            var compilation = CreateStandardCompilation(source, null, options: opt);
 
             compilation.VerifyDiagnostics(
                 // error CS0579: Duplicate 'A' attribute
@@ -5175,7 +5185,7 @@ partial class C
                 Diagnostic(ErrorCode.ERR_DuplicateAttribute, @"B").WithArguments("B"));
         }
 
-        [WorkItem(542625, "DevDiv")]
+        [WorkItem(542625, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542625")]
         [Fact]
         public void DuplicateAttributeOnTypeParameterOfPartialMethod()
         {
@@ -5209,32 +5219,32 @@ partial class C
 ";
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, null, options: opt);
+            var compilation = CreateStandardCompilation(source, null, options: opt);
             compilation.VerifyDiagnostics(
                 // (25,25): error CS0759: No defining declaration found for implementing declaration of partial method 'C.Foo6<T>()'
                 //     static partial void Foo6<[A][A] T>() { }
-                Diagnostic(ErrorCode.ERR_PartialMethodMustHaveLatent, "Foo6").WithArguments("C.Foo6<T>()"),
+                Diagnostic(ErrorCode.ERR_PartialMethodMustHaveLatent, "Foo6").WithArguments("C.Foo6<T>()").WithLocation(25, 25),
                 // (11,17): error CS0111: Type 'C' already defines a member called 'Foo2' with the same parameter types
                 //     static void Foo2<[A] T>() { }
-                Diagnostic(ErrorCode.ERR_MemberAlreadyExists, "Foo2").WithArguments("Foo2", "C"),
+                Diagnostic(ErrorCode.ERR_MemberAlreadyExists, "Foo2").WithArguments("Foo2", "C").WithLocation(11, 17),
                 // (15,17): error CS0102: The type 'C' already contains a definition for 'Foo3'
                 //     private int Foo3;
-                Diagnostic(ErrorCode.ERR_DuplicateNameInClass, "Foo3").WithArguments("C", "Foo3"),
-                // (7,30): error CS0579: Duplicate 'A' attribute
-                //     static partial void Foo<[A] T>() { }
-                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A"),
+                Diagnostic(ErrorCode.ERR_DuplicateNameInClass, "Foo3").WithArguments("C", "Foo3").WithLocation(15, 17),
                 // (18,34): error CS0579: Duplicate 'A' attribute
                 //     static partial void Foo4<[A][A] T>();
-                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A"),
+                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A").WithLocation(18, 34),
                 // (25,34): error CS0579: Duplicate 'A' attribute
                 //     static partial void Foo6<[A][A] T>() { }
-                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A"),
+                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A").WithLocation(25, 34),
+                // (7,30): error CS0579: Duplicate 'A' attribute
+                //     static partial void Foo<[A] T>() { }
+                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A").WithLocation(7, 30),
                 // (15,17): warning CS0169: The field 'C.Foo3' is never used
                 //     private int Foo3;
-                Diagnostic(ErrorCode.WRN_UnreferencedField, "Foo3").WithArguments("C.Foo3"));
+                Diagnostic(ErrorCode.WRN_UnreferencedField, "Foo3").WithArguments("C.Foo3").WithLocation(15, 17));
         }
 
-        [WorkItem(542625, "DevDiv")]
+        [WorkItem(542625, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542625")]
         [Fact]
         public void DuplicateAttributeOnParameterOfPartialMethod()
         {
@@ -5267,30 +5277,30 @@ partial class C
 ";
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, null, options: opt);
+            var compilation = CreateStandardCompilation(source, null, options: opt);
 
             compilation.VerifyDiagnostics(
                 // (25,25): error CS0759: No defining declaration found for implementing declaration of partial method 'C.Foo6(int)'
                 //     static partial void Foo6([A][A] int y) { }
-                Diagnostic(ErrorCode.ERR_PartialMethodMustHaveLatent, "Foo6").WithArguments("C.Foo6(int)"),
+                Diagnostic(ErrorCode.ERR_PartialMethodMustHaveLatent, "Foo6").WithArguments("C.Foo6(int)").WithLocation(25, 25),
                 // (11,17): error CS0111: Type 'C' already defines a member called 'Foo2' with the same parameter types
                 //     static void Foo2([A] int y) { }
-                Diagnostic(ErrorCode.ERR_MemberAlreadyExists, "Foo2").WithArguments("Foo2", "C"),
+                Diagnostic(ErrorCode.ERR_MemberAlreadyExists, "Foo2").WithArguments("Foo2", "C").WithLocation(11, 17),
                 // (15,17): error CS0102: The type 'C' already contains a definition for 'Foo3'
                 //     private int Foo3;
-                Diagnostic(ErrorCode.ERR_DuplicateNameInClass, "Foo3").WithArguments("C", "Foo3"),
-                // (7,30): error CS0579: Duplicate 'A' attribute
-                //     static partial void Foo([A] int y) { }
-                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A"),
+                Diagnostic(ErrorCode.ERR_DuplicateNameInClass, "Foo3").WithArguments("C", "Foo3").WithLocation(15, 17),
                 // (18,41): error CS0579: Duplicate 'A' attribute
                 //     static partial void Foo4([A][param: A] int y);
-                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A"),
+                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A").WithLocation(18, 41),
                 // (25,34): error CS0579: Duplicate 'A' attribute
                 //     static partial void Foo6([A][A] int y) { }
-                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A"),
+                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A").WithLocation(25, 34),
+                // (6,37): error CS0579: Duplicate 'A' attribute
+                //     static partial void Foo([param: A]int y);
+                Diagnostic(ErrorCode.ERR_DuplicateAttribute, "A").WithArguments("A").WithLocation(6, 37),
                 // (15,17): warning CS0169: The field 'C.Foo3' is never used
                 //     private int Foo3;
-                Diagnostic(ErrorCode.WRN_UnreferencedField, "Foo3").WithArguments("C.Foo3"));
+                Diagnostic(ErrorCode.WRN_UnreferencedField, "Foo3").WithArguments("C.Foo3").WithLocation(15, 17));
         }
 
         [Fact]
@@ -5308,7 +5318,7 @@ partial class C
             CompileAndVerify(source);
         }
 
-        [WorkItem(543456, "DevDiv")]
+        [WorkItem(543456, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543456")]
         [Fact]
         public void StructLayoutFieldsAreUsed()
         {
@@ -5319,10 +5329,10 @@ struct S
 {
     int a, b, c;
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
-        [WorkItem(542662, "DevDiv")]
+        [WorkItem(542662, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542662")]
         [Fact]
         public void FalseDuplicateOnPartial()
         {
@@ -5350,7 +5360,7 @@ partial class Program
             CompileAndVerify(source, expectedOutput: "1");
         }
 
-        [WorkItem(542652, "DevDiv")]
+        [WorkItem(542652, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542652")]
         [Fact]
         public void Bug9958()
         {
@@ -5365,7 +5375,7 @@ partial class C
 }";
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, null, options: opt);
+            var compilation = CreateStandardCompilation(source, null, options: opt);
 
             compilation.VerifyDiagnostics(
                 // (7,32): error CS1001: Identifier expected
@@ -5376,7 +5386,7 @@ partial class C
                 Diagnostic(ErrorCode.ERR_PartialMethodMustHaveLatent, "Foo").WithArguments("C.Foo<>()"));
         }
 
-        [WorkItem(542909, "DevDiv")]
+        [WorkItem(542909, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542909")]
         [Fact]
         public void OverriddenPropertyMissingAccessor()
         {
@@ -5400,10 +5410,10 @@ class B2 : A
 class C
 {
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
-        [WorkItem(542899, "DevDiv")]
+        [WorkItem(542899, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542899")]
         [Fact]
         public void TwoSyntaxTrees()
         {
@@ -5420,11 +5430,11 @@ using EnterpriseLibraryExtensions;
 
 [assembly: ConfigurationDesignManager(typeof(ExtensionDesignManager))]
 ";
-            var compilation = CreateCompilationWithMscorlib(new string[] { source, source2 });
+            var compilation = CreateStandardCompilation(new string[] { source, source2 });
             compilation.GetDiagnostics();
         }
 
-        [WorkItem(543785, "DevDiv")]
+        [WorkItem(543785, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543785")]
         [Fact]
         public void OpenGenericTypesUsedAsAttributeArgs()
         {
@@ -5434,23 +5444,26 @@ class Gen<T>
 {
     [TypeAttribute(typeof(L1.L2.L3<>.L4<>))] public T Fld6;
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             Assert.NotEmpty(compilation.GetDiagnostics());
 
             compilation.VerifyDiagnostics(
+                // (4,6): error CS0246: The type or namespace name 'TypeAttributeAttribute' could not be found (are you missing a using directive or an assembly reference?)
+                //     [TypeAttribute(typeof(L1.L2.L3<>.L4<>))] public T Fld6;
+                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "TypeAttribute").WithArguments("TypeAttributeAttribute").WithLocation(4, 6),
                 // (4,6): error CS0246: The type or namespace name 'TypeAttribute' could not be found (are you missing a using directive or an assembly reference?)
                 //     [TypeAttribute(typeof(L1.L2.L3<>.L4<>))] public T Fld6;
-                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "TypeAttribute").WithArguments("TypeAttribute"),
+                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "TypeAttribute").WithArguments("TypeAttribute").WithLocation(4, 6),
                 // (4,27): error CS0246: The type or namespace name 'L1' could not be found (are you missing a using directive or an assembly reference?)
                 //     [TypeAttribute(typeof(L1.L2.L3<>.L4<>))] public T Fld6;
-                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "L1").WithArguments("L1"),
+                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "L1").WithArguments("L1").WithLocation(4, 27),
                 // (4,55): warning CS0649: Field 'Gen<T>.Fld6' is never assigned to, and will always have its default value 
                 //     [TypeAttribute(typeof(L1.L2.L3<>.L4<>))] public T Fld6;
-                Diagnostic(ErrorCode.WRN_UnassignedInternalField, "Fld6").WithArguments("Gen<T>.Fld6", ""));
+                Diagnostic(ErrorCode.WRN_UnassignedInternalField, "Fld6").WithArguments("Gen<T>.Fld6", "").WithLocation(4, 55));
         }
 
-        [WorkItem(543914, "DevDiv")]
+        [WorkItem(543914, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543914")]
         [Fact]
         public void OpenGenericTypeInAttribute()
         {
@@ -5470,7 +5483,7 @@ public class Test
 }";
             CSharpCompilationOptions opt = TestOptions.ReleaseDll;
 
-            var compilation = CreateCompilationWithMscorlib(source, null, options: opt);
+            var compilation = CreateStandardCompilation(source, null, options: opt);
 
             compilation.VerifyDiagnostics(
                 // (3,16): error CS0698: A generic type cannot derive from 'System.Attribute' because it is an attribute class
@@ -5513,7 +5526,7 @@ public class Test
                 Diagnostic(ErrorCode.ERR_AttributeCantBeGeneric, "Gen2").WithArguments("Gen2<T>"));
         }
 
-        [WorkItem(544230, "DevDiv")]
+        [WorkItem(544230, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544230")]
         [Fact]
         public void Warnings_Unassigned_Unreferenced_AttributeTypeFields()
         {
@@ -5529,7 +5542,7 @@ class B : Attribute
     internal Type InternalField; // CS0649
 }";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
 
             comp.VerifyDiagnostics(
                 // (7,17): warning CS0649: Field 'B.PublicField' is never assigned to, and will always have its default value null
@@ -5546,7 +5559,7 @@ class B : Attribute
                 Diagnostic(ErrorCode.WRN_UnassignedInternalField, "InternalField").WithArguments("B.InternalField", "null"));
         }
 
-        [WorkItem(544230, "DevDiv")]
+        [WorkItem(544230, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544230")]
         [Fact]
         public void No_Warnings_For_Assigned_AttributeTypeFields()
         {
@@ -5570,7 +5583,7 @@ class A : Attribute
     }
 }";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
 
             comp.VerifyDiagnostics(
                 // (13,8): error CS0617: 'PrivateField' is not a valid named attribute argument. Named attribute arguments must be fields which are not readonly, static, or const, or read-write properties which are public and not static.
@@ -5584,7 +5597,7 @@ class A : Attribute
                 Diagnostic(ErrorCode.ERR_BadNamedAttributeArgument, "InternalField").WithArguments("InternalField"));
         }
 
-        [WorkItem(544351, "DevDiv")]
+        [WorkItem(544351, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544351")]
         [Fact]
         public void CS0182_ERR_BadAttributeArgument_Bug_12638()
         {
@@ -5597,7 +5610,7 @@ class A : Attribute
     public object X;
 }";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
 
             comp.VerifyDiagnostics(
                 // (4,8): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
@@ -5605,7 +5618,7 @@ class A : Attribute
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, "new Array[] { new[] { 1 } }").WithLocation(4, 8));
         }
 
-        [WorkItem(544348, "DevDiv")]
+        [WorkItem(544348, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544348")]
         [Fact]
         public void CS0182_ERR_BadAttributeArgument_WithConversions()
         {
@@ -5617,13 +5630,13 @@ class A : Attribute
 {
     public A(int x) { }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (3,4): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 // [A((int)(object)"ABC")]
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, @"(int)(object)""ABC""").WithLocation(3, 4));
         }
 
-        [WorkItem(544348, "DevDiv")]
+        [WorkItem(544348, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544348")]
         [Fact]
         public void CS0182_ERR_BadAttributeArgument_WithConversions_02()
         {
@@ -5642,7 +5655,7 @@ class B : Attribute
     public B(object[] x) { }
 }
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (3,4): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 // [A((object[])(object)( new [] { 1 }))]
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, "(object[])(object)( new [] { 1 })").WithLocation(3, 4),
@@ -5651,7 +5664,7 @@ class B : Attribute
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, @"(object[])(object)(new string[] { ""a"", null })").WithLocation(9, 4));
         }
 
-        [WorkItem(529392, "DevDiv")]
+        [WorkItem(529392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529392")]
         [Fact]
         public void CS0182_ERR_BadAttributeArgument_OpenType_ConstantValue()
         {
@@ -5686,7 +5699,7 @@ class C<T>
     public enum E { V }
 }";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
 
             comp.VerifyDiagnostics(
                 // (11,12): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
@@ -5694,7 +5707,7 @@ class C<T>
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, "C<T>.E.V").WithLocation(11, 12));
         }
 
-        [WorkItem(529392, "DevDiv")]
+        [WorkItem(529392, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529392")]
         [Fact]
         public void AttributeArgument_ConstructedType_ConstantValue()
         {
@@ -5721,7 +5734,7 @@ public class C<T>
             CompileAndVerify(source, expectedOutput: "");
         }
 
-        [WorkItem(544512, "DevDiv")]
+        [WorkItem(544512, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544512")]
         [Fact]
         public void LambdaInAttributeArg()
         {
@@ -5748,13 +5761,13 @@ class X
 }
 ";
 
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (14,9): error CS0655: 'd' is not a valid named attribute argument because it is not a valid attribute parameter type
                 // [myAttr(d = () => { })]
                 Diagnostic(ErrorCode.ERR_BadNamedAttributeArgumentType, "d").WithArguments("d").WithLocation(14, 9));
         }
 
-        [WorkItem(544590, "DevDiv")]
+        [WorkItem(544590, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544590")]
         [Fact]
         public void LambdaInAttributeArg2()
         {
@@ -5777,7 +5790,7 @@ public class Class1 {
 }
 ";
 
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (11,17): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 //     [field: Foo(((System.Func<int>)(() => 5))())]
                 Diagnostic(ErrorCode.ERR_BadAttributeArgument, "((System.Func<int>)(() => 5))()"),
@@ -5786,7 +5799,7 @@ public class Class1 {
                 Diagnostic(ErrorCode.WRN_UnreferencedEvent, "Click").WithArguments("Class1.Click"));
         }
 
-        [WorkItem(545030, "DevDiv")]
+        [WorkItem(545030, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545030")]
         [Fact]
         public void UserDefinedAttribute_Bug13264()
         {
@@ -5803,7 +5816,7 @@ namespace System
 }
 ";
 
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (4,6): error CS0616: 'System.Runtime.InteropServices.DllImportAttribute' is not an attribute class
                 //     [DllImport] // Error
                 Diagnostic(ErrorCode.ERR_NotAnAttributeClass, "DllImport").WithArguments("System.Runtime.InteropServices.DllImportAttribute"),
@@ -5812,7 +5825,7 @@ namespace System
                 Diagnostic(ErrorCode.WRN_SameFullNameThisAggAgg, "Object").WithArguments("", "System.Object", "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", "object"));
         }
 
-        [WorkItem(545241, "DevDiv")]
+        [WorkItem(545241, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545241")]
         [Fact]
         public void ConditionalAttributeOnAttribute()
         {
@@ -5860,7 +5873,7 @@ class Test
             CompileAndVerify(source, sourceSymbolValidator: sourceValidator, symbolValidator: metadataValidator);
         }
 
-        [WorkItem(545499, "DevDiv")]
+        [WorkItem(545499, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545499")]
         [Fact]
         public void IncompleteMethodParamAttribute()
         {
@@ -5876,12 +5889,12 @@ public class Test
 {
 	public void foo([MyAttribute2(Types = new Type[
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             Assert.NotEmpty(compilation.GetDiagnostics());
         }
 
-        [Fact, WorkItem(545556, "DevDiv")]
+        [Fact, WorkItem(545556, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545556")]
         public void NameLookupInDelegateParameterAttribute()
         {
             var source = @"
@@ -5895,13 +5908,13 @@ class A : Attribute
 }
 ";
 
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (7,24): error CS1503: Argument 1: cannot convert from 'method group' to 'int'
                 //     delegate void F([A(Equals)] int x);
                 Diagnostic(ErrorCode.ERR_BadArgType, "Equals").WithArguments("1", "method group", "int"));
         }
 
-        [Fact, WorkItem(546234, "DevDiv")]
+        [Fact, WorkItem(546234, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546234")]
         public void AmbiguousClassNamespaceLookup()
         {
             // One from source, one from PE
@@ -5913,7 +5926,7 @@ class System : Attribute
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             compilation.VerifyDiagnostics(
                 // (2,7): warning CS0437: The type 'System' in '' conflicts with the imported namespace 'System' in 'mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'. Using the type defined in ''.
@@ -5944,8 +5957,8 @@ public class X: Attribute
 {
 }
 ";
-            var comp1 = CreateCompilationWithMscorlib(source2, assemblyName: "Temp0").ToMetadataReference();
-            CreateCompilationWithMscorlib(source, references: new[] { comp1 }).VerifyDiagnostics(
+            var comp1 = CreateStandardCompilation(source2, assemblyName: "Temp0").ToMetadataReference();
+            CreateStandardCompilation(source, references: new[] { comp1 }).VerifyDiagnostics(
                 // (2,12): error CS0616: 'X' is not an attribute class
                 // [assembly: X]
                 Diagnostic(ErrorCode.ERR_NotAnAttributeClass, "X").WithArguments("X"));
@@ -5970,9 +5983,9 @@ class Y
 {
 }
 ";
-            comp1 = CreateCompilationWithMscorlib(source2, assemblyName: "Temp1").ToMetadataReference();
+            comp1 = CreateStandardCompilation(source2, assemblyName: "Temp1").ToMetadataReference();
             var comp2 = CreateCompilation(source3, assemblyName: "Temp2").ToMetadataReference();
-            var comp3 = CreateCompilationWithMscorlib(source4, references: new[] { comp1, comp2 });
+            var comp3 = CreateStandardCompilation(source4, references: new[] { comp1, comp2 });
             comp3.VerifyDiagnostics(
                 // (2,2): error CS0434: The namespace 'X' in 'Temp2, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null' conflicts with the type 'X' in 'Temp1, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null'
                 // [X]
@@ -5985,7 +5998,7 @@ class X
 {
 }
 ";
-            comp3 = CreateCompilationWithMscorlib(source5, references: new[] { comp1, comp2 });
+            comp3 = CreateStandardCompilation(source5, references: new[] { comp1, comp2 });
             comp3.VerifyDiagnostics(
                 // (2,2): error CS0616: 'X' is not an attribute class
                 // [X]
@@ -6012,7 +6025,7 @@ namespace X
 {
 }
 ";
-            comp3 = CreateCompilationWithMscorlib(source6, references: new[] { comp1, comp2 });
+            comp3 = CreateStandardCompilation(source6, references: new[] { comp1, comp2 });
             comp3.VerifyDiagnostics(
                 // (3,7): error CS0101: The namespace '<global namespace>' already contains a definition for 'X'
                 // class X
@@ -6027,7 +6040,7 @@ class Foo: Attribute
 {
 }
 ";
-            comp3 = CreateCompilationWithMscorlib(source7, references: new[] { comp1, comp2 });
+            comp3 = CreateStandardCompilation(source7, references: new[] { comp1, comp2 });
             comp3.VerifyDiagnostics(
                 // (4,2): error CS0576: Namespace '<global namespace>' contains a definition conflicting with alias 'X'
                 // [X]
@@ -6037,7 +6050,7 @@ class Foo: Attribute
                 Diagnostic(ErrorCode.ERR_NotAnAttributeClass, "X").WithArguments("X"));
         }
 
-        [WorkItem(546283, "DevDiv")]
+        [WorkItem(546283, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546283")]
         [Fact]
         public void ApplyIndexerNameAttributeTwice()
         {
@@ -6055,7 +6068,7 @@ public class IA
 	}
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (6,3): error CS0579: Duplicate 'IndexerName' attribute
                 Diagnostic(ErrorCode.ERR_DuplicateAttribute, "IndexerName").WithArguments("IndexerName"));
@@ -6064,7 +6077,7 @@ public class IA
             Assert.Equal("ItemX", indexer.MetadataName); //First one wins.
         }
 
-        [WorkItem(530524, "DevDiv")]
+        [WorkItem(530524, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530524")]
         [Fact]
         public void PEMethodSymbolExtensionAttribute1()
         {
@@ -6085,7 +6098,7 @@ public class IA
     ret
   }
 }";
-            var reference1 = CompileIL(source1, appendDefaultHeader: false);
+            var reference1 = CompileIL(source1, prependDefaultHeader: false);
             var source2 =
 @"class C
 {
@@ -6094,7 +6107,7 @@ public class IA
         o.M();
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source2, new[] { reference1 });
+            var compilation = CreateStandardCompilation(source2, new[] { reference1 });
             compilation.VerifyDiagnostics();
             var assembly = compilation.Assembly;
             Assert.Equal(assembly.GetAttributes().Length, 0);
@@ -6107,7 +6120,7 @@ public class IA
             Assert.True(method.IsExtensionMethod);
         }
 
-        [WorkItem(530524, "DevDiv")]
+        [WorkItem(530524, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530524")]
         [Fact]
         public void PEMethodSymbolExtensionAttribute2()
         {
@@ -6127,7 +6140,7 @@ public class IA
     ret
   }
 }";
-            var reference1 = CompileIL(source1, appendDefaultHeader: false);
+            var reference1 = CompileIL(source1, prependDefaultHeader: false);
             var source2 =
 @"class C
 {
@@ -6136,7 +6149,7 @@ public class IA
         o.M();
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source2, new[] { reference1 });
+            var compilation = CreateStandardCompilation(source2, new[] { reference1 });
             compilation.VerifyDiagnostics(); // we now recognize the extension method even without the assembly-level attribute
 
             var assembly = compilation.Assembly;
@@ -6150,7 +6163,7 @@ public class IA
             Assert.True(method.IsExtensionMethod);
         }
 
-        [WorkItem(530524, "DevDiv")]
+        [WorkItem(530524, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530524")]
         [Fact]
         public void PEMethodSymbolExtensionAttribute3()
         {
@@ -6170,7 +6183,7 @@ public class IA
     ret
   }
 }";
-            var reference1 = CompileIL(source1, appendDefaultHeader: false);
+            var reference1 = CompileIL(source1, prependDefaultHeader: false);
             var source2 =
 @"class C
 {
@@ -6179,7 +6192,7 @@ public class IA
         o.M();
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source2, new[] { reference1 });
+            var compilation = CreateStandardCompilation(source2, new[] { reference1 });
             compilation.VerifyDiagnostics(
                 // (5,11): error CS1061: 'object' does not contain a definition for 'M' and no extension method 'M' accepting a 
                 // first argument of type 'object' could be found (are you missing a using directive or an assembly reference?)
@@ -6197,7 +6210,7 @@ public class IA
             Assert.False(method.IsExtensionMethod);
         }
 
-        [WorkItem(530310, "DevDiv")]
+        [WorkItem(530310, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530310")]
         [Fact]
         public void PEParameterSymbolParamArrayAttribute()
         {
@@ -6216,7 +6229,7 @@ public class IA
     ret
   }
 }";
-            var reference1 = CompileIL(source1, appendDefaultHeader: false);
+            var reference1 = CompileIL(source1, prependDefaultHeader: false);
             var source2 =
 @"class C
 {
@@ -6226,7 +6239,7 @@ public class IA
         A.M(1, 2, 3, 4);
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source2, new[] { reference1 });
+            var compilation = CreateStandardCompilation(source2, new[] { reference1 });
             compilation.VerifyDiagnostics();
 
             var method = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("A").GetMember<PEMethodSymbol>("M");
@@ -6236,7 +6249,7 @@ public class IA
             Assert.Equal(0, yParam.GetAttributes().Length);
         }
 
-        [WorkItem(546490, "DevDiv")]
+        [WorkItem(546490, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546490")]
         [Fact]
         public void Bug15984()
         {
@@ -6265,15 +6278,15 @@ public class IA
 
 } // end of class Library1.Foo
 ";
-            var reference1 = CompileIL(source1, appendDefaultHeader: false);
+            var reference1 = CompileIL(source1, prependDefaultHeader: false);
 
-            var compilation = CreateCompilationWithMscorlib("", new[] { reference1 });
+            var compilation = CreateStandardCompilation("", new[] { reference1 });
 
             var type = compilation.GetTypeByMetadataName("Library1.Foo");
             Assert.Equal(0, type.GetAttributes()[0].ConstructorArguments.Count());
         }
 
-        [WorkItem(611177, "DevDiv")]
+        [WorkItem(611177, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/611177")]
         [Fact]
         public void GenericAttributeType()
         {
@@ -6307,7 +6320,7 @@ public class C<T, U> : Attribute
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
 
                 // NOTE: Dev11 reports ERR_AttributeCantBeGeneric for these, but this makes more sense.
@@ -6352,7 +6365,7 @@ public class C<T, U> : Attribute
                 Diagnostic(ErrorCode.ERR_GenericDerivingFromAttribute, "Attribute").WithArguments("System.Attribute"));
         }
 
-        [WorkItem(611177, "DevDiv")]
+        [WorkItem(611177, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/611177")]
         [Fact]
         public void AliasedGenericAttributeType_Source()
         {
@@ -6372,7 +6385,7 @@ public class C<T> : Attribute
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
                 // (5,2): error CS0404: Cannot apply attribute class 'C<int>' because it is generic
                 // [Alias]
@@ -6389,7 +6402,7 @@ public class C<T> : Attribute
                 Diagnostic(ErrorCode.ERR_GenericDerivingFromAttribute, "Attribute").WithArguments("System.Attribute"));
         }
 
-        [WorkItem(611177, "DevDiv")]
+        [WorkItem(611177, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/611177")]
         [Fact]
         public void AliasedGenericAttributeType_Metadata()
         {
@@ -6433,7 +6446,7 @@ class Test
                 Diagnostic(ErrorCode.ERR_AttributeCantBeGeneric, "Alias<int>").WithArguments("C<int>"));
         }
 
-        [WorkItem(611177, "DevDiv")]
+        [WorkItem(611177, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/611177")]
         [Fact]
         public void AliasedGenericAttributeType_Nested()
         {
@@ -6459,7 +6472,7 @@ public class Outer<T>
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
             // (5,2): error CS0404: Cannot apply attribute class 'Outer<int>.Inner' because it is generic
             // [InnerAlias]
@@ -6469,7 +6482,7 @@ public class Outer<T>
             Diagnostic(ErrorCode.ERR_AttributeCantBeGeneric, "Inner").WithArguments("Outer<int>.Inner"));
         }
 
-        [WorkItem(687816, "DevDiv")]
+        [WorkItem(687816, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/687816")]
         [Fact]
         public void VerbatimAliasVersusNonVerbatimAlias()
         {
@@ -6489,13 +6502,13 @@ class Program
 }
 ";
 
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (12,6): error CS1614: 'Action' is ambiguous between 'A.ActionAttribute' and 'A.ActionAttribute'; use either '@Action' or 'ActionAttribute'
                 //     [Action]
                 Diagnostic(ErrorCode.ERR_AmbiguousAttribute, "Action").WithArguments("Action", "A.ActionAttribute", "A.ActionAttribute"));
         }
 
-        [WorkItem(687816, "DevDiv")]
+        [WorkItem(687816, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/687816")]
         [Fact]
         public void DeclarationVersusNonVerbatimAlias()
         {
@@ -6515,13 +6528,13 @@ class Program
 }
 ";
 
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (12,6): error CS1614: 'Action' is ambiguous between 'A.ActionAttribute' and 'A.ActionAttribute'; use either '@Action' or 'ActionAttribute'
                 //     [Action]
                 Diagnostic(ErrorCode.ERR_AmbiguousAttribute, "Action").WithArguments("Action", "A.ActionAttribute", "A.ActionAttribute"));
         }
 
-        [WorkItem(728865, "DevDiv")]
+        [WorkItem(728865, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/728865")]
         [Fact]
         public void Repro728865()
         {
@@ -6621,7 +6634,7 @@ The type of the attribute is Microsoft.Yeti.CartesianRowDataAttribute
 ");
         }
 
-        [WorkItem(728865, "DevDiv")]
+        [WorkItem(728865, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/728865")]
         [Fact]
         public void StringArrayArgument1()
         {
@@ -6663,7 +6676,7 @@ public class ArrayOrObjectAttribute : Attribute
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
                 // (6,6): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 //     [ArrayOnlyAttribute(new string[] { "A" })] //error
@@ -6695,7 +6708,7 @@ public class ArrayOrObjectAttribute : Attribute
             attrs3[2].VerifyValue(0, TypedConstantKind.Array, value3);
         }
 
-        [WorkItem(728865, "DevDiv")]
+        [WorkItem(728865, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/728865")]
         [Fact]
         public void StringArrayArgument2()
         {
@@ -6742,7 +6755,7 @@ public class ParamArrayOrObjectAttribute : Attribute
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
                 // (6,6): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 //     [ParamArrayOnlyAttribute(new string[] { "A" })] //error
@@ -6783,7 +6796,7 @@ public class ParamArrayOrObjectAttribute : Attribute
             attrs4[2].VerifyValue(0, TypedConstantKind.Primitive, "A");
         }
 
-        [WorkItem(728865, "DevDiv")]
+        [WorkItem(728865, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/728865")]
         [Fact]
         public void StringArrayArgument3()
         {
@@ -6830,7 +6843,7 @@ public class StringOrObjectAttribute : Attribute
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
                 // (7,6): error CS0182: An attribute argument must be a constant expression, typeof expression or array creation expression of an attribute parameter type
                 //     [ObjectOnlyAttribute(new string[] { "A" })] //error
@@ -6865,7 +6878,7 @@ public class StringOrObjectAttribute : Attribute
             attrs4[2].VerifyValue(0, TypedConstantKind.Array, value4);
         }
 
-        [WorkItem(728865, "DevDiv")]
+        [WorkItem(728865, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/728865")]
         [Fact]
         public void IntArrayArgument1()
         {
@@ -6907,7 +6920,7 @@ public class ArrayOrObjectAttribute : Attribute
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics();
 
             var type = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("Test");
@@ -6932,7 +6945,7 @@ public class ArrayOrObjectAttribute : Attribute
             attrs3[2].VerifyValue(0, TypedConstantKind.Array, value3);
         }
 
-        [WorkItem(728865, "DevDiv")]
+        [WorkItem(728865, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/728865")]
         [Fact]
         public void IntArrayArgument2()
         {
@@ -6979,7 +6992,7 @@ public class ParamArrayOrObjectAttribute : Attribute
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics();
 
             var type = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("Test");
@@ -7013,7 +7026,7 @@ public class ParamArrayOrObjectAttribute : Attribute
             attrs4[2].VerifyValue(0, TypedConstantKind.Primitive, 1);
         }
 
-        [WorkItem(728865, "DevDiv")]
+        [WorkItem(728865, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/728865")]
         [Fact]
         public void IntArrayArgument3()
         {
@@ -7060,7 +7073,7 @@ public class IntOrObjectAttribute : Attribute
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics();
 
             var type = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("Test");
@@ -7092,7 +7105,7 @@ public class IntOrObjectAttribute : Attribute
             attrs4[2].VerifyValue(0, TypedConstantKind.Array, value4);
         }
 
-        [WorkItem(739630, "DevDiv")]
+        [WorkItem(739630, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/739630")]
         [Fact]
         public void NullVersusEmptyArray()
         {
@@ -7130,7 +7143,7 @@ public class Test
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics();
 
             var type = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("Test");
@@ -7159,7 +7172,7 @@ public class Test
         }
 
         [Fact]
-        [WorkItem(530266, "DevDiv")]
+        [WorkItem(530266, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530266")]
         public void UnboundGenericTypeInTypedConstant()
         {
             var source = @"
@@ -7174,7 +7187,7 @@ public class TestAttribute : Attribute
 class Target<T>
 {}";
 
-            var comp = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var comp = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
             comp.VerifyDiagnostics();
 
             var type = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("Target");
@@ -7184,7 +7197,7 @@ class Target<T>
             Assert.True(((INamedTypeSymbol)typeInAttribute).IsUnboundGenericType);
             Assert.Equal("Target<>", typeInAttribute.ToTestDisplayString());
 
-            var comp2 = CreateCompilationWithMscorlib("", new[] { comp.EmitToImageReference() });
+            var comp2 = CreateStandardCompilation("", new[] { comp.EmitToImageReference() });
             type = comp2.GlobalNamespace.GetMember<NamedTypeSymbol>("Target");
 
             Assert.IsAssignableFrom<PENamedTypeSymbol>(type);
@@ -7195,7 +7208,7 @@ class Target<T>
             Assert.Equal("Target<>", typeInAttribute.ToTestDisplayString());
         }
 
-        [Fact, WorkItem(1020038, "DevDiv")]
+        [Fact, WorkItem(1020038, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1020038")]
         public void Bug1020038()
         {
             var source1 = @"
@@ -7203,7 +7216,7 @@ public class CTest
 {}
 ";
 
-            var compilation1 = CreateCompilationWithMscorlib(source1, assemblyName: "Bug1020038");
+            var compilation1 = CreateStandardCompilation(source1, assemblyName: "Bug1020038");
 
             var source2 = @"
 class CAttr : System.Attribute
@@ -7216,7 +7229,7 @@ class Test
 {}
 ";
 
-            var compilation2 = CreateCompilationWithMscorlib(source2, new[] { new CSharpCompilationReference(compilation1) });
+            var compilation2 = CreateStandardCompilation(source2, new[] { new CSharpCompilationReference(compilation1) });
 
             CompileAndVerify(compilation2, symbolValidator: (m) =>
             {
@@ -7235,7 +7248,7 @@ class Test
 {}
 ";
 
-            var compilation3 = CreateCompilationWithMscorlib(source3, new[] { new CSharpCompilationReference(compilation1) });
+            var compilation3 = CreateStandardCompilation(source3, new[] { new CSharpCompilationReference(compilation1) });
 
             CompileAndVerify(compilation3, symbolValidator: (m) =>
             {
@@ -7244,7 +7257,7 @@ class Test
             });
         }
 
-        [Fact, WorkItem(937575, "DevDiv"), WorkItem(121, "CodePlex")]
+        [Fact, WorkItem(937575, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/937575"), WorkItem(121, "CodePlex")]
         public void Bug937575()
         {
             var source = @"
@@ -7256,7 +7269,7 @@ class C<T>
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.DebugDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.DebugDll);
 
             CompileAndVerify(compilation, symbolValidator: (m) =>
             {
@@ -7268,7 +7281,7 @@ class C<T>
             });
         }
 
-        [WorkItem(1144603, "DevDiv")]
+        [WorkItem(1144603, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1144603")]
         [Fact]
         public void EmitMetadataOnlyInPresenceOfErrors()
         {
@@ -7285,7 +7298,7 @@ public static class LanguageNames
     public const xyz CSharp = ""C#"";
 }
 ";
-            var compilation1 = CreateCompilationWithMscorlib(source1, options: TestOptions.DebugDll);
+            var compilation1 = CreateStandardCompilation(source1, options: TestOptions.DebugDll);
             compilation1.VerifyDiagnostics(
     // (10,18): error CS0246: The type or namespace name 'xyz' could not be found (are you missing a using directive or an assembly reference?)
     //     public const xyz CSharp = "C#";
@@ -7299,7 +7312,7 @@ internal sealed class CSharpCompilerDiagnosticAnalyzer
 {}
 ";
 
-            var compilation2 = CreateCompilationWithMscorlib(source2, new[] { new CSharpCompilationReference(compilation1) }, options: TestOptions.DebugDll, assemblyName: "Test.dll");
+            var compilation2 = CreateStandardCompilation(source2, new[] { new CSharpCompilationReference(compilation1) }, options: TestOptions.DebugDll, assemblyName: "Test.dll");
             Assert.Same(compilation1.Assembly, compilation2.SourceModule.ReferencedAssemblySymbols[1]);
             compilation2.VerifyDiagnostics();
 

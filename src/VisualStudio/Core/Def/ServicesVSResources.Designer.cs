@@ -1136,6 +1136,10 @@ namespace Microsoft.VisualStudio.LanguageServices {
         ///   Looks up a localized string similar to Modifiers (must match all).
         /// </summary>
         internal static string Modifiers_must_match_all {
+<<<<<<< HEAD
+            get {
+                return ResourceManager.GetString("Modifiers_must_match_all", resourceCulture);
+=======
             get {
                 return ResourceManager.GetString("Modifiers_must_match_all", resourceCulture);
             }
@@ -1156,394 +1160,774 @@ namespace Microsoft.VisualStudio.LanguageServices {
         internal static string Move_0_above_1 {
             get {
                 return ResourceManager.GetString("Move_0_above_1", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to More about {0}.
+        /// </summary>
+        internal static string More_about_0 {
+            get {
+                return ResourceManager.GetString("More_about_0", resourceCulture);
+=======
         ///   Looks up a localized string similar to Move {0} below {1}.
         /// </summary>
         internal static string Move_0_below_1 {
             get {
                 return ResourceManager.GetString("Move_0_below_1", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Move {0} above {1}.
+        /// </summary>
+        internal static string Move_0_above_1 {
+            get {
+                return ResourceManager.GetString("Move_0_above_1", resourceCulture);
+=======
         ///   Looks up a localized string similar to Move down.
         /// </summary>
         internal static string Move_down {
             get {
                 return ResourceManager.GetString("Move_down", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Move {0} below {1}.
+        /// </summary>
+        internal static string Move_0_below_1 {
+            get {
+                return ResourceManager.GetString("Move_0_below_1", resourceCulture);
+=======
         ///   Looks up a localized string similar to Move up.
         /// </summary>
         internal static string Move_up {
             get {
                 return ResourceManager.GetString("Move_up", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Move down.
+        /// </summary>
+        internal static string Move_down {
+            get {
+                return ResourceManager.GetString("Move_down", resourceCulture);
+=======
         ///   Looks up a localized string similar to Name:.
         /// </summary>
         internal static string Name_colon1 {
             get {
                 return ResourceManager.GetString("Name_colon1", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Move up.
+        /// </summary>
+        internal static string Move_up {
+            get {
+                return ResourceManager.GetString("Move_up", resourceCulture);
+=======
         ///   Looks up a localized string similar to Name:.
         /// </summary>
         internal static string Name_colon2 {
             get {
                 return ResourceManager.GetString("Name_colon2", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Name:.
+        /// </summary>
+        internal static string Name_colon1 {
+            get {
+                return ResourceManager.GetString("Name_colon1", resourceCulture);
+=======
         ///   Looks up a localized string similar to Naming Rule.
         /// </summary>
         internal static string Naming_Rule {
             get {
                 return ResourceManager.GetString("Naming_Rule", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Name:.
+        /// </summary>
+        internal static string Name_colon2 {
+            get {
+                return ResourceManager.GetString("Name_colon2", resourceCulture);
+=======
         ///   Looks up a localized string similar to Naming Rules allow you to define how particular sets of symbols should be named and how incorrectly-named symbols should be handled..
         /// </summary>
         internal static string Naming_Rules_allow_you_to_define_how_particular_sets_of_symbols_should_be_named_and_how_incorrectly_named_symbols_should_be_handled {
             get {
                 return ResourceManager.GetString("Naming_Rules_allow_you_to_define_how_particular_sets_of_symbols_should_be_named_a" +
                         "nd_how_incorrectly_named_symbols_should_be_handled", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Naming Rule.
+        /// </summary>
+        internal static string Naming_Rule {
+            get {
+                return ResourceManager.GetString("Naming_Rule", resourceCulture);
+=======
         ///   Looks up a localized string similar to Naming Style.
         /// </summary>
         internal static string Naming_Style {
             get {
                 return ResourceManager.GetString("Naming_Style", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Naming Rules allow you to define how particular sets of symbols should be named and how incorrectly-named symbols should be handled..
+        /// </summary>
+        internal static string Naming_Rules_allow_you_to_define_how_particular_sets_of_symbols_should_be_named_and_how_incorrectly_named_symbols_should_be_handled {
+            get {
+                return ResourceManager.GetString("Naming_Rules_allow_you_to_define_how_particular_sets_of_symbols_should_be_named_a" +
+                        "nd_how_incorrectly_named_symbols_should_be_handled", resourceCulture);
+=======
         ///   Looks up a localized string similar to Naming Style:.
         /// </summary>
         internal static string Naming_Style_colon {
             get {
                 return ResourceManager.GetString("Naming_Style_colon", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Naming Style.
+        /// </summary>
+        internal static string Naming_Style {
+            get {
+                return ResourceManager.GetString("Naming_Style", resourceCulture);
+=======
         ///   Looks up a localized string similar to Naming Style Title:.
         /// </summary>
         internal static string Naming_Style_Title_colon {
             get {
                 return ResourceManager.GetString("Naming_Style_Title_colon", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Naming Style:.
+        /// </summary>
+        internal static string Naming_Style_colon {
+            get {
+                return ResourceManager.GetString("Naming_Style_colon", resourceCulture);
+=======
         ///   Looks up a localized string similar to Navigation must be performed on the foreground thread..
         /// </summary>
         internal static string Navigation_must_be_performed_on_the_foreground_thread {
             get {
                 return ResourceManager.GetString("Navigation_must_be_performed_on_the_foreground_thread", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Naming Style Title:.
+        /// </summary>
+        internal static string Naming_Style_Title_colon {
+            get {
+                return ResourceManager.GetString("Naming_Style_Title_colon", resourceCulture);
+=======
         ///   Looks up a localized string similar to New _file name:.
         /// </summary>
         internal static string New_file_name_colon {
             get {
                 return ResourceManager.GetString("New_file_name_colon", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Navigation must be performed on the foreground thread..
+        /// </summary>
+        internal static string Navigation_must_be_performed_on_the_foreground_thread {
+            get {
+                return ResourceManager.GetString("Navigation_must_be_performed_on_the_foreground_thread", resourceCulture);
+=======
         ///   Looks up a localized string similar to New _interface name:.
         /// </summary>
         internal static string New_interface_name_colon {
             get {
                 return ResourceManager.GetString("New_interface_name_colon", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to New _file name:.
+        /// </summary>
+        internal static string New_file_name_colon {
+            get {
+                return ResourceManager.GetString("New_file_name_colon", resourceCulture);
+=======
         ///   Looks up a localized string similar to No.
         /// </summary>
         internal static string No {
             get {
                 return ResourceManager.GetString("No", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to New _interface name:.
+        /// </summary>
+        internal static string New_interface_name_colon {
+            get {
+                return ResourceManager.GetString("New_interface_name_colon", resourceCulture);
+=======
         ///   Looks up a localized string similar to No Changes.
         /// </summary>
         internal static string No_Changes {
             get {
                 return ResourceManager.GetString("No_Changes", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to No.
+        /// </summary>
+        internal static string No {
+            get {
+                return ResourceManager.GetString("No", resourceCulture);
+=======
         ///   Looks up a localized string similar to Not a valid value.
         /// </summary>
         internal static string Not_a_valid_value {
             get {
                 return ResourceManager.GetString("Not_a_valid_value", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to No Changes.
+        /// </summary>
+        internal static string No_Changes {
+            get {
+                return ResourceManager.GetString("No_Changes", resourceCulture);
+=======
         ///   Looks up a localized string similar to N/A.
         /// </summary>
         internal static string NotApplicable {
             get {
                 return ResourceManager.GetString("NotApplicable", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Not a valid value.
+        /// </summary>
+        internal static string Not_a_valid_value {
+            get {
+                return ResourceManager.GetString("Not_a_valid_value", resourceCulture);
+=======
         ///   Looks up a localized string similar to OK.
         /// </summary>
         internal static string OK {
             get {
                 return ResourceManager.GetString("OK", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to N/A.
+        /// </summary>
+        internal static string NotApplicable {
+            get {
+                return ResourceManager.GetString("NotApplicable", resourceCulture);
+=======
         ///   Looks up a localized string similar to Options.
         /// </summary>
         internal static string Options {
             get {
                 return ResourceManager.GetString("Options", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        internal static string OK {
+            get {
+                return ResourceManager.GetString("OK", resourceCulture);
+=======
         ///   Looks up a localized string similar to or.
         /// </summary>
         internal static string or {
             get {
                 return ResourceManager.GetString("or", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Options.
+        /// </summary>
+        internal static string Options {
+            get {
+                return ResourceManager.GetString("Options", resourceCulture);
+=======
         ///   Looks up a localized string similar to Outlining.
         /// </summary>
         internal static string Outlining {
             get {
                 return ResourceManager.GetString("Outlining", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to or.
+        /// </summary>
+        internal static string or {
+            get {
+                return ResourceManager.GetString("or", resourceCulture);
+=======
         ///   Looks up a localized string similar to Over:.
         /// </summary>
         internal static string Over_colon {
             get {
                 return ResourceManager.GetString("Over_colon", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Outlining.
+        /// </summary>
+        internal static string Outlining {
+            get {
+                return ResourceManager.GetString("Outlining", resourceCulture);
+=======
         ///   Looks up a localized string similar to Overridden By.
         /// </summary>
         internal static string Overridden_By {
             get {
                 return ResourceManager.GetString("Overridden_By", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Over:.
+        /// </summary>
+        internal static string Over_colon {
+            get {
+                return ResourceManager.GetString("Over_colon", resourceCulture);
+=======
         ///   Looks up a localized string similar to Overrides.
         /// </summary>
         internal static string Overrides_ {
             get {
                 return ResourceManager.GetString("Overrides_", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Overridden By.
+        /// </summary>
+        internal static string Overridden_By {
+            get {
+                return ResourceManager.GetString("Overridden_By", resourceCulture);
+=======
         ///   Looks up a localized string similar to Package install failed: {0}.
         /// </summary>
         internal static string Package_install_failed_colon_0 {
             get {
                 return ResourceManager.GetString("Package_install_failed_colon_0", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Overrides.
+        /// </summary>
+        internal static string Overrides_ {
+            get {
+                return ResourceManager.GetString("Overrides_", resourceCulture);
+=======
         ///   Looks up a localized string similar to Package uninstall failed: {0}.
         /// </summary>
         internal static string Package_uninstall_failed_colon_0 {
             get {
                 return ResourceManager.GetString("Package_uninstall_failed_colon_0", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Package install failed: {0}.
+        /// </summary>
+        internal static string Package_install_failed_colon_0 {
+            get {
+                return ResourceManager.GetString("Package_install_failed_colon_0", resourceCulture);
+=======
         ///   Looks up a localized string similar to Parameter.
         /// </summary>
         internal static string Parameter {
             get {
                 return ResourceManager.GetString("Parameter", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Package uninstall failed: {0}.
+        /// </summary>
+        internal static string Package_uninstall_failed_colon_0 {
+            get {
+                return ResourceManager.GetString("Package_uninstall_failed_colon_0", resourceCulture);
+=======
         ///   Looks up a localized string similar to Parameters:.
         /// </summary>
         internal static string Parameters_colon1 {
             get {
                 return ResourceManager.GetString("Parameters_colon1", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Parameter.
+        /// </summary>
+        internal static string Parameter {
+            get {
+                return ResourceManager.GetString("Parameter", resourceCulture);
+=======
         ///   Looks up a localized string similar to Parameters:.
         /// </summary>
         internal static string Parameters_colon2 {
             get {
                 return ResourceManager.GetString("Parameters_colon2", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Parameters:.
+        /// </summary>
+        internal static string Parameters_colon1 {
+            get {
+                return ResourceManager.GetString("Parameters_colon1", resourceCulture);
+=======
         ///   Looks up a localized string similar to Parent Rule:.
         /// </summary>
         internal static string Parent_Rule_colon {
             get {
                 return ResourceManager.GetString("Parent_Rule_colon", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Parameters:.
+        /// </summary>
+        internal static string Parameters_colon2 {
+            get {
+                return ResourceManager.GetString("Parameters_colon2", resourceCulture);
+=======
         ///   Looks up a localized string similar to Pascal Case Name.
         /// </summary>
         internal static string Pascal_Case_Name {
             get {
                 return ResourceManager.GetString("Pascal_Case_Name", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Parent Rule:.
+        /// </summary>
+        internal static string Parent_Rule_colon {
+            get {
+                return ResourceManager.GetString("Parent_Rule_colon", resourceCulture);
+=======
         ///   Looks up a localized string similar to Path cannot have empty filename.
         /// </summary>
         internal static string Path_cannot_have_empty_filename {
             get {
                 return ResourceManager.GetString("Path_cannot_have_empty_filename", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Pascal Case Name.
+        /// </summary>
+        internal static string Pascal_Case_Name {
+            get {
+                return ResourceManager.GetString("Pascal_Case_Name", resourceCulture);
+=======
         ///   Looks up a localized string similar to Pick members.
         /// </summary>
         internal static string Pick_members {
             get {
                 return ResourceManager.GetString("Pick_members", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Path cannot have empty filename.
+        /// </summary>
+        internal static string Path_cannot_have_empty_filename {
+            get {
+                return ResourceManager.GetString("Path_cannot_have_empty_filename", resourceCulture);
+=======
+        ///   Looks up a localized string similar to prefer auto properties.
+        /// </summary>
+        internal static string prefer_auto_properties {
+            get {
+                return ResourceManager.GetString("prefer_auto_properties", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
+            }
+        }
+        
+        /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Pick members.
+        /// </summary>
+        internal static string Pick_members {
+            get {
+                return ResourceManager.GetString("Pick_members", resourceCulture);
+=======
         ///   Looks up a localized string similar to Prefer braces.
         /// </summary>
         internal static string Prefer_braces {
             get {
                 return ResourceManager.GetString("Prefer_braces", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Prefer braces.
+        /// </summary>
+        internal static string Prefer_braces {
+            get {
+                return ResourceManager.GetString("Prefer_braces", resourceCulture);
+=======
         ///   Looks up a localized string similar to Prefer coalesce expression.
         /// </summary>
         internal static string Prefer_coalesce_expression {
             get {
                 return ResourceManager.GetString("Prefer_coalesce_expression", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Prefer coalesce expression.
+        /// </summary>
+        internal static string Prefer_coalesce_expression {
+            get {
+                return ResourceManager.GetString("Prefer_coalesce_expression", resourceCulture);
+=======
         ///   Looks up a localized string similar to Prefer collection initializer.
         /// </summary>
         internal static string Prefer_collection_initializer {
             get {
                 return ResourceManager.GetString("Prefer_collection_initializer", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Prefer collection initializer.
+        /// </summary>
+        internal static string Prefer_collection_initializer {
+            get {
+                return ResourceManager.GetString("Prefer_collection_initializer", resourceCulture);
+=======
         ///   Looks up a localized string similar to Prefer:.
         /// </summary>
         internal static string Prefer_colon {
             get {
                 return ResourceManager.GetString("Prefer_colon", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Prefer:.
+        /// </summary>
+        internal static string Prefer_colon {
+            get {
+                return ResourceManager.GetString("Prefer_colon", resourceCulture);
+=======
         ///   Looks up a localized string similar to Prefer explicit tuple name.
         /// </summary>
         internal static string Prefer_explicit_tuple_name {
             get {
                 return ResourceManager.GetString("Prefer_explicit_tuple_name", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Prefer explicit tuple name.
+        /// </summary>
+        internal static string Prefer_explicit_tuple_name {
+            get {
+                return ResourceManager.GetString("Prefer_explicit_tuple_name", resourceCulture);
+=======
         ///   Looks up a localized string similar to Prefer framework type.
         /// </summary>
         internal static string Prefer_framework_type {
             get {
                 return ResourceManager.GetString("Prefer_framework_type", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Prefer framework type.
+        /// </summary>
+        internal static string Prefer_framework_type {
+            get {
+                return ResourceManager.GetString("Prefer_framework_type", resourceCulture);
+=======
         ///   Looks up a localized string similar to Prefer inlined variable declaration.
         /// </summary>
         internal static string Prefer_inlined_variable_declaration {
             get {
                 return ResourceManager.GetString("Prefer_inlined_variable_declaration", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Prefer inlined variable declaration.
+        /// </summary>
+        internal static string Prefer_inlined_variable_declaration {
+            get {
+                return ResourceManager.GetString("Prefer_inlined_variable_declaration", resourceCulture);
+=======
         ///   Looks up a localized string similar to Prefer null propagation.
         /// </summary>
         internal static string Prefer_null_propagation {
             get {
                 return ResourceManager.GetString("Prefer_null_propagation", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Prefer null propagation.
+        /// </summary>
+        internal static string Prefer_null_propagation {
+            get {
+                return ResourceManager.GetString("Prefer_null_propagation", resourceCulture);
+=======
         ///   Looks up a localized string similar to Prefer object initializer.
         /// </summary>
         internal static string Prefer_object_initializer {
             get {
                 return ResourceManager.GetString("Prefer_object_initializer", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Prefer object initializer.
+        /// </summary>
+        internal static string Prefer_object_initializer {
+            get {
+                return ResourceManager.GetString("Prefer_object_initializer", resourceCulture);
+=======
         ///   Looks up a localized string similar to Prefer predefined type.
         /// </summary>
         internal static string Prefer_predefined_type {
             get {
                 return ResourceManager.GetString("Prefer_predefined_type", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
+            }
+        }
+        
+        /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Prefer predefined type.
+        /// </summary>
+        internal static string Prefer_predefined_type {
+            get {
+                return ResourceManager.GetString("Prefer_predefined_type", resourceCulture);
+=======
+        ///   Looks up a localized string similar to prefer throwing properties.
+        /// </summary>
+        internal static string prefer_throwing_properties {
+            get {
+                return ResourceManager.GetString("prefer_throwing_properties", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
@@ -2041,6 +2425,7 @@ namespace Microsoft.VisualStudio.LanguageServices {
         
         /// <summary>
         ///   Looks up a localized string similar to The analyzer assembly &apos;{0}&apos; has changed. Diagnostics may be incorrect until Visual Studio is restarted..
+<<<<<<< HEAD
         /// </summary>
         internal static string The_analyzer_assembly_0_has_changed_Diagnostics_may_be_incorrect_until_Visual_Studio_is_restarted {
             get {
@@ -2054,6 +2439,21 @@ namespace Microsoft.VisualStudio.LanguageServices {
         /// </summary>
         internal static string The_first_matching_top_level_Naming_Rule_is_used_by_default_when_naming_a_symbol_while_any_special_cases_are_handled_by_a_matching_child_rule {
             get {
+=======
+        /// </summary>
+        internal static string The_analyzer_assembly_0_has_changed_Diagnostics_may_be_incorrect_until_Visual_Studio_is_restarted {
+            get {
+                return ResourceManager.GetString("The_analyzer_assembly_0_has_changed_Diagnostics_may_be_incorrect_until_Visual_Stu" +
+                        "dio_is_restarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The first matching top-level Naming Rule is used by default when naming a symbol, while any special cases are handled by a matching child rule..
+        /// </summary>
+        internal static string The_first_matching_top_level_Naming_Rule_is_used_by_default_when_naming_a_symbol_while_any_special_cases_are_handled_by_a_matching_child_rule {
+            get {
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
                 return ResourceManager.GetString("The_first_matching_top_level_Naming_Rule_is_used_by_default_when_naming_a_symbol_" +
                         "while_any_special_cases_are_handled_by_a_matching_child_rule", resourceCulture);
             }
@@ -2164,7 +2564,11 @@ namespace Microsoft.VisualStudio.LanguageServices {
         internal static string Unfortunately_a_process_used_by_Visual_Studio_has_encountered_an_unrecoverable_error_We_recommend_saving_your_work_and_then_closing_and_restarting_Visual_Studio {
             get {
                 return ResourceManager.GetString("Unfortunately_a_process_used_by_Visual_Studio_has_encountered_an_unrecoverable_er" +
+<<<<<<< HEAD
                         "ror_We_recommend_saving_your_work_and_then_closing_and_restarting_Visual Studio", resourceCulture);
+=======
+                        "ror_We_recommend_saving_your_work_and_then_closing_and_restarting_Visual_Studio", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
@@ -2244,6 +2648,12 @@ namespace Microsoft.VisualStudio.LanguageServices {
         
         /// <summary>
         ///   Looks up a localized string similar to Use expression body for accessors.
+<<<<<<< HEAD
+        /// </summary>
+        internal static string Use_expression_body_for_accessors {
+            get {
+                return ResourceManager.GetString("Use_expression_body_for_accessors", resourceCulture);
+=======
         /// </summary>
         internal static string Use_expression_body_for_accessors {
             get {
@@ -2293,37 +2703,146 @@ namespace Microsoft.VisualStudio.LanguageServices {
         internal static string Use_expression_body_for_properties {
             get {
                 return ResourceManager.GetString("Use_expression_body_for_properties", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Validating breakpoint location....
+        ///   Looks up a localized string similar to Use expression body for constructors.
         /// </summary>
+<<<<<<< HEAD
+        internal static string Use_expression_body_for_constructors {
+            get {
+                return ResourceManager.GetString("Use_expression_body_for_constructors", resourceCulture);
+=======
         internal static string Validating_breakpoint_location {
             get {
                 return ResourceManager.GetString("Validating_breakpoint_location", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Use expression body for indexers.
+        /// </summary>
+        internal static string Use_expression_body_for_indexers {
+            get {
+                return ResourceManager.GetString("Use_expression_body_for_indexers", resourceCulture);
+=======
         ///   Looks up a localized string similar to Variable preferences:.
         /// </summary>
         internal static string Variable_preferences_colon {
             get {
                 return ResourceManager.GetString("Variable_preferences_colon", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Use expression body for methods.
+        /// </summary>
+        internal static string Use_expression_body_for_methods {
+            get {
+                return ResourceManager.GetString("Use_expression_body_for_methods", resourceCulture);
+=======
         ///   Looks up a localized string similar to Visual Studio has suspended some advanced features to improve performance..
         /// </summary>
         internal static string Visual_Studio_has_suspended_some_advanced_features_to_improve_performance {
             get {
                 return ResourceManager.GetString("Visual_Studio_has_suspended_some_advanced_features_to_improve_performance", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             }
         }
         
         /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Use expression body for operators.
+        /// </summary>
+        internal static string Use_expression_body_for_operators {
+            get {
+                return ResourceManager.GetString("Use_expression_body_for_operators", resourceCulture);
+=======
+        ///   Looks up a localized string similar to VisualStudioWorkspace.TryApplyChanges cannot be called from a background thread..
+        /// </summary>
+        internal static string VisualStudioWorkspace_TryApplyChanges_cannot_be_called_from_a_background_thread {
+            get {
+                return ResourceManager.GetString("VisualStudioWorkspace_TryApplyChanges_cannot_be_called_from_a_background_thread", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
+            }
+        }
+        
+        /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Use expression body for properties.
+        /// </summary>
+        internal static string Use_expression_body_for_properties {
+            get {
+                return ResourceManager.GetString("Use_expression_body_for_properties", resourceCulture);
+=======
+        ///   Looks up a localized string similar to When generating properties:.
+        /// </summary>
+        internal static string When_generating_properties {
+            get {
+                return ResourceManager.GetString("When_generating_properties", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
+            }
+        }
+        
+        /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Validating breakpoint location....
+        /// </summary>
+        internal static string Validating_breakpoint_location {
+            get {
+                return ResourceManager.GetString("Validating_breakpoint_location", resourceCulture);
+=======
+        ///   Looks up a localized string similar to When inserting properties, events and methods, place them:.
+        /// </summary>
+        internal static string When_inserting_properties_events_and_methods_place_them {
+            get {
+                return ResourceManager.GetString("When_inserting_properties_events_and_methods_place_them", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
+            }
+        }
+        
+        /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Variable preferences:.
+        /// </summary>
+        internal static string Variable_preferences_colon {
+            get {
+                return ResourceManager.GetString("Variable_preferences_colon", resourceCulture);
+=======
+        ///   Looks up a localized string similar to with other members of the same kind.
+        /// </summary>
+        internal static string with_other_members_of_the_same_kind {
+            get {
+                return ResourceManager.GetString("with_other_members_of_the_same_kind", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
+            }
+        }
+        
+        /// <summary>
+<<<<<<< HEAD
+        ///   Looks up a localized string similar to Visual Studio has suspended some advanced features to improve performance..
+        /// </summary>
+        internal static string Visual_Studio_has_suspended_some_advanced_features_to_improve_performance {
+            get {
+                return ResourceManager.GetString("Visual_Studio_has_suspended_some_advanced_features_to_improve_performance", resourceCulture);
+=======
+        ///   Looks up a localized string similar to Word Separator:.
+        /// </summary>
+        internal static string Word_Separator_colon {
+            get {
+                return ResourceManager.GetString("Word_Separator_colon", resourceCulture);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
+            }
+        }
+        
+        /// <summary>
+<<<<<<< HEAD
         ///   Looks up a localized string similar to VisualStudioWorkspace.TryApplyChanges cannot be called from a background thread..
         /// </summary>
         internal static string VisualStudioWorkspace_TryApplyChanges_cannot_be_called_from_a_background_thread {
@@ -2360,6 +2879,8 @@ namespace Microsoft.VisualStudio.LanguageServices {
         }
         
         /// <summary>
+=======
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
         ///   Looks up a localized string similar to Yes.
         /// </summary>
         internal static string Yes {

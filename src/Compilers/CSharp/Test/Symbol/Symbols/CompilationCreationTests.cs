@@ -2531,10 +2531,9 @@ class Module1
     {}
 }
 ";
-            var tree = Parse(text);
-
-            var c1 = CreateCompilationWithMscorlib(tree, new MetadataReference[]
+            var c1 = CreateCompilation(text, new MetadataReference[]
             {
+                MscorlibRef,
                 TestReferences.SymbolsTests.V1.MTTestLib1.dll,
                 TestReferences.SymbolsTests.V1.MTTestModule2.netmodule
             });
@@ -2665,7 +2664,7 @@ class Module1
             var xml = Temp.CreateFile().WriteAllBytes(TestResources.NetFX.v4_0_30319.System_Xml).Path;
             var system = Temp.CreateFile().WriteAllBytes(TestResources.NetFX.v4_0_30319.System).Path;
 
-            var trees = new[] 
+            var trees = new[]
             {
                 SyntaxFactory.ParseSyntaxTree($@"
 #r ""System.Data""
@@ -2692,8 +2691,8 @@ System.Diagnostics.Process.GetCurrentProcess();
 
             var boundRefs = compilation.Assembly.BoundReferences();
 
-            AssertEx.Equal(new[] 
-            { 
+            AssertEx.Equal(new[]
+            {
                 "System.Data",
                 "System.Xml",
                 "System.Core",
@@ -2761,7 +2760,6 @@ System.Diagnostics.Process.GetCurrentProcess();
             var csInterfaces01 = Temp.CreateFile().WriteAllBytes(TestResources.MetadataTests.InterfaceAndClass.CSInterfaces01).Path;
 
             var source = @"
-#r """ + typeof(object).Assembly.Location + @"""
 #r """ + "!@#$%^/&*-resolve" + @"""
 #r """ + csInterfaces01 + @"""
 class C : Metadata.ICSPropImpl { }";
@@ -2949,17 +2947,17 @@ Console.WriteLine(2);
             CheckCompilationSyntaxTrees(compilation4, tree2, tree3);
         }
 
-        [WorkItem(578706, "DevDiv")]
+        [WorkItem(578706, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/578706")]
         [Fact]
         public void DeclaringCompilationOfAddedModule()
         {
             var source1 = "public class C1 { }";
             var source2 = "public class C2 { }";
 
-            var lib1 = CreateCompilationWithMscorlib(source1, assemblyName: "Lib1", options: TestOptions.ReleaseModule);
+            var lib1 = CreateStandardCompilation(source1, assemblyName: "Lib1", options: TestOptions.ReleaseModule);
             var ref1 = lib1.EmitToImageReference(); // NOTE: can't use a compilation reference for a module.
 
-            var lib2 = CreateCompilationWithMscorlib(source2, new[] { ref1 }, assemblyName: "Lib2");
+            var lib2 = CreateStandardCompilation(source2, new[] { ref1 }, assemblyName: "Lib2");
             lib2.VerifyDiagnostics();
 
             var sourceAssembly = lib2.Assembly;

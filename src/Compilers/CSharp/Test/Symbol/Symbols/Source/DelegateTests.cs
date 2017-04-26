@@ -41,7 +41,7 @@ delegate void A();
                 );
         }
 
-        [WorkItem(530363, "DevDiv")]
+        [WorkItem(530363, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530363")]
         [Fact]
         public void MissingAsyncTypes()
         {
@@ -62,7 +62,7 @@ class A {
     delegate void D();
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var a = global.GetTypeMembers("A", 0).Single();
             var d = a.GetMembers("D")[0] as NamedTypeSymbol;
@@ -79,7 +79,7 @@ class A {
 delegate void D(int x);
 delegate void D(float y);
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var diags = comp.GetDeclarationDiagnostics();
             Assert.Equal(1, diags.Count());
 
@@ -97,7 +97,7 @@ class A {
     public System.Func<int> Field;
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var a = global.GetTypeMembers("A", 0).Single();
             var field = a.GetMembers("Field")[0] as FieldSymbol;
@@ -111,14 +111,14 @@ class A {
             Assert.Equal(comp.GetSpecialType(SpecialType.System_IntPtr), ctor.Parameters[1].Type);
         }
 
-        [WorkItem(537188, "DevDiv")]
+        [WorkItem(537188, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537188")]
         [Fact]
         public void SimpleDelegate()
         {
             var text =
 @"delegate void MyDel(int n);";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var v = comp.GlobalNamespace.GetTypeMembers("MyDel", 0).Single();
             Assert.NotEqual(null, v);
             Assert.Equal(SymbolKind.NamedType, v.Kind);
@@ -133,8 +133,8 @@ class A {
             Assert.Equal("System.MulticastDelegate", v.BaseType.ToTestDisplayString());
         }
 
-        [WorkItem(537188, "DevDiv")]
-        [WorkItem(538707, "DevDiv")]
+        [WorkItem(537188, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537188")]
+        [WorkItem(538707, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538707")]
         [Fact]
         public void BeginInvokeEndInvoke()
         {
@@ -146,7 +146,7 @@ namespace System
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var myDel = global.GetTypeMembers("MyDel", 0).Single() as NamedTypeSymbol;
 
@@ -183,7 +183,7 @@ namespace System
             Assert.Equal(k, endInvoke.Parameters.Length);
         }
 
-        [WorkItem(537188, "DevDiv")]
+        [WorkItem(537188, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537188")]
         [Fact]
         public void GenericDelegate()
         {
@@ -193,7 +193,7 @@ namespace System
     internal delegate void D<Q>(Q q);
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var namespaceNS = comp.GlobalNamespace.GetMembers("NS").First() as NamespaceOrTypeSymbol;
             Assert.Equal(1, namespaceNS.GetTypeMembers().Length);
 
@@ -212,14 +212,14 @@ namespace System
             Assert.Equal(1, d.TypeArguments.Length);
         }
 
-        [WorkItem(537401, "DevDiv")]
+        [WorkItem(537401, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537401")]
         [Fact]
         public void DelegateEscapedIdentifier()
         {
             var text = @"
 delegate void @out();
 ";
-            var comp = CreateCompilationWithMscorlib(Parse(text));
+            var comp = CreateStandardCompilation(Parse(text));
             NamedTypeSymbol dout = (NamedTypeSymbol)comp.SourceModule.GlobalNamespace.GetMembers("out").Single();
             Assert.Equal("out", dout.Name);
             Assert.Equal("@out", dout.ToString());
@@ -248,7 +248,7 @@ class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics();
+            CreateStandardCompilation(text).VerifyDiagnostics();
         }
 
         [Fact]
@@ -292,13 +292,13 @@ namespace CSSample
     }
 }
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 // (17,19): warning CS0169: The field 'CSSample.Program.d3' is never used
                 //         static D3 d3;
                 Diagnostic(ErrorCode.WRN_UnreferencedField, "d3").WithArguments("CSSample.Program.d3"));
         }
 
-        [WorkItem(538722, "DevDiv")]
+        [WorkItem(538722, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538722")]
         [Fact]
         public void MulticastIsNotDelegate()
         {
@@ -312,19 +312,19 @@ class Program
   }
 }
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 // (7,27): error CS0428: Cannot convert method group 'Main' to non-delegate type 'System.MulticastDelegate'. Did you intend to invoke the method?
                 Diagnostic(ErrorCode.ERR_MethGrpToNonDel, "Main").WithArguments("Main", "System.MulticastDelegate"));
         }
 
-        [WorkItem(538706, "DevDiv")]
+        [WorkItem(538706, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538706")]
         [Fact]
         public void DelegateMethodParameterNames()
         {
             var text = @"
 delegate int D(int x, ref int y, out int z);
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics();
 
             NamedTypeSymbol d = (NamedTypeSymbol)comp.SourceModule.GlobalNamespace.GetMembers("D").Single();
@@ -353,7 +353,7 @@ delegate int D(int x, ref int y, out int z);
             Assert.Equal("result", endInvokeParameters[2].Name);
         }
 
-        [WorkItem(541179, "DevDiv")]
+        [WorkItem(541179, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541179")]
         [Fact]
         public void DelegateWithTypeParameterNamedInvoke()
         {
@@ -368,17 +368,17 @@ class Foo
   }
 }
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics();
+            CreateStandardCompilation(text).VerifyDiagnostics();
         }
 
-        [WorkItem(612002, "DevDiv")]
+        [WorkItem(612002, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/612002")]
         [Fact]
         public void DelegateWithOutParameterNamedResult()
         {
             var text = @"
 delegate void D(out int result);
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics();
 
             NamedTypeSymbol d = (NamedTypeSymbol)comp.SourceModule.GlobalNamespace.GetMembers("D").Single();
@@ -402,14 +402,14 @@ delegate void D(out int result);
             Assert.Equal("__result", endInvokeParameters[1].Name);
         }
 
-        [WorkItem(612002, "DevDiv")]
+        [WorkItem(612002, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/612002")]
         [Fact]
         public void DelegateWithOutParameterNamedResult2()
         {
             var text = @"
 delegate void D(out int @__result);
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics();
 
             NamedTypeSymbol d = (NamedTypeSymbol)comp.SourceModule.GlobalNamespace.GetMembers("D").Single();
@@ -433,14 +433,14 @@ delegate void D(out int @__result);
             Assert.Equal("result", endInvokeParameters[1].Name);
         }
 
-        [WorkItem(612002, "DevDiv")]
+        [WorkItem(612002, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/612002")]
         [Fact]
         public void DelegateWithOutParameterNamedResult3()
         {
             var text = @"
 delegate void D(out int result, out int @__result);
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics();
 
             NamedTypeSymbol d = (NamedTypeSymbol)comp.SourceModule.GlobalNamespace.GetMembers("D").Single();
@@ -467,14 +467,14 @@ delegate void D(out int result, out int @__result);
             Assert.Equal("____result", endInvokeParameters[2].Name);
         }
 
-        [WorkItem(612002, "DevDiv")]
+        [WorkItem(612002, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/612002")]
         [Fact]
         public void DelegateWithParametersNamedCallbackAndObject()
         {
             var text = @"
 delegate void D(int callback, int @object);
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics();
 
             NamedTypeSymbol d = (NamedTypeSymbol)comp.SourceModule.GlobalNamespace.GetMembers("D").Single();
@@ -587,7 +587,7 @@ public class DelegateTest
     public static void RunG<T>(T t) { }
 }
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 // These match Dev10.
 
                 // (44,14): error CS0123: No overload for 'FTT' matches delegate 'DelegateTest.Da'
@@ -695,10 +695,10 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
-        [WorkItem(634014, "DevDiv")]
+        [WorkItem(634014, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/634014")]
         [Fact]
         public void DelegateTest634014()
         {
@@ -708,14 +708,28 @@ class C
 {
     D d = async delegate { };
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
-                // (4,11): error CS1988: Async methods cannot have ref or out parameters
+            CreateStandardCompilation(source).VerifyDiagnostics(
+                // (4,17): error CS1988: Async methods cannot have ref or out parameters
                 //     D d = async delegate { };
-                Diagnostic(ErrorCode.ERR_BadAsyncArgType, "async delegate { }"),
+                Diagnostic(ErrorCode.ERR_BadAsyncArgType, "delegate").WithLocation(4, 17),
                 // (4,11): warning CS1998: This async method lacks 'await' operators and will run synchronously. Consider using the 'await' operator to await non-blocking API calls, or 'await Task.Run(...)' to do CPU-bound work on a background thread.
                 //     D d = async delegate { };
-                Diagnostic(ErrorCode.WRN_AsyncLacksAwaits, "async delegate { }")
+                Diagnostic(ErrorCode.WRN_AsyncLacksAwaits, "async delegate { }").WithLocation(4, 11)
                 );
+        }
+
+        [Fact]
+        public void RefReturningDelegate()
+        {
+            var source = @"delegate ref int D();";
+
+            var comp = CreateCompilationWithMscorlib45(source);
+            comp.VerifyDiagnostics();
+
+            var global = comp.GlobalNamespace;
+            var d = global.GetMembers("D")[0] as NamedTypeSymbol;
+            Assert.Equal(RefKind.Ref, d.DelegateInvokeMethod.RefKind);
+            Assert.Equal(RefKind.Ref, ((MethodSymbol)d.GetMembers("EndInvoke").Single()).RefKind);
         }
     }
 }

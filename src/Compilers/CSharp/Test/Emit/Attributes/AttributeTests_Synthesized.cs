@@ -27,7 +27,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             return (DebuggerBrowsableState)attributes.Single(a => a.AttributeClass.Name == "DebuggerBrowsableAttribute").ConstructorArguments.First().Value;
         }
 
-        [Fact, WorkItem(546632, "DevDiv")]
+        [Fact, WorkItem(546632, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546632")]
         public void PrivateImplementationDetails()
         {
             string source = @"
@@ -36,7 +36,7 @@ class C
     int[] a = new[] { 1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9, };
 }
 ";
-            var reference = CreateCompilationWithMscorlib(source).EmitToImageReference();
+            var reference = CreateStandardCompilation(source).EmitToImageReference();
 
             var comp = CreateCompilation("", new[] { reference }, options: TestOptions.ReleaseDll.WithMetadataImportOptions(MetadataImportOptions.Internal));
 
@@ -48,7 +48,7 @@ class C
             AssertEx.SetEqual(expectedAttrs, actualAttrs);
         }
 
-        [Fact, WorkItem(546958, "DevDiv")]
+        [Fact, WorkItem(546958, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546958")]
         public void FixedSizeBuffers()
         {
             string source = @"
@@ -57,7 +57,7 @@ unsafe struct S
     public fixed char C[5];
 }
 ";
-            var reference = CreateCompilationWithMscorlib(source, options: TestOptions.UnsafeReleaseDll).EmitToImageReference();
+            var reference = CreateStandardCompilation(source, options: TestOptions.UnsafeReleaseDll).EmitToImageReference();
             var comp = CreateCompilation("", new[] { reference }, options: TestOptions.UnsafeReleaseDll.WithMetadataImportOptions(MetadataImportOptions.Internal));
 
             var s = (NamedTypeSymbol)comp.GlobalNamespace.GetMembers("S").Single();
@@ -69,7 +69,7 @@ unsafe struct S
             AssertEx.SetEqual(expectedAttrs, actualAttrs);
         }
 
-        [Fact, WorkItem(546927, "DevDiv")]
+        [Fact, WorkItem(546927, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546927")]
         public void BackingFields()
         {
             string source = @"
@@ -83,7 +83,7 @@ class Test
 ";
             foreach (var options in new[] { TestOptions.DebugDll, TestOptions.ReleaseDll })
             {
-                var comp = CreateCompilationWithMscorlib(source, options: options);
+                var comp = CreateStandardCompilation(source, options: options);
 
                 var c = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("Test");
                 var p = c.GetMember<PropertySymbol>("MyProp");
@@ -106,7 +106,7 @@ class Test
             }
         }
 
-        [Fact, WorkItem(546927, "DevDiv")]
+        [Fact, WorkItem(546927, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546927")]
         public void Accessors()
         {
             string source = @"
@@ -121,7 +121,7 @@ abstract class C
 ";
             foreach (var options in new[] { TestOptions.DebugDll, TestOptions.ReleaseDll })
             {
-                var comp = CreateCompilationWithMscorlib(source, options: options);
+                var comp = CreateStandardCompilation(source, options: options);
 
                 var c = comp.GlobalNamespace.GetMember<NamedTypeSymbol>("C");
                 var p = c.GetMember<PropertySymbol>("P");
@@ -169,7 +169,7 @@ class C
 ";
             foreach (var options in new[] { TestOptions.DebugDll, TestOptions.ReleaseDll })
             {
-                var comp = CreateCompilationWithMscorlib(source, options: options);
+                var comp = CreateStandardCompilation(source, options: options);
 
                 CompileAndVerify(comp, symbolValidator: m =>
                 {
@@ -198,7 +198,7 @@ class C
 ";
             foreach (var options in new[] { TestOptions.DebugDll, TestOptions.ReleaseDll })
             {
-                var comp = CreateCompilationWithMscorlib(source, options: options);
+                var comp = CreateStandardCompilation(source, options: options);
 
                 CompileAndVerify(comp, symbolValidator: m =>
                 {
@@ -282,7 +282,7 @@ public class C
    }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(source, options: TestOptions.DebugDll);
+            var comp = CreateStandardCompilation(source, options: TestOptions.DebugDll);
 
             CompileAndVerify(comp, symbolValidator: m =>
             {
@@ -337,7 +337,7 @@ public class C
 ";
             foreach (var options in new[] { TestOptions.DebugDll, TestOptions.ReleaseDll })
             {
-                var comp = CreateCompilationWithMscorlib(source, options: options);
+                var comp = CreateStandardCompilation(source, options: options);
 
                 CompileAndVerify(comp, symbolValidator: module =>
                 {
@@ -489,7 +489,7 @@ public class Test
 }";
             foreach (OutputKind outputKind in Enum.GetValues(typeof(OutputKind)))
             {
-                var compilation = CreateCompilationWithMscorlib(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
+                var compilation = CreateStandardCompilation(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
 
                 var sourceAssembly = (SourceAssemblySymbol)compilation.Assembly;
                 var synthesizedAttributes = sourceAssembly.GetSynthesizedAttributes();
@@ -528,7 +528,7 @@ public class Test
 }";
             foreach (OutputKind outputKind in Enum.GetValues(typeof(OutputKind)))
             {
-                var compilation = CreateCompilationWithMscorlib(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
+                var compilation = CreateStandardCompilation(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
 
                 var sourceAssembly = (SourceAssemblySymbol)compilation.Assembly;
 
@@ -571,7 +571,7 @@ public class Test
 }";
             foreach (OutputKind outputKind in Enum.GetValues(typeof(OutputKind)))
             {
-                var compilation = CreateCompilationWithMscorlib(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
+                var compilation = CreateStandardCompilation(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
 
                 var sourceAssembly = (SourceAssemblySymbol)compilation.Assembly;
 
@@ -615,7 +615,7 @@ public class Test
 }";
             foreach (OutputKind outputKind in Enum.GetValues(typeof(OutputKind)))
             {
-                var compilation = CreateCompilationWithMscorlib(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
+                var compilation = CreateStandardCompilation(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
 
                 var sourceAssembly = (SourceAssemblySymbol)compilation.Assembly;
 
@@ -661,7 +661,7 @@ public class Test
 }";
             foreach (OutputKind outputKind in Enum.GetValues(typeof(OutputKind)))
             {
-                var compilation = CreateCompilationWithMscorlib(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
+                var compilation = CreateStandardCompilation(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
 
                 var sourceAssembly = (SourceAssemblySymbol)compilation.Assembly;
 
@@ -744,7 +744,7 @@ public class Test
 }";
             foreach (OutputKind outputKind in Enum.GetValues(typeof(OutputKind)))
             {
-                var compilation = CreateCompilationWithMscorlib(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
+                var compilation = CreateStandardCompilation(source, options: new CSharpCompilationOptions(outputKind, optimizationLevel: OptimizationLevel.Release));
 
                 if (!outputKind.IsNetModule())
                 {
@@ -1270,7 +1270,7 @@ class C
     {
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.UnsafeReleaseDll);
             compilation.VerifyDiagnostics();
 
             var assembly = (SourceAssemblySymbol)compilation.Assembly;
@@ -1292,7 +1292,7 @@ class C
     {
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.UnsafeReleaseDll.WithOutputKind(OutputKind.NetModule));
+            var compilation = CreateStandardCompilation(source, options: TestOptions.UnsafeReleaseDll.WithOutputKind(OutputKind.NetModule));
             compilation.VerifyDiagnostics();
 
             var assembly = (SourceAssemblySymbol)compilation.Assembly;
@@ -1622,7 +1622,7 @@ public class Test
 
         #endregion
 
-        [Fact, WorkItem(431)]
+        [Fact, WorkItem(431, "https://github.com/dotnet/roslyn/issues/431")]
         public void BaseMethodWrapper()
         {
             string source = @"
@@ -1652,6 +1652,67 @@ class B : A
 
                 AssertEx.SetEqual(new[] { "CompilerGeneratedAttribute", "DebuggerHiddenAttribute" }, GetAttributeNames(baseMethodWrapper.GetAttributes()));
             }
+        }
+
+        [Fact, WorkItem(7809, "https://github.com/dotnet/roslyn/issues/7809")]
+        public void SynthesizeAttributeWithUseSiteErrorFails()
+        {
+            #region "mslib"
+            var mslibNoString = @"
+namespace System
+{
+    public class Object { }
+    public struct Int32 { }
+    public class ValueType { }
+    public class Attribute { }
+    public struct Void { }
+}";
+            var mslib = mslibNoString + @"
+namespace System
+{
+    public class String { }
+}";
+            #endregion
+
+            // Build an mscorlib including String
+            var mslibComp = CreateCompilation(new string[] { mslib }).VerifyDiagnostics();
+            var mslibRef = mslibComp.EmitToImageReference();
+
+            // Build an mscorlib without String
+            var mslibNoStringComp = CreateCompilation(new string[] { mslibNoString }).VerifyDiagnostics();
+            var mslibNoStringRef = mslibNoStringComp.EmitToImageReference();
+
+            var diagLibSource = @"
+namespace System.Diagnostics
+{
+    public class DebuggerDisplayAttribute : System.Attribute
+    {
+        public DebuggerDisplayAttribute(System.String s) { }
+        public System.String Type { get { return null; } set { } }
+    }
+}
+namespace System.Runtime.CompilerServices
+{
+    public class CompilerGeneratedAttribute { } 
+}";
+            // Build Diagnostics referencing mscorlib with String
+            var diagLibComp = CreateCompilation(new string[] { diagLibSource }, references: new[] { mslibRef }).VerifyDiagnostics();
+            var diagLibRef = diagLibComp.EmitToImageReference();
+
+            // Create compilation using Diagnostics but referencing mscorlib without String
+            var comp = CreateCompilation(new SyntaxTree[] { Parse("") }, references: new[] { diagLibRef, mslibNoStringRef });
+
+            // Attribute cannot be synthesized because ctor has a use-site error (String type missing)
+            var attribute = comp.TrySynthesizeAttribute(WellKnownMember.System_Diagnostics_DebuggerDisplayAttribute__ctor);
+            Assert.Equal(null, attribute);
+
+            // Attribute cannot be synthesized because type in named argument has use-site error (String type missing)
+            var attribute2 = comp.TrySynthesizeAttribute(
+                                WellKnownMember.System_Runtime_CompilerServices_CompilerGeneratedAttribute__ctor,
+                                namedArguments: ImmutableArray.Create(new KeyValuePair<WellKnownMember, TypedConstant>(
+                                                    WellKnownMember.System_Diagnostics_DebuggerDisplayAttribute__Type,
+                                                    new TypedConstant(comp.GetSpecialType(SpecialType.System_String), TypedConstantKind.Primitive, "unused"))));
+            Assert.Equal(null, attribute2);
         }
     }
 }

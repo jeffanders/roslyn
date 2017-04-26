@@ -62,14 +62,23 @@ namespace Microsoft.VisualStudio.LanguageServices.Setup
             var method = compilerFailFast.GetMethod(nameof(FailFast.OnFatalException), BindingFlags.Static | BindingFlags.NonPublic);
             property.SetValue(null, Delegate.CreateDelegate(property.PropertyType, method));
 
-            RegisterFindResultsLibraryManager();
-
+<<<<<<< HEAD
+=======
             var componentModel = (IComponentModel)this.GetService(typeof(SComponentModel));
             _workspace = componentModel.GetService<VisualStudioWorkspace>();
+
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
+            RegisterFindResultsLibraryManager();
 
             // Ensure the options persisters are loaded since we have to fetch options from the shell
             componentModel.GetExtensions<IOptionPersister>();
 
+<<<<<<< HEAD
+            // Ensure the options persisters are loaded since we have to fetch options from the shell
+            componentModel.GetExtensions<IOptionPersister>();
+
+=======
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             RoslynTelemetrySetup.Initialize(this);
 
             // set workspace output pane
@@ -186,7 +195,7 @@ namespace Microsoft.VisualStudio.LanguageServices.Setup
             var objectManager = this.GetService(typeof(SVsObjectManager)) as IVsObjectManager2;
             if (objectManager != null)
             {
-                _libraryManager = new LibraryManager(this);
+                _libraryManager = new LibraryManager(_workspace, this);
 
                 if (ErrorHandler.Failed(objectManager.RegisterSimpleLibrary(_libraryManager, out _libraryManagerCookie)))
                 {

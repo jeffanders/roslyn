@@ -4,7 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Microsoft.CodeAnalysis.Editor.Shared.Tagging;
+using Microsoft.CodeAnalysis.Internal.Log;
 using Microsoft.CodeAnalysis.Shared.TestHooks;
+using Microsoft.CodeAnalysis.Text.Shared.Extensions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Roslyn.Utilities;
@@ -15,6 +18,14 @@ namespace Microsoft.CodeAnalysis.Editor.Tagging
     {
         private sealed partial class Tagger : IAccurateTagger<TTag>, IDisposable
         {
+            /// <summary>
+            /// If we get more than this many differences, then we just issue it as a single change
+            /// notification.  The number has been completely made up without any data to support it.
+            /// 
+            /// Internal for testing purposes.
+            /// </summary>
+            private const int CoalesceDifferenceCount = 10;
+
             #region Fields that can be accessed from either thread
 
             private readonly ITextBuffer _subjectBuffer;
@@ -43,7 +54,8 @@ namespace Microsoft.CodeAnalysis.Editor.Tagging
                 Contract.ThrowIfNull(subjectBuffer);
 
                 _subjectBuffer = subjectBuffer;
-                _batchChangeNotifier = new BatchChangeNotifier(subjectBuffer, listener, notificationService, ReportChangedSpan);
+                _batchChangeNotifier = new BatchChangeNotifier(
+                    subjectBuffer, listener, notificationService, NotifyEditorNow);
 
                 _tagSource = tagSource;
 
@@ -61,23 +73,13 @@ namespace Microsoft.CodeAnalysis.Editor.Tagging
                 _tagSource.OnTaggerDisposed(this);
             }
 
-            private void ReportChangedSpan(SnapshotSpan changeSpan)
-            {
-                _batchChangeNotifier.AssertIsForeground();
-                TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(changeSpan));
-            }
-
             private void OnPaused(object sender, EventArgs e)
-            {
-                _batchChangeNotifier.Pause();
-            }
+                => _batchChangeNotifier.Pause();
 
             private void OnResumed(object sender, EventArgs e)
-            {
-                _batchChangeNotifier.Resume();
-            }
+                => _batchChangeNotifier.Resume();
 
-            private void OnTagsChangedForBuffer(ICollection<KeyValuePair<ITextBuffer, NormalizedSnapshotSpanCollection>> changes)
+            private void OnTagsChangedForBuffer(ICollection<KeyValuePair<ITextBuffer, DiffResult>> changes)
             {
                 _tagSource.AssertIsForeground();
 
@@ -94,19 +96,84 @@ namespace Microsoft.CodeAnalysis.Editor.Tagging
                     }
 
                     // Now report them back to the UI on the main thread.
-                    _batchChangeNotifier.EnqueueChanges(change.Value);
+
+                    // We ask to update UI immediately for removed tags
+                    NotifyEditors(change.Value.Removed, _tagSource.RemovedTagNotificationDelay);
+                    NotifyEditors(change.Value.Added, _tagSource.AddedTagNotificationDelay);
                 }
             }
 
-            public IEnumerable<ITagSpan<TTag>> GetTags(NormalizedSnapshotSpanCollection requestedSpans)
+            private void NotifyEditors(NormalizedSnapshotSpanCollection changes, TaggerDelay delay)
             {
-                return GetTagsWorker(requestedSpans, accurate: false, cancellationToken: CancellationToken.None);
+                _tagSource.AssertIsForeground();
+
+                if (changes.Count == 0)
+                {
+                    // nothing to do.
+                    return;
+                }
+
+                if (delay == TaggerDelay.NearImmediate)
+                {
+                    // if delay is immediate, we let notifier knows about the change right away
+                    _batchChangeNotifier.EnqueueChanges(changes);
+                    return;
+                }
+
+                // if delay is anything more than that, we let notifier knows about the change after given delay
+                // event notification is not cancellable.
+                _tagSource.RegisterNotification(() => _batchChangeNotifier.EnqueueChanges(changes), (int)delay.ComputeTimeDelay(_subjectBuffer).TotalMilliseconds, CancellationToken.None);
             }
 
-            public IEnumerable<ITagSpan<TTag>> GetAllTags(NormalizedSnapshotSpanCollection requestedSpans, CancellationToken cancellationToken)
+            private void NotifyEditorNow(NormalizedSnapshotSpanCollection normalizedSpans)
             {
-                return GetTagsWorker(requestedSpans, accurate: true, cancellationToken: cancellationToken);
+                _batchChangeNotifier.AssertIsForeground();
+
+                using (Logger.LogBlock(FunctionId.Tagger_BatchChangeNotifier_NotifyEditorNow, CancellationToken.None))
+                {
+                    if (normalizedSpans.Count == 0)
+                    {
+                        return;
+                    }
+
+                    var tagsChanged = this.TagsChanged;
+                    if (tagsChanged == null)
+                    {
+                        return;
+                    }
+
+                    normalizedSpans = CoalesceSpans(normalizedSpans);
+
+                    // Don't use linq here.  It's a hotspot.
+                    foreach (var span in normalizedSpans)
+                    {
+                        tagsChanged(this, new SnapshotSpanEventArgs(span));
+                    }
+                }
             }
+
+            internal static NormalizedSnapshotSpanCollection CoalesceSpans(NormalizedSnapshotSpanCollection normalizedSpans)
+            {
+                var snapshot = normalizedSpans.First().Snapshot;
+
+                // Coalesce the spans if there are a lot of them.
+                if (normalizedSpans.Count > CoalesceDifferenceCount)
+                {
+                    // Spans are normalized.  So to find the whole span we just go from the
+                    // start of the first span to the end of the last span.
+                    normalizedSpans = new NormalizedSnapshotSpanCollection(snapshot.GetSpanFromBounds(
+                        normalizedSpans.First().Start,
+                        normalizedSpans.Last().End));
+                }
+
+                return normalizedSpans;
+            }
+
+            public IEnumerable<ITagSpan<TTag>> GetTags(NormalizedSnapshotSpanCollection requestedSpans)
+                => GetTagsWorker(requestedSpans, accurate: false, cancellationToken: CancellationToken.None);
+
+            public IEnumerable<ITagSpan<TTag>> GetAllTags(NormalizedSnapshotSpanCollection requestedSpans, CancellationToken cancellationToken)
+                => GetTagsWorker(requestedSpans, accurate: true, cancellationToken: cancellationToken);
 
             private IEnumerable<ITagSpan<TTag>> GetTagsWorker(
                 NormalizedSnapshotSpanCollection requestedSpans,
@@ -121,7 +188,7 @@ namespace Microsoft.CodeAnalysis.Editor.Tagging
                 var buffer = requestedSpans.First().Snapshot.TextBuffer;
                 var tags = accurate
                     ? _tagSource.GetAccurateTagIntervalTreeForBuffer(buffer, cancellationToken)
-                    : _tagSource.GetTagIntervalTreeForBuffer(buffer);
+                    : _tagSource.TryGetTagIntervalTreeForBuffer(buffer);
 
                 if (tags == null)
                 {

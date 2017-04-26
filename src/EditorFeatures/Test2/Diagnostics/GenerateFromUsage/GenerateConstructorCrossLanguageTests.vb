@@ -11,16 +11,16 @@ Namespace Microsoft.CodeAnalysis.Editor.UnitTests.Diagnostics.GenerateConstructo
             If language = LanguageNames.CSharp Then
                 Return Tuple.Create(Of DiagnosticAnalyzer, CodeFixProvider)(
                     Nothing,
-                    New Microsoft.CodeAnalysis.CSharp.CodeFixes.GenerateConstructor.GenerateConstructorCodeFixProvider())
+                    New CodeAnalysis.CSharp.GenerateConstructor.GenerateConstructorCodeFixProvider())
             Else
                 Return Tuple.Create(Of DiagnosticAnalyzer, CodeFixProvider)(
                     Nothing,
-                    New Microsoft.CodeAnalysis.VisualBasic.CodeFixes.GenerateConstructor.GenerateConstructorCodeFixProvider())
+                    New CodeAnalysis.VisualBasic.GenerateConstructor.GenerateConstructorCodeFixProvider())
             End If
         End Function
 
-        <WorkItem(546671)>
-        <WpfFact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateConstructor)>
+        <WorkItem(546671, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546671")>
+        <Fact, Trait(Traits.Feature, Traits.Features.CodeActionsGenerateConstructor)>
         Public Async Function Test_CSharpToVisualBasic1() As System.Threading.Tasks.Task
             Dim input =
         <Workspace>

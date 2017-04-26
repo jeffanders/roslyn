@@ -3,13 +3,15 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Threading;
-using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
 using System.Collections.Generic;
+<<<<<<< HEAD
 using Microsoft.CodeAnalysis.Symbols;
 using System;
+=======
+using System.Linq;
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
 
 namespace Microsoft.CodeAnalysis.CSharp.Symbols
 {
@@ -174,7 +176,13 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
             return this.GetAttributesBag().Attributes;
         }
 
-        internal override CustomAttributesBag<CSharpAttributeData> GetAttributesBag()
+        /// <summary>
+        /// Returns a bag of applied custom attributes and data decoded from well-known attributes. Returns null if there are no attributes applied on the symbol.
+        /// </summary>
+        /// <remarks>
+        /// Forces binding and decoding of attributes.
+        /// </remarks>
+        internal virtual CustomAttributesBag<CSharpAttributeData> GetAttributesBag()
         {
             if (_lazyCustomAttributesBag == null || !_lazyCustomAttributesBag.IsSealed)
             {
@@ -183,7 +191,9 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
                 var sourceMethod = this.ContainingSymbol as SourceMemberMethodSymbol;
                 if ((object)sourceMethod == null || (object)sourceMethod.SourcePartialDefinition == null)
                 {
-                    lazyAttributesStored = LoadAndValidateAttributes(OneOrMany.Create(this.MergedAttributeDeclarationSyntaxLists), ref _lazyCustomAttributesBag);
+                    lazyAttributesStored = LoadAndValidateAttributes(
+                        OneOrMany.Create(this.MergedAttributeDeclarationSyntaxLists),
+                        ref _lazyCustomAttributesBag);
                 }
                 else
                 {
@@ -460,6 +470,49 @@ namespace Microsoft.CodeAnalysis.CSharp.Symbols
         {
             return _owner.GetTypeParameterConstraints(this.Ordinal);
         }
+    }
+
+    // TODO: https://github.com/dotnet/roslyn/issues/17244 This type is probably not necessary
+    internal sealed class LocalFunctionTypeParameterSymbol : SourceTypeParameterSymbolBase
+    {
+        private readonly LocalFunctionSymbol _owner;
+
+        public LocalFunctionTypeParameterSymbol(
+            LocalFunctionSymbol owner,
+            string name,
+            int ordinal,
+            ImmutableArray<Location> locations,
+            ImmutableArray<SyntaxReference> syntaxRefs)
+            : base(name, ordinal, locations, syntaxRefs)
+        {
+            _owner = owner;
+        }
+
+        internal override void AddDeclarationDiagnostics(DiagnosticBag diagnostics)
+            => _owner.AddDeclarationDiagnostics(diagnostics);
+
+        public override TypeParameterKind TypeParameterKind => TypeParameterKind.Method;
+
+        public override Symbol ContainingSymbol => _owner;
+
+        public override bool HasConstructorConstraint
+            => (GetDeclaredConstraints() & TypeParameterConstraintKind.Constructor) != 0;
+
+        public override bool HasValueTypeConstraint
+            => (GetDeclaredConstraints() & TypeParameterConstraintKind.ValueType) != 0;
+
+        public override bool HasReferenceTypeConstraint
+            => (GetDeclaredConstraints() & TypeParameterConstraintKind.ReferenceType) != 0;
+
+        protected override ImmutableArray<TypeParameterSymbol> ContainerTypeParameters => _owner.TypeParameters;
+
+        protected override TypeParameterBounds ResolveBounds(ConsList<TypeParameterSymbol> inProgress, DiagnosticBag diagnostics)
+        {
+            var constraintTypes = _owner.GetTypeParameterConstraintTypes(this.Ordinal);
+            return this.ResolveBounds(this.ContainingAssembly.CorLibrary, inProgress.Prepend(this), constraintTypes, false, this.DeclaringCompilation, diagnostics);
+        }
+
+        private TypeParameterConstraintKind GetDeclaredConstraints() => _owner.GetTypeParameterConstraints(Ordinal);
     }
 
     /// <summary>

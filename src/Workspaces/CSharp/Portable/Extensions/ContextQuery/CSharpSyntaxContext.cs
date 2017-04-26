@@ -98,13 +98,22 @@ namespace Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery
             bool isCatchFilterContext,
             bool isDestructorTypeContext,
             bool isPossibleTupleContext,
+<<<<<<< HEAD
+=======
+            bool isPatternContext,
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             CancellationToken cancellationToken)
             : base(workspace, semanticModel, position, leftToken, targetToken,
                    isTypeContext, isNamespaceContext, isNamespaceDeclarationNameContext,
                    isPreProcessorDirectiveContext,
                    isRightOfDotOrArrowOrColonColon, isStatementContext, isAnyExpressionContext,
                    isAttributeNameContext, isEnumTypeMemberAccessContext, isNameOfContext,
+<<<<<<< HEAD
                    isInQuery, isInImportsDirective, IsWithinAsyncMethod(), isPossibleTupleContext, cancellationToken)
+=======
+                   isInQuery, isInImportsDirective, IsWithinAsyncMethod(), isPossibleTupleContext,
+                   isPatternContext, cancellationToken)
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
         {
             this.ContainingTypeDeclaration = containingTypeDeclaration;
             this.ContainingTypeOrEnumDeclaration = containingTypeOrEnumDeclaration;
@@ -242,6 +251,10 @@ namespace Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery
                 syntaxTree.IsCatchFilterContext(position, leftToken),
                 isDestructorTypeContext,
                 syntaxTree.IsPossibleTupleContext(leftToken, position),
+<<<<<<< HEAD
+=======
+                syntaxTree.IsPatternContext(leftToken, position),
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
                 cancellationToken);
         }
 

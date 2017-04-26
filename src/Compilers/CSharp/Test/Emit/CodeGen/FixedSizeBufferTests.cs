@@ -180,7 +180,7 @@ class Program
         }
 
         [Fact]
-        [WorkItem(531407, "DevDiv")]
+        [WorkItem(531407, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/531407")]
         public void FixedBufferPointer()
         {
             var text =
@@ -227,7 +227,7 @@ class Program
         }
 
         [Fact]
-        [WorkItem(587119, "DevDiv")]
+        [WorkItem(587119, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/587119")]
         public void FixedSizeBufferInFixedSizeBufferSize_Class()
         {
             var source = @"
@@ -237,7 +237,7 @@ unsafe class C
     fixed int G[1];
 }
 ";
-            CreateCompilationWithMscorlib(source, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(source, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (5,15): error CS1642: Fixed size buffer fields may only be members of structs
                 //     fixed int G[1];
                 Diagnostic(ErrorCode.ERR_FixedNotInStruct, "G"),
@@ -250,7 +250,7 @@ unsafe class C
         }
 
         [Fact]
-        [WorkItem(587119, "DevDiv")]
+        [WorkItem(587119, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/587119")]
         public void FixedSizeBufferInFixedSizeBufferSize_Struct()
         {
             var source = @"
@@ -261,14 +261,14 @@ unsafe struct S
 }
 ";
             // CONSIDER: Dev11 reports CS1666 (ERR_FixedBufferNotFixed), but that's no more helpful.
-            CreateCompilationWithMscorlib(source, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(source, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,17): error CS0120: An object reference is required for the non-static field, method, or property 'S.G'
                 //     fixed int F[G];
                 Diagnostic(ErrorCode.ERR_ObjectRequired, "G").WithArguments("S.G"));
         }
 
         [Fact]
-        [WorkItem(586977, "DevDiv")]
+        [WorkItem(586977, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/586977")]
         public void FixedSizeBufferInFixedSizeBufferSize_Cycle()
         {
             var source = @"
@@ -280,14 +280,14 @@ unsafe struct S
             // CONSIDER: Dev11 also reports CS0110 (ERR_CircConstValue), but Roslyn doesn't regard this as a cycle:
             // F has no initializer, so it has no constant value, so the constant value of F is "null" - not "the 
             // constant value of F" (i.e. cyclic).
-            CreateCompilationWithMscorlib(source, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(source, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,17): error CS0120: An object reference is required for the non-static field, method, or property 'S.F'
                 //     fixed int F[F];
                 Diagnostic(ErrorCode.ERR_ObjectRequired, "F").WithArguments("S.F"));
         }
 
         [Fact]
-        [WorkItem(587000, "DevDiv")]
+        [WorkItem(587000, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/587000")]
         public void SingleDimensionFixedBuffersOnly()
         {
             var source = @"
@@ -295,13 +295,13 @@ unsafe struct S
 {
     fixed int F[3, 4];
 }";
-            CreateCompilationWithMscorlib(source, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
+            CreateStandardCompilation(source, options: TestOptions.UnsafeReleaseDll).VerifyDiagnostics(
                 // (4,16): error CS7092: A fixed buffer may only have one dimension.
                 //     fixed int F[3, 4];
                 Diagnostic(ErrorCode.ERR_FixedBufferTooManyDimensions, "[3, 4]"));
         }
 
-        [Fact, WorkItem(1171076, "DevDiv")]
+        [Fact, WorkItem(1171076, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1171076")]
         public void UIntFixedBuffer()
         {
             var text =
@@ -358,7 +358,7 @@ class Program
 }");
         }
 
-        [Fact, WorkItem(1171076, "DevDiv")]
+        [Fact, WorkItem(1171076, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1171076")]
         public void ReadonlyFixedBuffer()
         {
             var text =
@@ -380,14 +380,14 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyEmitDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyEmitDiagnostics(
     // (8,34): error CS0106: The modifier 'readonly' is not valid for this item
     //     public readonly fixed UInt32 StartOfTables[ 16 ];
     Diagnostic(ErrorCode.ERR_BadMemberFlag, "StartOfTables").WithArguments("readonly").WithLocation(8, 34)
                 );
         }
 
-        [Fact, WorkItem(1171076, "DevDiv")]
+        [Fact, WorkItem(1171076, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1171076")]
         public void StaticFixedBuffer()
         {
             var text =
@@ -409,14 +409,14 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyEmitDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyEmitDiagnostics(
     // (8,32): error CS0106: The modifier 'static' is not valid for this item
     //     public static fixed UInt32 StartOfTables[ 16 ];
     Diagnostic(ErrorCode.ERR_BadMemberFlag, "StartOfTables").WithArguments("static").WithLocation(8, 32)
                 );
         }
 
-        [Fact, WorkItem(1171076, "DevDiv")]
+        [Fact, WorkItem(1171076, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1171076")]
         public void ConstFixedBuffer_01()
         {
             var text =
@@ -438,7 +438,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyEmitDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyEmitDiagnostics(
     // (8,18): error CS1031: Type expected
     //     public fixed const UInt32 StartOfTables[ 16 ];
     Diagnostic(ErrorCode.ERR_TypeExpected, "const").WithLocation(8, 18),
@@ -472,7 +472,7 @@ class Program
                 );
         }
 
-        [Fact, WorkItem(1171076, "DevDiv")]
+        [Fact, WorkItem(1171076, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1171076")]
         public void ConstFixedBuffer_02()
         {
             var text =
@@ -494,7 +494,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyEmitDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyEmitDiagnostics(
     // (8,18): error CS1031: Type expected
     //     public const fixed UInt32 StartOfTables[ 16 ];
     Diagnostic(ErrorCode.ERR_TypeExpected, "fixed").WithLocation(8, 18),
@@ -513,7 +513,7 @@ class Program
                 );
         }
 
-        [Fact, WorkItem(1171076, "DevDiv")]
+        [Fact, WorkItem(1171076, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1171076")]
         public void VolatileFixedBuffer()
         {
             var text =
@@ -535,7 +535,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(text, options: TestOptions.UnsafeReleaseDll).VerifyEmitDiagnostics(
+            CreateStandardCompilation(text, options: TestOptions.UnsafeReleaseDll).VerifyEmitDiagnostics(
     // (8,34): error CS0106: The modifier 'volatile' is not valid for this item
     //     public volatile fixed UInt32 StartOfTables[ 16 ];
     Diagnostic(ErrorCode.ERR_BadMemberFlag, "StartOfTables").WithArguments("volatile").WithLocation(8, 34)

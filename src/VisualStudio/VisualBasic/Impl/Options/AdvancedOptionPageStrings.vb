@@ -84,6 +84,18 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.Options
         Public ReadOnly Property Option_with_other_members_of_the_same_kind As String =
             ServicesVSResources.with_other_members_of_the_same_kind
 
+<<<<<<< HEAD
+=======
+        Public ReadOnly Property Option_When_generating_properties As String =
+            ServicesVSResources.When_generating_properties
+
+        Public ReadOnly Property Option_prefer_auto_properties As String =
+            ServicesVSResources.prefer_auto_properties
+
+        Public ReadOnly Property Option_prefer_throwing_properties As String =
+            ServicesVSResources.prefer_throwing_properties
+
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
         Public ReadOnly Property Option_at_the_end As String =
             ServicesVSResources.at_the_end
 
@@ -132,6 +144,7 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.Options
         Public ReadOnly Property Option_OptimizeForSolutionSize_Large As String
             Get
                 Return BasicVSResources.Large
+<<<<<<< HEAD
             End Get
         End Property
 
@@ -182,6 +195,58 @@ Namespace Microsoft.VisualStudio.LanguageServices.VisualBasic.Options
             End Get
         End Property
 
+=======
+            End Get
+        End Property
+
+        Public ReadOnly Property Option_Outlining As String = ServicesVSResources.Outlining
+
+        Public ReadOnly Property Option_Show_outlining_for_declaration_level_constructs As String =
+            ServicesVSResources.Show_outlining_for_declaration_level_constructs
+
+        Public ReadOnly Property Option_Show_outlining_for_code_level_constructs As String =
+            ServicesVSResources.Show_outlining_for_code_level_constructs
+
+        Public ReadOnly Property Option_Show_outlining_for_comments_and_preprocessor_regions As String =
+            ServicesVSResources.Show_outlining_for_comments_and_preprocessor_regions
+
+        Public ReadOnly Property Option_Collapse_regions_when_collapsing_to_definitions As String =
+            ServicesVSResources.Collapse_regions_when_collapsing_to_definitions
+
+        Public ReadOnly Property Option_Block_Structure_Guides As String =
+            ServicesVSResources.Block_Structure_Guides
+
+        Public ReadOnly Property Option_Show_guides_for_declaration_level_constructs As String =
+            ServicesVSResources.Show_guides_for_declaration_level_constructs
+
+        Public ReadOnly Property Option_Show_guides_for_code_level_constructs As String =
+            ServicesVSResources.Show_guides_for_code_level_constructs
+
+        Public ReadOnly Property Option_Performance As String
+            Get
+                Return BasicVSResources.Performance
+            End Get
+        End Property
+
+        Public ReadOnly Property Option_RenameTrackingPreview As String
+            Get
+                Return BasicVSResources.Show_preview_for_rename_tracking
+            End Get
+        End Property
+
+        Public ReadOnly Property Option_Import_Directives As String
+            Get
+                Return BasicVSResources.Import_Directives
+            End Get
+        End Property
+
+        Public ReadOnly Property Option_PlaceSystemNamespaceFirst As String
+            Get
+                Return BasicVSResources.Place_System_directives_first_when_sorting_imports
+            End Get
+        End Property
+
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
         Public ReadOnly Property Option_Suggest_imports_for_types_in_reference_assemblies As String
             Get
                 Return BasicVSResources.Suggest_imports_for_types_in_reference_assemblies

@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Editor.CSharp.KeywordHighlighting.KeywordHighlighters;
@@ -14,137 +14,172 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.KeywordHighlighting
             return new TryStatementHighlighter();
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
+        [Fact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
         public async Task TestExample1_1()
         {
             await TestAsync(
-        @"class C {
-    void M() {
-        {|Cursor:[|try|]|} {
-    try {
+@"class C
+{
+    void M()
+    {
+        {|Cursor:[|try|]|}
+        {
+            try
+            {
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        [|finally|]
+        {
+        }
     }
-    catch (Exception e) {
-    }
-}
-[|finally|] {
-}
-    }
-}
-");
+}");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
+        [Fact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
         public async Task TestExample1_2()
         {
             await TestAsync(
-        @"class C {
-    void M() {
-        try {
-    {|Cursor:[|try|]|} {
+@"class C
+{
+    void M()
+    {
+        try
+        {
+            {|Cursor:[|try|]|}
+            {
+            }
+            [|catch|] (Exception e)
+            {
+            }
+        }
+        finally
+        {
+        }
     }
-    [|catch|] (Exception e) {
-    }
-}
-finally {
-}
-    }
-}
-");
+}");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
+        [Fact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
         public async Task TestExample1_3()
         {
             await TestAsync(
-        @"class C {
-    void M() {
-        try {
-    [|try|] {
+@"class C
+{
+    void M()
+    {
+        try
+        {
+            [|try|]
+            {
+            }
+            {|Cursor:[|catch|]|} (Exception e)
+            {
+            }
+        }
+        finally
+        {
+        }
     }
-    {|Cursor:[|catch|]|} (Exception e) {
-    }
-}
-finally {
-}
-    }
-}
-");
+}");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
+        [Fact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
         public async Task TestExample1_4()
         {
             await TestAsync(
-        @"class C {
-    void M() {
-        [|try|] {
-    try {
+@"class C
+{
+    void M()
+    {
+        [|try|]
+        {
+            try
+            {
+            }
+            catch (Exception e)
+            {
+            }
+        }
+        {|Cursor:[|finally|]|}
+        {
+        }
     }
-    catch (Exception e) {
-    }
-}
-{|Cursor:[|finally|]|} {
-}
-    }
-}
-");
+}");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
+        [Fact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
         public async Task TestExceptionFilter1()
         {
             await TestAsync(
-        @"class C {
-    void M() {
-        try {
-    {|Cursor:[|try|]|} {
+@"class C
+{
+    void M()
+    {
+        try
+        {
+            {|Cursor:[|try|]|}
+            {
+            }
+            [|catch|] (Exception e) [|when|] (e != null)
+            {
+            }
+        }
+        finally
+        {
+        }
     }
-    [|catch|] (Exception e) [|when|] (e != null) {
-    }
-}
-finally {
-}
-    }
-}
-");
+}");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
+        [Fact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
         public async Task TestExceptionFilter2()
         {
             await TestAsync(
-        @"class C {
-    void M() {
-        try {
-    [|try|] {
+@"class C
+{
+    void M()
+    {
+        try
+        {
+            [|try|]
+            {
+            }
+            {|Cursor:[|catch|]|} (Exception e) [|when|] (e != null)
+            {
+            }
+        }
+        finally
+        {
+        }
     }
-    {|Cursor:[|catch|]|} (Exception e) [|when|] (e != null) {
-    }
-}
-finally {
-}
-    }
-}
-");
+}");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
+        [Fact, Trait(Traits.Feature, Traits.Features.KeywordHighlighting)]
         public async Task TestExceptionFilter3()
         {
             await TestAsync(
-        @"class C {
-    void M() {
-        try {
-    [|try|] {
+@"class C
+{
+    void M()
+    {
+        try
+        {
+            [|try|]
+            {
+            }
+            [|catch|] (Exception e) {|Cursor:[|when|]|} (e != null)
+            {
+            }
+        }
+        finally
+        {
+        }
     }
-    [|catch|] (Exception e) {|Cursor:[|when|]|} (e != null) {
-    }
-}
-finally {
-}
-    }
-}
-");
+}");
         }
     }
 }

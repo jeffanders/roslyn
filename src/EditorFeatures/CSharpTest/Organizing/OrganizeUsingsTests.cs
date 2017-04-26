@@ -3,7 +3,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Editor.UnitTests.Workspaces;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.OrganizeImports;
 using Roslyn.Test.Utilities;
 using Xunit;
@@ -12,31 +14,32 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Organizing
 {
     public class OrganizeUsingsTests
     {
-        protected async Task CheckAsync(string initial, string final, bool specialCaseSystem, CSharpParseOptions options = null)
+        protected async Task CheckAsync(string initial, string final, bool placeSystemNamespaceFirst = false, CSharpParseOptions options = null)
         {
-            using (var workspace = await CSharpWorkspaceFactory.CreateWorkspaceFromFileAsync(initial))
+            using (var workspace = TestWorkspace.CreateCSharp(initial))
             {
                 var document = workspace.CurrentSolution.GetDocument(workspace.Documents.First().Id);
-                var newRoot = await (await OrganizeImportsService.OrganizeImportsAsync(document, specialCaseSystem)).GetSyntaxRootAsync();
+                workspace.Options = workspace.Options.WithChangedOption(new OptionKey(GenerationOptions.PlaceSystemNamespaceFirst, document.Project.Language), placeSystemNamespaceFirst);
+                var newRoot = await (await OrganizeImportsService.OrganizeImportsAsync(document)).GetSyntaxRootAsync();
                 Assert.Equal(final.NormalizeLineEndings(), newRoot.ToFullString());
             }
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task EmptyFile()
         {
-            await CheckAsync(string.Empty, string.Empty, true);
+            await CheckAsync(string.Empty, string.Empty);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task SingleUsingStatement()
         {
             var initial = @"using A;";
             var final = initial;
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task AliasesAtBottom()
         {
             var initial =
@@ -52,10 +55,10 @@ using A = B;
 using D = E;
 ";
 
-            await CheckAsync(initial, final, false);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task UsingStaticsBetweenUsingsAndAliases()
         {
             var initial =
@@ -77,10 +80,10 @@ using A = B;
 using D = E;
 ";
 
-            await CheckAsync(initial, final, false);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task NestedStatements()
         {
             var initial =
@@ -162,10 +165,10 @@ namespace N3
     using N;
   } 
 }";
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task SpecialCaseSystem()
         {
             var initial =
@@ -180,10 +183,10 @@ using System.Linq;
 using M1;
 using M2;
 ";
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final, placeSystemNamespaceFirst: true);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task SpecialCaseSystemWithUsingStatic()
         {
             var initial =
@@ -202,10 +205,10 @@ using M2;
 using static System.BitConverter;
 using static Microsoft.Win32.Registry;
 ";
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final, placeSystemNamespaceFirst: true);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DoNotSpecialCaseSystem()
         {
             var initial =
@@ -221,10 +224,10 @@ using System;
 using System.Linq;
 ";
 
-            await CheckAsync(initial, final, false);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DoNotSpecialCaseSystemWithUsingStatics()
         {
             var initial =
@@ -242,89 +245,10 @@ using System;
 using System.Linq;
 using static Microsoft.Win32.Registry;
 using static System.BitConverter;";
-            await CheckAsync(initial, final, false);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact(Skip = "752024"), Trait(Traits.Feature, Traits.Features.Organizing)]
-        public async Task MissingSemicolons()
-        {
-            var initial =
-@"using B
-using A
-using C";
-
-            var final =
-@"using A
-using B
-using C";
-            await CheckAsync(initial, final, true);
-        }
-
-        [WpfFact(Skip = "752024"), Trait(Traits.Feature, Traits.Features.Organizing)]
-        public async Task MissingNamesAndSemicolons()
-        {
-            var initial =
-@"using B
-using 
-using A";
-
-            var final =
-@"using
-using A
-using B
-";
-            await CheckAsync(initial, final, true);
-        }
-
-        [WpfFact(Skip = "752024"), Trait(Traits.Feature, Traits.Features.Organizing)]
-        public async Task MissingEverything()
-        {
-            var initial =
-@"extern alias C
-extern alias;
-extern alias A
-extern alias
-extern alias 
-extern alias B
-using
-using C
-using 
-using B
-using;
-using A
-using D = 
-using E = X
-using;
-using F = X.Y
-using 
-using
-using D = Z";
-
-            var final =
-@"extern alias;
-extern alias
-extern alias
-extern alias A
-extern alias B
-extern alias C
-using
-using
-using;
-using;
-using
-using
-using A
-using B
-using C
-using D =
-using D = Z
-using E = X
-using F = X.Y
-";
-            await CheckAsync(initial, final, true);
-        }
-
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task IndentationAfterSorting()
         {
             var initial =
@@ -355,10 +279,10 @@ namespace U { }
 namespace V.W { }
 namespace X.Y.Z { }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DoNotTouchCommentsAtBeginningOfFile1()
         {
             var initial =
@@ -381,10 +305,10 @@ using B;
 namespace A { }
 namespace B { }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DoNotTouchCommentsAtBeginningOfFile2()
         {
             var initial =
@@ -407,10 +331,10 @@ using B;
 namespace A { }
 namespace B { }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DoNotTouchCommentsAtBeginningOfFile3()
         {
             var initial =
@@ -433,11 +357,11 @@ using B;
 namespace A { }
 namespace B { }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
         [WorkItem(2480, "https://github.com/dotnet/roslyn/issues/2480")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DoTouchCommentsAtBeginningOfFile1()
         {
             var initial =
@@ -458,11 +382,11 @@ using B;
 namespace A { }
 namespace B { }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
         [WorkItem(2480, "https://github.com/dotnet/roslyn/issues/2480")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DoTouchCommentsAtBeginningOfFile2()
         {
             var initial =
@@ -483,11 +407,11 @@ using B;
 namespace A { }
 namespace B { }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
         [WorkItem(2480, "https://github.com/dotnet/roslyn/issues/2480")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DoTouchCommentsAtBeginningOfFile3()
         {
             var initial =
@@ -508,11 +432,11 @@ using B;
 namespace A { }
 namespace B { }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
         [WorkItem(2480, "https://github.com/dotnet/roslyn/issues/2480")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task CommentsNotAtTheStartOfTheFile1()
         {
             var initial =
@@ -533,11 +457,11 @@ namespace B { }";
     using System.Text;
 }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
         [WorkItem(2480, "https://github.com/dotnet/roslyn/issues/2480")]
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task CommentsNotAtTheStartOfTheFile2()
         {
             var initial =
@@ -560,10 +484,10 @@ namespace B { }";
     using System.Text;
 }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DoNotSortIfEndIfBlocks()
         {
             var initial =
@@ -581,10 +505,10 @@ namespace C { }
 namespace D { }";
 
             var final = initial;
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task ExternAliases()
         {
             var initial =
@@ -661,10 +585,10 @@ namespace C
     }
 }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DuplicateUsings()
         {
             var initial =
@@ -673,10 +597,10 @@ using A;";
 
             var final = initial;
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task InlineComments()
         {
             var initial =
@@ -693,10 +617,10 @@ using A;";
 /*00*/using/*01*/D/*02*/;/*03*/
 /*16*/";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task AllOnOneLine()
         {
             var initial =
@@ -707,10 +631,10 @@ using A;";
 using B; 
 using C; ";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task InsideRegionBlock()
         {
             var initial =
@@ -734,10 +658,10 @@ class Class1
 {
 }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task NestedRegionBlock()
         {
             var initial =
@@ -749,10 +673,10 @@ using B;";
 
             var final = initial;
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task MultipleRegionBlocks()
         {
             var initial =
@@ -766,10 +690,10 @@ using B;
 
             var final = initial;
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task InterleavedNewlines()
         {
             var initial =
@@ -788,10 +712,10 @@ using C;
 
 class D { }";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task InsideIfEndIfBlock()
         {
             var initial =
@@ -808,10 +732,10 @@ using B;
 using C;
 #endif";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task IfEndIfBlockAbove()
         {
             var initial =
@@ -825,10 +749,10 @@ using A;
 using E;";
 
             var final = initial;
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task IfEndIfBlockMiddle()
         {
             var initial =
@@ -845,10 +769,10 @@ using E;
 using G;";
 
             var final = initial;
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task IfEndIfBlockBelow()
         {
             var initial =
@@ -862,10 +786,10 @@ using F;
 #endif";
 
             var final = initial;
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task Korean()
         {
             var initial =
@@ -901,10 +825,10 @@ using 파;
 using 하;
 ";
 
-            await CheckAsync(initial, final, true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DoNotSpecialCaseSystem1()
         {
             var initial =
@@ -930,10 +854,10 @@ using System.Collections.Generic;
 using SystemZ;
 ";
 
-            await CheckAsync(initial, final, specialCaseSystem: false);
+            await CheckAsync(initial, final, placeSystemNamespaceFirst: false);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task DoNotSpecialCaseSystem2()
         {
             var initial =
@@ -973,10 +897,10 @@ using Y = System.UInt32;
 using Z = System.Int32;
 ";
 
-            await CheckAsync(initial, final, specialCaseSystem: false);
+            await CheckAsync(initial, final, placeSystemNamespaceFirst: false);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task CaseSensitivity1()
         {
             var initial =
@@ -1066,10 +990,10 @@ using ああ;
 
 // If Kana is sensitive あ != ア, if Kana is insensitive あ == ア.
 // If Width is sensitiveア != ｱ, if Width is insensitive ア == ｱ.";
-            await CheckAsync(initial, final, specialCaseSystem: true);
+            await CheckAsync(initial, final);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Organizing)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Organizing)]
         public async Task CaseSensitivity2()
         {
             var initial =
@@ -1101,7 +1025,7 @@ using あｱ;
 using ああ;
 ";
 
-            await CheckAsync(initial, final, specialCaseSystem: true);
+            await CheckAsync(initial, final);
         }
     }
 }

@@ -1879,7 +1879,7 @@ class D
 
         #endregion Execution
 
-        [Fact(), WorkItem(1106943, "DevDiv")]
+        [Fact(), WorkItem(1106943, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1106943")]
         public void Bug1106943_01()
         {
             var source = @"
@@ -1894,13 +1894,13 @@ class C1
     }
 }";
 
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
             compilation.MakeMemberMissing(WellKnownMember.System_Threading_Monitor__Enter);
 
             CompileAndVerify(compilation, expectedOutput: "Inside lock.");
         }
 
-        [Fact(), WorkItem(1106943, "DevDiv")]
+        [Fact(), WorkItem(1106943, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1106943")]
         public void Bug1106943_02()
         {
             var source = @"
@@ -1915,13 +1915,13 @@ class C1
     }
 }";
 
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
             compilation.MakeMemberMissing(WellKnownMember.System_Threading_Monitor__Enter2);
 
             CompileAndVerify(compilation, expectedOutput: "Inside lock.");
         }
 
-        [Fact(), WorkItem(1106943, "DevDiv")]
+        [Fact(), WorkItem(1106943, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1106943")]
         public void Bug1106943_03()
         {
             var source = @"
@@ -1936,7 +1936,7 @@ class C1
     }
 }";
 
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
             compilation.MakeMemberMissing(WellKnownMember.System_Threading_Monitor__Enter);
             compilation.MakeMemberMissing(WellKnownMember.System_Threading_Monitor__Enter2);
 
@@ -1950,7 +1950,7 @@ class C1
                 );
         }
 
-        [Fact(), WorkItem(1106943, "DevDiv")]
+        [Fact(), WorkItem(1106943, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1106943")]
         public void Bug1106943_04()
         {
             var source = @"
@@ -1965,7 +1965,7 @@ class C1
     }
 }";
 
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
             compilation.MakeMemberMissing(WellKnownMember.System_Threading_Monitor__Exit);
 
             compilation.VerifyEmitDiagnostics(
@@ -1978,7 +1978,7 @@ class C1
                 );
         }
 
-        [Fact(), WorkItem(1106943, "DevDiv")]
+        [Fact(), WorkItem(1106943, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1106943")]
         public void Bug1106943_05()
         {
             var source = @"
@@ -1993,7 +1993,7 @@ class C1
     }
 }";
 
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
             compilation.MakeMemberMissing(WellKnownMember.System_Threading_Monitor__Enter);
             compilation.MakeMemberMissing(WellKnownMember.System_Threading_Monitor__Enter2);
             compilation.MakeMemberMissing(WellKnownMember.System_Threading_Monitor__Exit);
@@ -2014,7 +2014,7 @@ class C1
                 );
         }
 
-        [Fact(), WorkItem(1106943, "DevDiv")]
+        [Fact(), WorkItem(1106943, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1106943")]
         public void Bug1106943_06()
         {
             var source = @"
@@ -2029,7 +2029,7 @@ class C1
     }
 }";
 
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseExe);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseExe);
             compilation.MakeTypeMissing(WellKnownType.System_Threading_Monitor);
 
             compilation.VerifyEmitDiagnostics(

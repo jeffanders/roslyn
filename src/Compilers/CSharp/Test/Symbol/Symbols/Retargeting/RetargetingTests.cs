@@ -30,7 +30,7 @@ static class S2
 {
     internal static void E<T, U>(this T t, U u) { }
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             var sourceModule = compilation.SourceModule;
             var sourceAssembly = (SourceAssemblySymbol)sourceModule.ContainingAssembly;
@@ -101,7 +101,7 @@ class C
         set { }
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             var sourceModule = compilation.SourceModule;
             var sourceAssembly = (SourceAssemblySymbol)sourceModule.ContainingAssembly;
@@ -134,7 +134,7 @@ class C
     [MarshalAs(UnmanagedType.SafeArray, SafeArraySubType = VarEnum.VT_DISPATCH, SafeArrayUserDefinedSubType = typeof(D))]
     internal int F2;
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             var sourceModule = compilation.SourceModule;
             var sourceAssembly = (SourceAssemblySymbol)sourceModule.ContainingAssembly;
@@ -168,7 +168,7 @@ class C
         return 1;
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             var sourceModule = compilation.SourceModule;
             var sourceAssembly = (SourceAssemblySymbol)sourceModule.ContainingAssembly;
@@ -204,7 +204,7 @@ struct S<T> where T : struct
 }
 delegate T D<T>() where T : I<T>;";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             var sourceModule = compilation.SourceModule;
             var sourceAssembly = (SourceAssemblySymbol)sourceModule.ContainingAssembly;
@@ -221,7 +221,7 @@ delegate T D<T>() where T : I<T>;";
             RetargetingSymbolChecker.CheckSymbols(sourceNamespace.GetMember<NamedTypeSymbol>("D"), retargetingNamespace.GetMember<NamedTypeSymbol>("D"));
         }
 
-        [WorkItem(542571, "DevDiv")]
+        [WorkItem(542571, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542571")]
         [Fact]
         public void RetargetExplicitImplementationDifferentModule()
         {
@@ -235,8 +235,8 @@ delegate T D<T>() where T : I<T>;";
 public class A
 {
 }";
-            var compilation1_v1 = CreateCompilationWithMscorlib(source1, assemblyName: "assembly1");
-            var compilation1_v2 = CreateCompilationWithMscorlib(source1, assemblyName: "assembly1");
+            var compilation1_v1 = CreateStandardCompilation(source1, assemblyName: "assembly1");
+            var compilation1_v2 = CreateStandardCompilation(source1, assemblyName: "assembly1");
 
             var source2 =
 @"class B : I<A>
@@ -253,11 +253,11 @@ class C<CT> : I<CT>
     I<CT> I<CT>.P { get { return null; } }
 }
 ";
-            var compilation2 = CreateCompilationWithMscorlib(source2, new[] { new CSharpCompilationReference(compilation1_v1) }, assemblyName: "assembly2");
+            var compilation2 = CreateStandardCompilation(source2, new[] { new CSharpCompilationReference(compilation1_v1) }, assemblyName: "assembly2");
 
             var compilation2Ref = new CSharpCompilationReference(compilation2);
 
-            var compilation3 = CreateCompilationWithMscorlib("", new[] { compilation2Ref, new CSharpCompilationReference(compilation1_v2) }, assemblyName: "assembly3");
+            var compilation3 = CreateStandardCompilation("", new[] { compilation2Ref, new CSharpCompilationReference(compilation1_v2) }, assemblyName: "assembly3");
 
             var assembly2 = compilation3.GetReferencedAssemblySymbol(compilation2Ref);
             MethodSymbol implemented_m;
@@ -317,7 +317,7 @@ class C<CT> : I<CT>
         }
 
         [Fact]
-        [WorkItem(604878, "DevDiv")]
+        [WorkItem(604878, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/604878")]
         public void RetargetMissingEnumUnderlyingType_Implicit()
         {
             var source = @"
@@ -354,7 +354,7 @@ public enum E
         }
 
         [Fact]
-        [WorkItem(604878, "DevDiv")]
+        [WorkItem(604878, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/604878")]
         public void RetargetMissingEnumUnderlyingType_Explicit()
         {
             var source = @"
@@ -391,14 +391,14 @@ public enum E : short
         }
 
         [Fact]
-        [WorkItem(604878, "DevDiv")]
+        [WorkItem(604878, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/604878")]
         public void RetargetInvalidBaseType_Class()
         {
             var source = @"
 public class Test : short { }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
                 // (2,14): error CS0509: 'Test': cannot derive from sealed type 'short'
                 // public class Test : short { }
@@ -416,7 +416,7 @@ public class Test : short { }
         }
 
         [Fact]
-        [WorkItem(604878, "DevDiv")]
+        [WorkItem(604878, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/604878")]
         public void RetargetMissingBaseType_Class()
         {
             var source = @"
@@ -446,14 +446,14 @@ public class Test : short { }
         }
 
         [Fact]
-        [WorkItem(604878, "DevDiv")]
+        [WorkItem(604878, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/604878")]
         public void RetargetInvalidBaseType_Struct()
         {
             var source = @"
 public struct Test : short { }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
                 // (2,22): error CS0527: Type 'short' in interface list is not an interface
                 // public struct Test : short { }
@@ -471,8 +471,8 @@ public struct Test : short { }
         }
 
         [Fact]
-        [WorkItem(604878, "DevDiv")]
-        [WorkItem(609515, "DevDiv")]
+        [WorkItem(604878, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/604878")]
+        [WorkItem(609515, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/609515")]
         public void RetargetMissingBaseType_Struct()
         {
             var source = @"
@@ -507,14 +507,14 @@ public struct Test : short { }
         }
 
         [Fact]
-        [WorkItem(604878, "DevDiv")]
+        [WorkItem(604878, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/604878")]
         public void RetargetInvalidBaseType_Interface()
         {
             var source = @"
 public interface Test : short { }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
                 // (2,25): error CS0527: Type 'short' in interface list is not an interface
                 // public interface Test : short { }
@@ -532,8 +532,8 @@ public interface Test : short { }
         }
 
         [Fact]
-        [WorkItem(604878, "DevDiv")]
-        [WorkItem(609515, "DevDiv")]
+        [WorkItem(604878, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/604878")]
+        [WorkItem(609515, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/609515")]
         public void RetargetMissingBaseType_Interface()
         {
             var source = @"
@@ -563,8 +563,8 @@ public interface Test : short { }
         }
 
         [Fact]
-        [WorkItem(604878, "DevDiv")]
-        [WorkItem(609519, "DevDiv")]
+        [WorkItem(604878, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/604878")]
+        [WorkItem(609519, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/609519")]
         public void RetargetInvalidConstraint()
         {
             var source = @"
@@ -573,7 +573,7 @@ public class C<T> where T : int
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
                 // (2,29): error CS0701: 'int' is not a valid constraint. A type used as a constraint must be an interface, a non-sealed class or a type parameter.
                 // public class C<T> where T : int
@@ -591,8 +591,8 @@ public class C<T> where T : int
         }
 
         [Fact]
-        [WorkItem(604878, "DevDiv")]
-        [WorkItem(609519, "DevDiv")]
+        [WorkItem(604878, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/604878")]
+        [WorkItem(609519, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/609519")]
         public void RetargetMissingConstraint()
         {
             var source = @"
@@ -683,7 +683,7 @@ public class C<T> where T : int
             CheckMethods(source.ReducedFrom, retargeting.ReducedFrom);
         }
 
-        [Fact, WorkItem(703433, "DevDiv")]
+        [Fact, WorkItem(703433, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/703433")]
         public void Bug703433()
         {
             var source =

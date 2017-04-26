@@ -133,7 +133,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Test(compilation, n => n.IndexOf("enum", StringComparison.OrdinalIgnoreCase) >= 0, includeNamespace: true, includeType: true, includeMember: true, count: 2);
         }
 
-        [WorkItem(876191)]
+        [WorkItem(876191, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/876191")]
         [Fact]
         public void TestExplicitInterfaceSearch()
         {
@@ -153,7 +153,7 @@ class Implicit : I
     public void M() { }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(new[] { source });
+            var compilation = CreateStandardCompilation(new[] { source });
 
             Test(compilation, n => n.IndexOf("M", StringComparison.OrdinalIgnoreCase) >= 0, includeNamespace: false, includeType: false, includeMember: true, count: 3);
         }
@@ -194,7 +194,7 @@ enum Enum
     EnumValue
 }
 ";
-            return CreateCompilationWithMscorlib(sources: new string[] { source });
+            return CreateStandardCompilation(sources: new string[] { source });
         }
 
         private static void Test(CSharpCompilation compilation, Func<string, bool> predicate, bool includeNamespace, bool includeType, bool includeMember, int count)

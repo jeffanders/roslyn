@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Test.Utilities;
 using Xunit;
+using System;
 
 namespace Microsoft.CodeAnalysis.CSharp.UnitTests
 {
@@ -235,7 +236,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             TestNormalizeDeclaration("class c{void M([a]int x,[b] [c,d]int y){}}", "class c\r\n{\r\n  void M([a] int x, [b][c, d] int y)\r\n  {\r\n  }\r\n}");
         }
 
-        [WorkItem(541684, "DevDiv")]
+        [WorkItem(541684, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541684")]
         [Fact]
         public void TestNormalizeRegion1()
         {
@@ -265,7 +266,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             TestNormalizeExpression(@"$""Message is {a}""", @"$""Message is {a}""");
         }
 
-        [WorkItem(528584, "DevDiv")]
+        [WorkItem(528584, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528584")]
         [Fact]
         public void TestNormalizeRegion2()
         {
@@ -284,9 +285,9 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         private void TestNormalizeDeclaration(string text, string expected)
         {
             var node = SyntaxFactory.ParseCompilationUnit(text);
-            Assert.Equal(text, node.ToFullString());
+            Assert.Equal(text.NormalizeLineEndings(), node.ToFullString().NormalizeLineEndings());
             var actual = node.NormalizeWhitespace("  ").ToFullString();
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected.NormalizeLineEndings(), actual.NormalizeLineEndings());
         }
 
         [Fact]
@@ -318,7 +319,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.Equal(expected, actual);
         }
 
-        [ClrOnlyFact]
+        [Fact]
         [WorkItem(1066, "github")]
         public void TestNormalizePreprocessorDirectives()
         {
@@ -356,8 +357,8 @@ namespace foo
 ");
         }
 
-        [ClrOnlyFact]
-        [WorkItem(531607, "DevDiv")]
+        [Fact]
+        [WorkItem(531607, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/531607")]
         public void TestNormalizeLineDirectiveTrivia()
         {
             TestNormalize(
@@ -382,7 +383,7 @@ namespace foo
             // Note: the literal was formatted as a C# string literal, not as a directive string literal.
         }
 
-        [WorkItem(538115, "DevDiv")]
+        [WorkItem(538115, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538115")]
         [Fact]
         public void TestNormalizeWithinDirectives()
         {
@@ -391,8 +392,8 @@ namespace foo
 "class C\r\n{\r\n#if true\r\n  void Foo(A x)\r\n  {\r\n  }\r\n#else\r\n#endif\r\n}");
         }
 
-        [WorkItem(542887, "DevDiv")]
-        [ClrOnlyFact]
+        [WorkItem(542887, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542887")]
+        [Fact]
         public void TestFormattingForBlockSyntax()
         {
             var code =
@@ -415,11 +416,11 @@ int i = 1;
       int i = 1;
     }
   }
-}");
+}".NormalizeLineEndings());
         }
 
-        [WorkItem(1079042, "DevDiv")]
-        [ClrOnlyFact]
+        [WorkItem(1079042, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1079042")]
+        [Fact]
         public void TestNormalizeDocumentationComments()
         {
             var code =
@@ -434,32 +435,23 @@ int i = 1;
 }";
             var tree = SyntaxFactory.ParseSyntaxTree(code);
             TestNormalize(tree.GetCompilationUnitRoot(),
-@"class c1
-{
-  ///<summary>
-  /// A documentation comment
-  ///</summary>
-  void foo()
-  {
-  }
-}");
+"class c1\r\n" +
+"{\r\n"
++ // The normalizer doesn't change line endings in comments,
+  // see https://github.com/dotnet/roslyn/issues/8536
+$"  ///<summary>{Environment.NewLine}" +
+$"  /// A documentation comment{Environment.NewLine}" +
+$"  ///</summary>{Environment.NewLine}" +
+"  void foo()\r\n" +
+"  {\r\n" +
+"  }\r\n" +
+"}");
         }
 
-        [ClrOnlyFact]
+        [Fact]
         public void TestNormalizeDocumentationComments2()
         {
             var code =
-@"class c1
-{
-    ///  <summary>
-    ///  A documentation comment
-    ///  </summary>
-    void foo()
-    {
-    }
-}";
-            var tree = SyntaxFactory.ParseSyntaxTree(code);
-            TestNormalize(tree.GetCompilationUnitRoot(),
 @"class c1
 {
   ///  <summary>
@@ -468,7 +460,19 @@ int i = 1;
   void foo()
   {
   }
-}");
+}";
+            var tree = SyntaxFactory.ParseSyntaxTree(code);
+            TestNormalize(tree.GetCompilationUnitRoot(),
+"class c1\r\n" +
+"{\r\n" + // The normalizer doesn't change line endings in comments,
+          // see https://github.com/dotnet/roslyn/issues/8536
+$"  ///  <summary>{Environment.NewLine}" +
+$"  ///  A documentation comment{Environment.NewLine}" +
+$"  ///  </summary>{Environment.NewLine}" +
+"  void foo()\r\n" +
+"  {\r\n" +
+"  }\r\n" +
+"}");
         }
 
         [Fact]
@@ -503,8 +507,8 @@ int i = 1;
 
         private void TestNormalize(SyntaxTriviaList trivia, string expected)
         {
-            var actual = trivia.NormalizeWhitespace("    ").ToFullString();
-            Assert.Equal(expected, actual);
+            var actual = trivia.NormalizeWhitespace("    ").ToFullString().NormalizeLineEndings();
+            Assert.Equal(expected.NormalizeLineEndings(), actual);
         }
     }
 }

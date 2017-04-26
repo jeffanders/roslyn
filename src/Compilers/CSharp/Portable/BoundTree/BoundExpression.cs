@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Utilities;
+using System;
 
 namespace Microsoft.CodeAnalysis.CSharp
 {
@@ -246,6 +247,7 @@ namespace Microsoft.CodeAnalysis.CSharp
             get { return this.LocalSymbol; }
         }
 
+<<<<<<< HEAD
         public override EffectiveNullability EffectiveNullability
         {
             get
@@ -263,6 +265,21 @@ namespace Microsoft.CodeAnalysis.CSharp
             {
                 return EffectiveNullability.NonNullable;
             }
+=======
+        public BoundLocal(SyntaxNode syntax, LocalSymbol localSymbol, ConstantValue constantValueOpt, TypeSymbol type, bool hasErrors)
+            : this(syntax, localSymbol, false, constantValueOpt, type, hasErrors)
+        {
+        }
+
+        public BoundLocal(SyntaxNode syntax, LocalSymbol localSymbol, ConstantValue constantValueOpt, TypeSymbol type)
+            : this(syntax, localSymbol, false, constantValueOpt, type)
+        {
+        }
+
+        public BoundLocal Update(LocalSymbol localSymbol, ConstantValue constantValueOpt, TypeSymbol type)
+        {
+            return this.Update(localSymbol, this.IsDeclaration, constantValueOpt, type);
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
         }
     }
 
@@ -568,6 +585,21 @@ namespace Microsoft.CodeAnalysis.CSharp
             get { return this.ConstantValueOpt; }
         }
 
+        public ConversionKind ConversionKind
+        {
+            get { return this.Conversion.Kind; }
+        }
+
+        public bool IsExtensionMethod
+        {
+            get { return this.Conversion.IsExtensionMethod; }
+        }
+
+        public MethodSymbol SymbolOpt
+        {
+            get { return this.Conversion.Method; }
+        }
+
         public override Symbol ExpressionSymbol
         {
             get { return this.SymbolOpt; }
@@ -723,7 +755,7 @@ namespace Microsoft.CodeAnalysis.CSharp
         }
     }
 
-    internal partial class BoundDefaultOperator
+    internal partial class BoundDefaultExpression
     {
         public override ConstantValue ConstantValue
         {
@@ -1127,6 +1159,27 @@ namespace Microsoft.CodeAnalysis.CSharp
         bool System.IEquatable<BoundTypeOrValueData>.Equals(BoundTypeOrValueData b)
         {
             return b == this;
+        }
+    }
+
+    internal partial class BoundTupleExpression
+    {
+        /// <summary>
+        /// Applies action to all the nested elements of this tuple.
+        /// </summary>
+        internal void VisitAllElements<T>(Action<BoundExpression, T> action, T args)
+        {
+            foreach (var argument in this.Arguments)
+            {
+                if (argument.Kind == BoundKind.TupleLiteral)
+                {
+                    ((BoundTupleExpression)argument).VisitAllElements(action, args);
+                }
+                else
+                {
+                    action(argument, args);
+                }
+            }
         }
     }
 }

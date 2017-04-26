@@ -174,11 +174,11 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests.Symbols
                 for (int j = 0; j < types.Length; ++j)
                 {
                     var kind = conversions[i, j];
-                    var result = c.ClassifyConversion(types[j], types[i], ref useSiteDiagnostics);
+                    var result = c.ClassifyConversionFromType(types[j], types[i], ref useSiteDiagnostics);
                     //Assert.Equal doesn't allow a string explanation, so provide one this way.
                     if (kind != result.Kind)
                     {
-                        var result2 = c.ClassifyConversion(types[j], types[i], ref useSiteDiagnostics); // set breakpoint here if this test is failing...
+                        var result2 = c.ClassifyConversionFromType(types[j], types[i], ref useSiteDiagnostics); // set breakpoint here if this test is failing...
                         Assert.True(false, string.Format("Expected {0} but got {1} when converting {2} -> {3}", kind, result, types[j], types[i]));
                     }
                 }
@@ -240,41 +240,41 @@ class X {
             string s = f7Type.ToTestDisplayString();
 
             Assert.False(f1Type.Equals(f2Type));
-            Assert.True(f1Type.Equals(f2Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f2Type.Equals(f1Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f1Type.Equals(f1Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f2Type.Equals(f2Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
+            Assert.True(f1Type.Equals(f2Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f2Type.Equals(f1Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f1Type.Equals(f1Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f2Type.Equals(f2Type, TypeCompareKind.AllIgnoreOptions));
 
             Assert.False(f3Type.Equals(f4Type));
-            Assert.True(f3Type.Equals(f4Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f4Type.Equals(f3Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.False(f4Type.Equals(f5Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.False(f5Type.Equals(f4Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
+            Assert.True(f3Type.Equals(f4Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f4Type.Equals(f3Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.False(f4Type.Equals(f5Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.False(f5Type.Equals(f4Type, TypeCompareKind.AllIgnoreOptions));
 
             Assert.False(f6Type.Equals(f7Type));
             Assert.False(f6Type.Equals(f8Type));
             Assert.False(f7Type.Equals(f8Type));
-            Assert.True(f6Type.Equals(f7Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f7Type.Equals(f6Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f6Type.Equals(f6Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f7Type.Equals(f7Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f8Type.Equals(f7Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f7Type.Equals(f8Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f8Type.Equals(f8Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f7Type.Equals(f7Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f8Type.Equals(f6Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f6Type.Equals(f8Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f8Type.Equals(f8Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(f6Type.Equals(f6Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
+            Assert.True(f6Type.Equals(f7Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f7Type.Equals(f6Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f6Type.Equals(f6Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f7Type.Equals(f7Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f8Type.Equals(f7Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f7Type.Equals(f8Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f8Type.Equals(f8Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f7Type.Equals(f7Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f8Type.Equals(f6Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f6Type.Equals(f8Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f8Type.Equals(f8Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(f6Type.Equals(f6Type, TypeCompareKind.AllIgnoreOptions));
 
-            Assert.False(f9Type.Equals(f10Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.False(f10Type.Equals(f9Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
+            Assert.False(f9Type.Equals(f10Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.False(f10Type.Equals(f9Type, TypeCompareKind.AllIgnoreOptions));
 
             Assert.False(g1Type.Equals(g2Type));
-            Assert.True(g1Type.Equals(g2Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(g2Type.Equals(g1Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(g1Type.Equals(g1Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
-            Assert.True(g2Type.Equals(g2Type, ignoreCustomModifiersAndArraySizesAndLowerBounds: true, ignoreDynamic: true));
+            Assert.True(g1Type.Equals(g2Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(g2Type.Equals(g1Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(g1Type.Equals(g1Type, TypeCompareKind.AllIgnoreOptions));
+            Assert.True(g2Type.Equals(g2Type, TypeCompareKind.AllIgnoreOptions));
         }
 
         /// <summary>
@@ -293,7 +293,7 @@ class C
 
             var ilAssemblyReference = TestReferences.SymbolsTests.CustomModifiers.Modifiers.dll;
 
-            var compilation = CreateCompilationWithMscorlib(text, new MetadataReference[] { ilAssemblyReference });
+            var compilation = CreateStandardCompilation(text, new MetadataReference[] { ilAssemblyReference });
             compilation.VerifyDiagnostics(
                 // (4,11): warning CS0169: The field 'C.a' is never used
                 //     int[] a;
@@ -306,23 +306,23 @@ class C
             var interfaceI3 = compilation.GlobalNamespace.GetMember<NamedTypeSymbol>("I3");
             var typeIntArrayWithCustomModifiers = interfaceI3.GetMember<MethodSymbol>("M1").Parameters.Single().Type;
 
-            Assert.True(typeIntArrayWithCustomModifiers.HasCustomModifiers(flagNonDefaultArraySizesOrLowerBounds:false));
+            Assert.True(typeIntArrayWithCustomModifiers.HasCustomModifiers(flagNonDefaultArraySizesOrLowerBounds: false));
 
             var conv = new BuckStopsHereBinder(compilation).Conversions;
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
 
             // no custom modifiers to custom modifiers
-            Assert.Equal(ConversionKind.Identity, conv.ClassifyConversion(typeIntArray, typeIntArrayWithCustomModifiers, ref useSiteDiagnostics).Kind);
+            Assert.Equal(ConversionKind.Identity, conv.ClassifyConversionFromType(typeIntArray, typeIntArrayWithCustomModifiers, ref useSiteDiagnostics).Kind);
 
             // custom modifiers to no custom modifiers
-            Assert.Equal(ConversionKind.Identity, conv.ClassifyConversion(typeIntArrayWithCustomModifiers, typeIntArray, ref useSiteDiagnostics).Kind);
+            Assert.Equal(ConversionKind.Identity, conv.ClassifyConversionFromType(typeIntArrayWithCustomModifiers, typeIntArray, ref useSiteDiagnostics).Kind);
 
             // custom modifiers to custom modifiers
-            Assert.Equal(ConversionKind.Identity, conv.ClassifyConversion(typeIntArrayWithCustomModifiers, typeIntArrayWithCustomModifiers, ref useSiteDiagnostics).Kind);
+            Assert.Equal(ConversionKind.Identity, conv.ClassifyConversionFromType(typeIntArrayWithCustomModifiers, typeIntArrayWithCustomModifiers, ref useSiteDiagnostics).Kind);
         }
 
-        [WorkItem(529056, "DevDiv")]
-        [WorkItem(529056, "DevDiv")]
+        [WorkItem(529056, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529056")]
+        [WorkItem(529056, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529056")]
         [Fact()]
         public void TestConversion_ParenthesizedExpression()
         {
@@ -341,12 +341,12 @@ public class Program
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             var tuple = GetBindingNodeAndModel<ExpressionSyntax>(comp);
             Assert.Equal(ConversionKind.Identity, tuple.Item2.ClassifyConversion(tuple.Item1, comp.GetSpecialType(SpecialType.System_Boolean)).Kind);
         }
 
-        [WorkItem(544571, "DevDiv")]
+        [WorkItem(544571, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544571")]
         [Fact]
         public void TestClassifyConversion()
         {
@@ -442,7 +442,7 @@ class Program
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             var diagnostics = compilation.GetDiagnostics();
             Assert.NotEmpty(diagnostics);
         }
@@ -462,7 +462,7 @@ class Program
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             var diagnostics = compilation.GetDiagnostics();
             Assert.Empty(diagnostics);
         }
@@ -485,7 +485,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
         [Fact]
@@ -508,7 +508,7 @@ class Program
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             var diagnostics = compilation.GetDiagnostics();
             Assert.NotEmpty(diagnostics);
         }
@@ -530,7 +530,7 @@ public class Driver
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             var diagnostics = compilation.GetDiagnostics();
             Assert.NotEmpty(diagnostics);
         }
@@ -553,10 +553,10 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
-        [WorkItem(542540, "DevDiv")]
+        [WorkItem(542540, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542540")]
         [Fact]
         public void TestMethodGroupConversionWithOptionalParameter()
         {
@@ -569,13 +569,13 @@ class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (6,27): error CS0123: No overload for 'foo' matches delegate 'System.Action'
                 //         System.Action a = foo;
                 Diagnostic(ErrorCode.ERR_MethDelegateMismatch, "foo").WithArguments("foo", "System.Action"));
         }
 
-        [WorkItem(543119, "DevDiv")]
+        [WorkItem(543119, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543119")]
         [Fact]
         public void TestConversion_IntToNullableShort()
         {
@@ -591,10 +591,10 @@ class C
         }
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
-        [WorkItem(543450, "DevDiv")]
+        [WorkItem(543450, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543450")]
         [Fact()]
         public void TestConversion_IntToByte()
         {
@@ -609,7 +609,7 @@ class Program
         x <<= y;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
         [Fact]
@@ -640,7 +640,7 @@ class Test
         A a = b;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (23,15): error CS0457: Ambiguous user defined conversions 'B.implicit operator A(B)' and 'A.implicit operator A(B)' when converting from 'B' to 'A'
                 Diagnostic(ErrorCode.ERR_AmbigUDConv, "b").WithArguments("B.implicit operator A(B)", "A.implicit operator A(B)", "B", "A"));
         }
@@ -673,7 +673,7 @@ class Test
         A a = (A)b;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (23,15): error CS0457: Ambiguous user defined conversions 'B.implicit operator A(B)' and 'A.implicit operator A(B)' when converting from 'B' to 'A'
                 Diagnostic(ErrorCode.ERR_AmbigUDConv, "(A)b").WithArguments("B.implicit operator A(B)", "A.implicit operator A(B)", "B", "A"));
         }
@@ -706,7 +706,7 @@ class C
         A a = b;
      }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (23,15): error CS0457: Ambiguous user defined conversions 'B<A>.implicit operator A(B<A>)' and 'A.implicit operator A(B<A>)' when converting from 'B<A>' to 'A'
                 Diagnostic(ErrorCode.ERR_AmbigUDConv, "b").WithArguments("B<A>.implicit operator A(B<A>)", "A.implicit operator A(B<A>)", "B<A>", "A"));
         }
@@ -739,7 +739,7 @@ class Test
         A a = (A)b;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (23,15): error CS0457: Ambiguous user defined conversions 'B.explicit operator A(B)' and 'A.explicit operator A(B)' when converting from 'B' to 'A'
                 Diagnostic(ErrorCode.ERR_AmbigUDConv, "(A)b").WithArguments("B.explicit operator A(B)", "A.explicit operator A(B)", "B", "A"));
         }
@@ -772,7 +772,7 @@ class Test
         A a = b;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (23,15): error CS0266: Cannot implicitly convert type 'B' to 'A'. An explicit conversion exists (are you missing a cast?)
                 Diagnostic(ErrorCode.ERR_NoImplicitConvCast, "b").WithArguments("B", "A"));
         }
@@ -806,7 +806,7 @@ class Test
     }
 }";
             // As in Dev10, we prefer the implicit conversion.
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
         [Fact]
@@ -837,7 +837,7 @@ class Test
         A a = (A)b;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (23,15): error CS0457: Ambiguous user defined conversions 'B.explicit operator A(B)' and 'A.implicit operator A(B)' when converting from 'B' to 'A'
                 //         A a = (A)b;
                 Diagnostic(ErrorCode.ERR_AmbigUDConv, "(A)b").WithArguments("B.explicit operator A(B)", "A.implicit operator A(B)", "B", "A"));
@@ -862,7 +862,7 @@ class C
 
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (12,18): error CS1750: A value of type 'A' cannot be used as a default parameter because there are no standard conversions to type 'int'
                 Diagnostic(ErrorCode.ERR_NoConversionForDefaultParam, "x").WithArguments("A", "int"));
         }
@@ -886,7 +886,7 @@ class C
 
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (12,16): error CS1750: A value of type 'int' cannot be used as a default parameter because there are no standard conversions to type 'A'
                 Diagnostic(ErrorCode.ERR_NoConversionForDefaultParam, "x").WithArguments("int", "A"));
         }
@@ -913,7 +913,7 @@ class C
 
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (15,19): error CS1750: A value of type 'A' cannot be used as a default parameter because there are no standard conversions to type 'Base'
                 Diagnostic(ErrorCode.ERR_NoConversionForDefaultParam, "b").WithArguments("A", "Base"));
         }
@@ -951,7 +951,7 @@ class C
         Console.WriteLine(b is A);
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (27,27): warning CS0184: The given expression is never of the provided ('B') type
                 Diagnostic(ErrorCode.WRN_IsAlwaysFalse, "a is B").WithArguments("B"),
                 // (28,27): warning CS0184: The given expression is never of the provided ('A') type
@@ -991,7 +991,7 @@ class C
         Console.WriteLine(b as A);
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (27,27): error CS0039: Cannot convert type 'A' to 'B' via a reference conversion, boxing conversion, unboxing conversion, wrapping conversion, or null type conversion
                 Diagnostic(ErrorCode.ERR_NoExplicitBuiltinConv, "a as B").WithArguments("A", "B"),
                 // (28,27): error CS0039: Cannot convert type 'B' to 'A' via a reference conversion, boxing conversion, unboxing conversion, wrapping conversion, or null type conversion
@@ -1017,7 +1017,7 @@ class Convertible
         throw null;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (6,15): error CS0155: The type caught or thrown must be derived from System.Exception
                 Diagnostic(ErrorCode.ERR_BadExceptionType, "new Convertible()"));
         }
@@ -1046,7 +1046,7 @@ class Convertible
         throw null;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (9,15): error CS0155: The type caught or thrown must be derived from System.Exception
                 Diagnostic(ErrorCode.ERR_BadExceptionType, "Convertible"));
         }
@@ -1083,7 +1083,7 @@ class Exception2 : System.Exception
         throw null;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
         [Fact]
@@ -1108,11 +1108,14 @@ class Convertible
         return 0;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
-                // (8,13): error CS0150: A constant value is expected
-                Diagnostic(ErrorCode.ERR_ConstantExpected, "case default(Convertible):"),
+            CreateStandardCompilation(source).VerifyDiagnostics(
+                // (8,18): error CS0150: A constant value is expected
+                //             case default(Convertible): return;
+                Diagnostic(ErrorCode.ERR_ConstantExpected, "default(Convertible)").WithLocation(8, 18),
                 // (8,40): warning CS0162: Unreachable code detected
-                Diagnostic(ErrorCode.WRN_UnreachableCode, "return"));
+                //             case default(Convertible): return;
+                Diagnostic(ErrorCode.WRN_UnreachableCode, "return").WithLocation(8, 40)
+                );
         }
 
         [Fact]
@@ -1138,11 +1141,14 @@ class Convertible
         return 0;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
-                // (9,13): error CS0150: A constant value is expected
-                Diagnostic(ErrorCode.ERR_ConstantExpected, "case c:"),
+            CreateStandardCompilation(source).VerifyDiagnostics(
+                // (9,18): error CS0150: A constant value is expected
+                //             case c: return;
+                Diagnostic(ErrorCode.ERR_ConstantExpected, "c").WithLocation(9, 18),
                 // (9,21): warning CS0162: Unreachable code detected
-                Diagnostic(ErrorCode.WRN_UnreachableCode, "return"));
+                //             case c: return;
+                Diagnostic(ErrorCode.WRN_UnreachableCode, "return").WithLocation(9, 21)
+                );
         }
 
         [Fact]
@@ -1194,14 +1200,14 @@ class C
         var b = (C)1000M;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (10,17): error CS0031: Constant value '1000M' cannot be converted to a 'byte'
                 //         var b = (C)1000M;
                 Diagnostic(ErrorCode.ERR_ConstOutOfRange, "1000M").WithArguments("1000M", "byte")
                 );
         }
 
-        [WorkItem(529568, "DevDiv")]
+        [WorkItem(529568, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529568")]
         [Fact()]
         public void AmbiguousConversions()
         {
@@ -1410,7 +1416,7 @@ public class Test {
     }
 }
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
     // (126,12): error CS0457: Ambiguous user defined conversions 'H1<A>.implicit operator G1<A>(H1<A>)' and 'H0.implicit operator G0(H0)' when converting from 'H1<A>' to 'G0'
     //         F0(h1a);
     Diagnostic(ErrorCode.ERR_AmbigUDConv, "h1a").WithArguments("H1<A>.implicit operator G1<A>(H1<A>)", "H0.implicit operator G0(H0)", "H1<A>", "G0"),
@@ -1516,7 +1522,7 @@ public class Test {
                 );
         }
 
-        [WorkItem(545361, "DevDiv")]
+        [WorkItem(545361, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545361")]
         [ClrOnlyFact]
         public void NullableIntToStructViaDecimal()
         {
@@ -1615,8 +1621,9 @@ public struct S
             CompileAndVerify(source, expectedOutput: @"1ttt");
         }
 
-        [WorkItem(545471, "DevDiv")]
-        [ClrOnlyFact]
+        [ConditionalFact(typeof(ClrOnly), typeof(DesktopOnly))]
+        [WorkItem(545471, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545471")]
+        [WorkItem(18446, "https://github.com/dotnet/roslyn/issues/18446")]
         public void CheckedConversionsInExpressionTrees()
         {
             var source = @"
@@ -1664,7 +1671,7 @@ namespace ExpressionTest
 ");
         }
 
-        [WorkItem(647055, "DevDiv")]
+        [WorkItem(647055, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/647055")]
         [Fact]
         public void AmbiguousImplicitExplicitUserDefined()
         {
@@ -1686,7 +1693,7 @@ class C<T>
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
                 // (6,21): error CS0457: Ambiguous user defined conversions 'C<int>.explicit operator C<int>(int)' and 'C<int>.implicit operator C<int>(int)' when converting from 'int' to 'C<int>'
                 //         C<int> x1 = (C<int>)1; // Expression to type
@@ -1717,7 +1724,7 @@ class C<T>
             AssertEx.SetEqual(elementConversion.OriginalUserDefinedConversions, conversionSymbols);
         }
 
-        [WorkItem(715207, "DevDiv")]
+        [WorkItem(715207, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/715207")]
         [ClrOnlyFact]
         public void LiftingReturnTypeOfExplicitUserDefinedConversion()
         {
@@ -1748,7 +1755,7 @@ struct BigInteger
 ");
         }
 
-        [WorkItem(737732, "DevDiv")]
+        [WorkItem(737732, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/737732")]
         [Fact]
         public void ConsiderSourceExpressionWhenDeterminingBestUserDefinedConversion()
         {
@@ -1768,7 +1775,7 @@ public class Test
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             var tree = comp.SyntaxTrees.Single();
             var model = comp.GetSemanticModel(tree);
 
@@ -1782,7 +1789,7 @@ public class Test
             Assert.Equal(SpecialType.System_Byte, method.ParameterTypes.Single().SpecialType);
         }
 
-        [WorkItem(737732, "DevDiv")]
+        [WorkItem(737732, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/737732")]
         [Fact]
         public void Repro737732()
         {
@@ -1802,7 +1809,7 @@ public struct C
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
             var tree = comp.SyntaxTrees.Single();
             var model = comp.GetSemanticModel(tree);
 
@@ -1816,7 +1823,7 @@ public struct C
             Assert.Equal(SpecialType.System_Byte, method.ParameterTypes.Single().SpecialType);
         }
 
-        [WorkItem(742345, "DevDiv")]
+        [WorkItem(742345, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/742345")]
         [ClrOnlyFact]
         public void MethodGroupConversion_ContravarianceAndDynamic()
         {
@@ -1839,7 +1846,7 @@ public class C
             CompileAndVerify(source, new[] { SystemCoreRef }, expectedOutput: "B");
         }
 
-        [WorkItem(742345, "DevDiv")]
+        [WorkItem(742345, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/742345")]
         [Fact]
         public void MethodGroupConversion_CovarianceAndDynamic()
         {
@@ -1869,7 +1876,7 @@ public class C
                 Diagnostic(ErrorCode.ERR_BadRetType, "F").WithArguments("C.F()", "dynamic"));
         }
 
-        [WorkItem(737971, "DevDiv")]
+        [WorkItem(737971, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/737971")]
         [Fact]
         public void ConversionsFromExpressions()
         {

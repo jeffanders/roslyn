@@ -16,7 +16,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
 {
     public class MethodBodyModelTests : CSharpTestBase
     {
-        [WorkItem(537881, "DevDiv")]
+        [WorkItem(537881, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537881")]
         [Fact]
         public void BindAliasWithSameNameClass()
         {
@@ -48,13 +48,13 @@ namespace B
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             Assert.Equal(0, comp.GetDeclarationDiagnostics().Count());
 
             comp.GetMethodBodyDiagnostics().Verify();
         }
 
-        [Fact, WorkItem(537919, "DevDiv")]
+        [Fact, WorkItem(537919, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537919")]
         public void NullRefForNameAndOptionalMethod()
         {
             var text = @"
@@ -70,13 +70,13 @@ public class MyClass
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             Assert.Equal(0, comp.GetDeclarationDiagnostics().Count());
 
             comp.GetMethodBodyDiagnostics().Verify();
         }
 
-        [WorkItem(538099, "DevDiv")]
+        [WorkItem(538099, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538099")]
         [Fact]
         public void ConversionsForLiterals()
         {
@@ -93,11 +93,11 @@ class Program
     }
 }";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(538100, "DevDiv")]
+        [WorkItem(538100, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538100")]
         [Fact]
         public void ConversionsFromVoid()
         {
@@ -116,7 +116,7 @@ class Program
     }
 }";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
 
             int[] count = new int[4];
             Dictionary<int, int> errors = new Dictionary<int, int>();
@@ -135,7 +135,7 @@ class Program
             Assert.Equal(1, errors[1503]);
         }
 
-        [WorkItem(538110, "DevDiv")]
+        [WorkItem(538110, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538110")]
         [Fact]
         public void NullComparisons()
         {
@@ -156,11 +156,11 @@ class Program
     } 
 }";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(538114, "DevDiv")]
+        [WorkItem(538114, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538114")]
         [Fact]
         public void OvldRslnWithExplicitIfaceImpl()
         {
@@ -196,7 +196,7 @@ class Program
     }
 }";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
@@ -236,11 +236,11 @@ class Program
     }
 }";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(538194, "DevDiv")]
+        [WorkItem(538194, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538194")]
         [Fact]
         public void ComparisonOperatorForRefTypes()
         {
@@ -259,11 +259,11 @@ class Program
     }
 }";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(538211, "DevDiv")]
+        [WorkItem(538211, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538211")]
         [Fact]
         public void BindCastConversionOnArithmeticOp()
         {
@@ -287,11 +287,11 @@ public class MyClass
 ";
 
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(538212, "DevDiv")]
+        [WorkItem(538212, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538212")]
         [Fact]
         public void NegBindLHSCStyleArray()
         {
@@ -337,7 +337,7 @@ class A
 }
 ";
 
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
     // (6,42): error CS1525: Invalid expression term ','
     //         int[,] arr = new int[3,2] {{1,2},,{4,5}};
     Diagnostic(ErrorCode.ERR_InvalidExprTerm, ",").WithArguments(",")
@@ -363,7 +363,7 @@ public class Program
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
@@ -387,7 +387,7 @@ public class Program2
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
@@ -410,7 +410,7 @@ public class Program1
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             Assert.Equal(1, comp.GetDiagnostics().Count());
         }
 
@@ -434,7 +434,7 @@ public class Program1
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             Assert.Equal(1, comp.GetDiagnostics().Count());
         }
 
@@ -457,7 +457,7 @@ public class Program1
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             Assert.Equal(1, comp.GetDiagnostics().Count());
         }
 
@@ -480,7 +480,7 @@ public class Program1
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             Assert.Equal(1, comp.GetDiagnostics().Count());
         }
 
@@ -503,7 +503,7 @@ public class Program1
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             Assert.Equal(1, comp.GetDiagnostics().Count());
         }
 
@@ -526,11 +526,11 @@ public class Program
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(538650, "DevDiv")]
+        [WorkItem(538650, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538650")]
         [Fact]
         public void PropertyAmbiguity()
         {
@@ -557,7 +557,7 @@ class C
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics(
                 // (19,19): error CS0229: Ambiguity between 'IA.Foo' and 'IB.Foo'
                 //         int y = x.Foo;
@@ -568,7 +568,7 @@ class C
             );
         }
 
-        [WorkItem(538770, "DevDiv")]
+        [WorkItem(538770, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538770")]
         [Fact]
         public void DelegateMethodAmbiguity()
         {
@@ -609,13 +609,13 @@ public class Program : I3
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             var diags = comp.GetDiagnostics();
             Assert.Equal(0, diags.Count(d => d.Severity == DiagnosticSeverity.Error));
             Assert.Equal(0, diags.Count(d => d.Severity == DiagnosticSeverity.Warning));
         }
 
-        [WorkItem(538835, "DevDiv")]
+        [WorkItem(538835, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538835")]
         [Fact]
         public void LocalReferenceTypeConsts()
         {
@@ -633,7 +633,7 @@ public class Program
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics(
                 // (10,18): warning CS0219: The variable 'C' is assigned but its value is never used
                 //         const c1 C = null;
@@ -641,7 +641,7 @@ public class Program
                 );
         }
 
-        [WorkItem(538617, "DevDiv")]
+        [WorkItem(538617, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538617")]
         [Fact]
         public void TypeParameterNotInvocable()
         {
@@ -660,11 +660,11 @@ class A<T> : B
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(539591, "DevDiv")]
+        [WorkItem(539591, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/539591")]
         [Fact]
         public void ParenthesizedSetOnlyProperty()
         {
@@ -692,7 +692,7 @@ namespace ParenthesizedExpression
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
@@ -719,11 +719,11 @@ class C
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(539929, "DevDiv")]
+        [WorkItem(539929, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/539929")]
         [Fact]
         public void TypeWithSameNameAsProp()
         {
@@ -744,11 +744,11 @@ class C
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(541504, "DevDiv")]
+        [WorkItem(541504, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541504")]
         [Fact]
         public void TypeWithSameNameAsProp2()
         {
@@ -764,7 +764,7 @@ class F
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics(
                 // (8,19): warning CS0414: The field 'F.p' is assigned but its value is never used
                 //   ProtectionLevel p = ProtectionLevel.Privacy;
@@ -772,7 +772,7 @@ class F
             );
         }
 
-        [WorkItem(541505, "DevDiv")]
+        [WorkItem(541505, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541505")]
         [Fact]
         public void TypeWithSameNameAsProp3()
         {
@@ -789,12 +789,12 @@ class F
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree,
+            var comp = CreateStandardCompilation(tree,
                 references: new[] { TestReferences.NetFx.v4_0_30319.System });
             Assert.Equal(string.Empty, string.Join(Environment.NewLine, comp.GetDiagnostics()));
         }
 
-        [WorkItem(539622, "DevDiv")]
+        [WorkItem(539622, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/539622")]
         [Fact]
         public void AccessTypeThroughAliasNamespace()
         {
@@ -827,11 +827,11 @@ namespace LevelOne.LevelTwo.LevelThree
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(540105, "DevDiv")]
+        [WorkItem(540105, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540105")]
         [Fact]
         public void WarningPassLocalAsRefParameter()
         {
@@ -854,11 +854,11 @@ public static int Main()
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(540105, "DevDiv")]
+        [WorkItem(540105, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540105")]
         [Fact]
         public void WarningPassLocalAsOutParameter()
         {
@@ -879,11 +879,11 @@ public class TestClass
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(540270, "DevDiv")]
+        [WorkItem(540270, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540270")]
         [Fact]
         public void SimpleNameThroughUsingAlias()
         {
@@ -906,11 +906,11 @@ class C
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(544434, "DevDiv")]
+        [WorkItem(544434, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544434")]
         [Fact]
         public void MethodInvocationWithMultipleArgsToParams()
         {
@@ -927,11 +927,11 @@ class Test
 }
 ";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics();
         }
 
-        [Fact, WorkItem(1118749, "DevDiv")]
+        [Fact, WorkItem(1118749, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1118749")]
         public void InstanceFieldOfEnclosingStruct()
         {
             var text = @"
@@ -948,12 +948,50 @@ struct Outer
     }
 }";
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             Assert.Equal(0, comp.GetDeclarationDiagnostics().Count());
             comp.GetMethodBodyDiagnostics().Verify(
                 // (10,21): error CS0120: An object reference is required for the non-static field, method, or property 'Outer.f1'
                 //             var x = f1 - 1;
                 Diagnostic(ErrorCode.ERR_ObjectRequired, "f1").WithArguments("Outer.f1").WithLocation(10, 21)
+                );
+        }
+
+        [Fact, WorkItem(8556, "https://github.com/dotnet/roslyn/issues/8556")]
+        public void CastAmbiguousMethodGroupTypeProducesCorrectErrorMessage()
+        {
+            var text = @"
+using System;
+
+public delegate void Foo ();
+
+class D
+{
+    public static implicit operator D (Action d)
+    {
+        return new D ();
+    }
+
+    public static explicit operator D (Foo d)
+    {
+        return new D ();
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        D d = (D) Main;
+    }
+}
+";
+            var tree = Parse(text);
+            var comp = CreateStandardCompilation(tree);
+            comp.GetMethodBodyDiagnostics().Verify(
+                // (23,15): error CS0457: Ambiguous user defined conversions 'D.explicit operator D(Foo)' and 'D.implicit operator D(Action)' when converting from 'method group' to 'D'
+                //          D d = (D) Main;
+                Diagnostic(ErrorCode.ERR_AmbigUDConv, "(D) Main").WithArguments("D.explicit operator D(Foo)", "D.implicit operator D(System.Action)", "method group", "D").WithLocation(23, 15)
                 );
         }
     }

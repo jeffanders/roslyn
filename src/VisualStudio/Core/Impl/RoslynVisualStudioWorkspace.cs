@@ -6,11 +6,15 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
+<<<<<<< HEAD
 using Microsoft.CodeAnalysis.Editor.FindUsages;
+=======
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
 using Microsoft.CodeAnalysis.Editor.GoToDefinition;
 using Microsoft.CodeAnalysis.Editor.Host;
 using Microsoft.CodeAnalysis.Editor.Undo;
 using Microsoft.CodeAnalysis.FindSymbols;
+<<<<<<< HEAD
 using Microsoft.CodeAnalysis.FindUsages;
 using Microsoft.CodeAnalysis.GeneratedCodeRecognition;
 using Microsoft.CodeAnalysis.Options;
@@ -18,11 +22,15 @@ using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Composition;
 using Microsoft.VisualStudio.LanguageServices.Implementation;
+=======
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.CodeAnalysis.Shared.Extensions;
+using Microsoft.VisualStudio.Composition;
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
 using Microsoft.VisualStudio.LanguageServices.Implementation.CodeModel;
 using Microsoft.VisualStudio.LanguageServices.Implementation.Interop;
 using Microsoft.VisualStudio.LanguageServices.Implementation.Library.ObjectBrowser.Lists;
 using Microsoft.VisualStudio.LanguageServices.Implementation.ProjectSystem;
-using Microsoft.VisualStudio.Shell;
 using Roslyn.Utilities;
 
 namespace Microsoft.VisualStudio.LanguageServices
@@ -32,18 +40,27 @@ namespace Microsoft.VisualStudio.LanguageServices
     internal class RoslynVisualStudioWorkspace : VisualStudioWorkspaceImpl
     {
         private readonly IEnumerable<Lazy<IStreamingFindUsagesPresenter>> _streamingPresenters;
+<<<<<<< HEAD
         private readonly IEnumerable<Lazy<IDefinitionsAndReferencesPresenter>> _referencedSymbolsPresenters;
+=======
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
 
         [ImportingConstructor]
         private RoslynVisualStudioWorkspace(
             ExportProvider exportProvider,
             [ImportMany] IEnumerable<Lazy<IStreamingFindUsagesPresenter>> streamingPresenters,
+<<<<<<< HEAD
             [ImportMany] IEnumerable<Lazy<IDefinitionsAndReferencesPresenter>> referencedSymbolsPresenters,
+=======
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             [ImportMany] IEnumerable<IDocumentOptionsProviderFactory> documentOptionsProviderFactories)
             : base(exportProvider.AsExportProvider())
         {
             _streamingPresenters = streamingPresenters;
+<<<<<<< HEAD
             _referencedSymbolsPresenters = referencedSymbolsPresenters;
+=======
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
 
             foreach (var providerFactory in documentOptionsProviderFactories)
             {
@@ -203,6 +220,7 @@ namespace Microsoft.VisualStudio.LanguageServices
 
         public override bool TryFindAllReferences(ISymbol symbol, Project project, CancellationToken cancellationToken)
         {
+<<<<<<< HEAD
             if (!_referencedSymbolsPresenters.Any())
             {
                 return false;
@@ -225,12 +243,17 @@ namespace Microsoft.VisualStudio.LanguageServices
                 return true;
             }
 
+=======
+            // Legacy API.  Previously used by ObjectBrowser to support 'FindRefs' off of an
+            // object browser item.  Now ObjectBrowser goes through the streaming-FindRefs system.
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             return false;
         }
 
         public override void DisplayReferencedSymbols(
             Solution solution, IEnumerable<ReferencedSymbol> referencedSymbols)
         {
+<<<<<<< HEAD
             var service = this.Services.GetService<IDefinitionsAndReferencesFactory>();
             var definitionsAndReferences = service.CreateDefinitionsAndReferences(
                 solution, referencedSymbols,
@@ -241,6 +264,10 @@ namespace Microsoft.VisualStudio.LanguageServices
                 presenter.Value.DisplayResult(definitionsAndReferences);
                 return;
             }
+=======
+            // Legacy API.  Previously used by ObjectBrowser to support 'FindRefs' off of an
+            // object browser item.  Now ObjectBrowser goes through the streaming-FindRefs system.
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
         }
 
         internal override object GetBrowseObject(SymbolListItem symbolListItem)

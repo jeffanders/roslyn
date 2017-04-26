@@ -184,21 +184,21 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests.Symbols.Metadata.PE
             Assert.Same(varI102, varT.ConstraintTypes.ElementAt(1));
         }
 
-        [Fact, WorkItem(619267, "DevDiv")]
+        [Fact, WorkItem(619267, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/619267")]
         public void InvalidNestedArity()
         {
             // .class public C`2<T1,T2>
             // .class nested public D<S1>
             var mdRef = MetadataReference.CreateFromImage(TestResources.MetadataTests.Invalid.InvalidGenericType.AsImmutableOrNull());
             string source = "class X : C<int, int>.D { }";
-            CreateCompilationWithMscorlib(source, new[] { mdRef }).VerifyDiagnostics(
+            CreateStandardCompilation(source, new[] { mdRef }).VerifyDiagnostics(
                 // (2,11): error CS0648: 'C<T1, T2>.D' is a type not supported by the language
                 // class X : C<int, int>.D { }
                 Diagnostic(ErrorCode.ERR_BogusType, "C<int, int>.D").WithArguments("C<T1, T2>.D")
                 );
         }
 
-        [WorkItem(528859, "DevDiv")]
+        [WorkItem(528859, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528859")]
         [Fact]
         public void InvalidNestedArity_2()
         {

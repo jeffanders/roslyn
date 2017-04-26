@@ -150,6 +150,7 @@ namespace RunTests
         {
             // Save out the error output for easy artifact inspecting
 <<<<<<< HEAD
+<<<<<<< HEAD
             var outputLogPath = "";
             if (testResult.ResultsFilePath != null)
             {
@@ -158,6 +159,8 @@ namespace RunTests
                 File.WriteAllText(outputLogPath, testResult.StandardOutput);
             }
 =======
+=======
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             var resultsDir = testResult.ResultsDirectory;
             var outputLogPath = Path.Combine(resultsDir, $"{testResult.DisplayName}.out.log");
             File.WriteAllText(outputLogPath, testResult.StandardOutput);

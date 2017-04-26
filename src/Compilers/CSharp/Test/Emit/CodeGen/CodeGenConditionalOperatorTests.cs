@@ -8,7 +8,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests.CodeGen
 {
     public class CodeGenConditionalOperatorTests : CSharpTestBase
     {
-        [Fact, WorkItem(638289, "DevDiv")]
+        [Fact, WorkItem(638289, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/638289")]
         public void ConditionalDelegateInterfaceUnification1()
         {
             var src =
@@ -103,7 +103,7 @@ class C : I
 ");
         }
 
-        [Fact, WorkItem(638289, "DevDiv")]
+        [Fact, WorkItem(638289, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/638289")]
         public void ConditionalDelegateInterfaceUnification2()
         {
             var src =
@@ -229,7 +229,7 @@ class C : I
 ");
         }
 
-        [Fact, WorkItem(638289, "DevDiv")]
+        [Fact, WorkItem(638289, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/638289")]
         public void ConditionalDelegateInterfaceUnification3()
         {
             var src =
@@ -354,7 +354,7 @@ class C : I
 }");
         }
 
-        [Fact, WorkItem(638289, "DevDiv")]
+        [Fact, WorkItem(638289, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/638289")]
         public void ConditionalDelegateInterfaceUnification4()
         {
             var src =
@@ -510,7 +510,7 @@ class C : I
 ");
         }
 
-        [Fact(), WorkItem(638289, "DevDiv")]
+        [Fact(), WorkItem(638289, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/638289")]
         public void NestedConditional1()
         {
             var src =
@@ -594,7 +594,7 @@ public class C : I
 }");
         }
 
-        [Fact(), WorkItem(638289, "DevDiv")]
+        [Fact(), WorkItem(638289, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/638289")]
         public void NestedConditional2()
         {
             var src =
@@ -682,7 +682,7 @@ public class C : I
 }");
         }
 
-        [Fact(), WorkItem(638289, "DevDiv")]
+        [Fact(), WorkItem(638289, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/638289")]
         public void NestedConditional3()
         {
             var src =
@@ -784,7 +784,7 @@ public class C : I
 }");
         }
 
-        [Fact(), WorkItem(638289, "DevDiv")]
+        [Fact(), WorkItem(638289, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/638289")]
         public void NestedConditional4()
         {
             var src =
@@ -1588,7 +1588,7 @@ class Program
             CompileAndVerify(source, expectedOutput: expectedOutput).VerifyIL("Program.Main", expectedIL);
         }
 
-        [WorkItem(528275, "DevDiv")]
+        [WorkItem(528275, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528275")]
         [Fact]
         public void TestConditionalOperatorForImplicitConv()
         {
@@ -1670,7 +1670,7 @@ class Program
             CompileAndVerify(source, additionalRefs: new[] { SystemCoreRef }).VerifyIL("Program.Main", expectedIL);
         }
 
-        [Fact, WorkItem(530071, "DevDiv")]
+        [Fact, WorkItem(530071, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530071")]
         public void TestConditionalOperatorForImplicitlyTypedArrays()
         {
             var source = @"
@@ -2088,7 +2088,7 @@ public static class Program
             CompileAndVerify(source, expectedOutput: expectedOutput).VerifyIL("Program.Main", expectedIL);
         }
 
-        [Fact(), WorkItem(543609, "DevDiv")]
+        [Fact(), WorkItem(543609, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543609")]
         public void SeveralAdjacentIfsWithConditionalExpressions()
         {
             var source = @"
@@ -2141,7 +2141,7 @@ class Class1
             CompileAndVerify(source, expectedOutput: expectedOutput).VerifyIL("Class1.Main", expectedIL);
         }
 
-        [Fact(), WorkItem(638289, "DevDiv")]
+        [Fact(), WorkItem(638289, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/638289")]
         public void TestNestedConditionalAndNullOperators()
         {
             var src =
@@ -2226,7 +2226,7 @@ public class C : I
 }");
         }
 
-        [Fact(), WorkItem(543609, "DevDiv")]
+        [Fact(), WorkItem(543609, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543609")]
         public void UnreachableLabelInUnreachableCode()
         {
             var source = @"
@@ -2272,5 +2272,179 @@ class Class1
 ";
             CompileAndVerify(source, expectedOutput: expectedOutput).VerifyIL("Class1.Main", expectedIL);
         }
+
+        [Fact, WorkItem(12439, "https://github.com/dotnet/roslyn/issues/12439")]
+        public void GenericStructInLambda()
+        {
+            var source = @"
+using System;
+
+static class LiveList
+{
+    struct WhereInfo<TSource>
+    {
+        public int Key { get; set; }
+    }
+
+    static void Where<TSource>()
+    {
+        Action subscribe = () =>
+        {
+            WhereInfo<TSource>? previous = null;
+
+            var previousKey = previous?.Key;
+        };
+    }
+}";
+
+            CompileAndVerify(source);
+        }
+
+        [Fact, WorkItem(12439, "https://github.com/dotnet/roslyn/issues/12439")]
+        public void GenericStructInIterator()
+        {
+            var source = @"
+using System;
+using System.Collections.Generic;
+
+static class LiveList
+{
+    struct WhereInfo<TSource>
+    {
+        public int Key { get; set; }
+    }
+
+    static IEnumerable<int> Where<TSource>()
+    {
+        WhereInfo<TSource>? previous = null;
+
+        var previousKey = previous?.Key;
+
+        yield break;
+    }
+}";
+
+            CompileAndVerify(source);
+        }
+
+        [Fact, WorkItem(17756, "https://github.com/dotnet/roslyn/issues/17756")]
+        public void TestConditionalOperatorNotLvalue()
+        {
+            var source = @"
+    class Program
+    {
+
+        interface IIncrementable
+        {
+            int Increment();
+        }
+
+        struct S1: IIncrementable
+        {
+            public int field;
+            public int Increment() => field++;
+        }
+
+        static void Main()
+        {
+            S1 v = default(S1);
+            v.Increment();
+
+            (true ? v : default(S1)).Increment();
+
+            System.Console.WriteLine(v.field);
+
+            System.Console.WriteLine((false ? default(S1): v).Increment());
+
+            System.Console.WriteLine(v.field);
+
+            Test(ref v);
+            System.Console.WriteLine(v.field);
+        }
+
+        static void Test<T>(ref T arg) where T:IIncrementable
+        {
+            (true ? arg : default(T)).Increment();
+        }
+    }
+";
+            string expectedOutput = @"1
+1
+1
+1";
+            CompileAndVerify(source, expectedOutput: expectedOutput);
+        }
+
+        [Fact, WorkItem(17756, "https://github.com/dotnet/roslyn/issues/17756")]
+        public void TestConditionalOperatorNotLvaluePointerElementAccess()
+        {
+            var source = @"
+class Program
+{
+
+    struct S1 
+    {
+        public int field;
+        public int Increment() => field++;
+
+    }
+
+    unsafe static void Main()
+    {
+        S1 v = default(S1);
+        v.Increment();
+
+        System.Console.WriteLine(v.field);
+
+        S1* pv = &v;
+
+        (true ? pv[0] : default(S1)).Increment();
+
+        System.Console.WriteLine(v.field);
+    }
+}
+";
+            string expectedOutput = @"1
+1";
+            CompileAndVerify(source, expectedOutput: expectedOutput, options: TestOptions.UnsafeReleaseExe);
+        }
+
+        [Fact, WorkItem(17756, "https://github.com/dotnet/roslyn/issues/17756")]
+        public void TestConditionalOperatorNotLvalueRefCall()
+        {
+            var source = @"
+class Program
+{
+
+    struct S1 
+    {
+        public int field;
+        public int Increment() => field++;
+    }
+
+    private static S1 sv;
+
+    private static ref S1 M1()
+    {
+        return ref sv;
+    }
+
+    static void Main()
+    {
+        sv.Increment();
+
+        System.Console.WriteLine(sv.field);
+
+        (true ? M1() : default(S1)).Increment();
+
+        System.Console.WriteLine(sv.field);
+    }
+}
+";
+            string expectedOutput = @"1
+1";
+            CompileAndVerify(source, expectedOutput: expectedOutput);
+        }
+
     }
 }

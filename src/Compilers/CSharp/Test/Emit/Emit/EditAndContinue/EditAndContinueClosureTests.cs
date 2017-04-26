@@ -36,7 +36,7 @@ class C
         return ((D)(() => o))();
     }
 }";
-            var compilation0 = CreateCompilationWithMscorlib(source0, options: TestOptions.DebugDll);
+            var compilation0 = CreateStandardCompilation(source0, options: TestOptions.DebugDll);
             var compilation1 = compilation0.WithSource(source1);
             var bytes0 = compilation0.EmitToArray();
             var generation0 = EmitBaseline.CreateInitialBaseline(ModuleMetadata.CreateFromImage(bytes0), EmptyLocalsProvider);
@@ -90,7 +90,7 @@ class C
         Func<int> x = <N:0>() => 2</N:0>;
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -143,7 +143,7 @@ class C
         Func<T> x = <N:0>() => default(T)</N:0>;
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -199,7 +199,7 @@ class C
         return 2;
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -254,7 +254,7 @@ class C
         return 2;
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -327,7 +327,7 @@ class C : D
         Func<int> f6 = <N:7>() => b * 10 + c</N:7>;
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -392,7 +392,7 @@ partial class C
 {
     Func<int> m2 = <N:1>() => 10</N:1>;
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -451,7 +451,7 @@ class C
                      <N:3>select d.Key</N:3>;
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -532,7 +532,7 @@ class C
 		                   <N:4>select a</N:4></N:10>;
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -615,7 +615,7 @@ class C
 		             <N:4>select <N:5>a + b</N:5></N:4>;
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -697,7 +697,7 @@ class C
                      <N:9>select <N:10>Z(<N:11>() => <N:12>a - b</N:12></N:11>)</N:10></N:9>;
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -714,10 +714,10 @@ class C
 
             // no new synthesized members generated (with #1 in names):
             diff1.VerifySynthesizedMembers(
-                "C.<>c__DisplayClass1_0: {a, <F>b__1}",
-                "C.<>c__DisplayClass1_1: {b, <F>b__3}",
-                "C.<>c__DisplayClass1_2: {a, b, <F>b__5}",
-                "C: {<F>b__1_0, <F>b__1_2, <F>b__1_4, <>c__DisplayClass1_0, <>c__DisplayClass1_1, <>c__DisplayClass1_2}");
+               "C.<>c__DisplayClass1_2: {a, b, <F>b__5}",
+               "C.<>c__DisplayClass1_1: {b, <F>b__3}",
+               "C: {<F>b__1_0, <F>b__1_2, <F>b__1_4, <>c__DisplayClass1_0, <>c__DisplayClass1_1, <>c__DisplayClass1_2}",
+               "C.<>c__DisplayClass1_0: {a, <F>b__1}");
 
             var md1 = diff1.GetMetadata();
             var reader1 = md1.Reader;
@@ -784,7 +784,7 @@ class C
                      <N:5>select <N:6>Z(<N:7>() => <N:8>g.Last()</N:8></N:7>)</N:6></N:5>;
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -862,7 +862,7 @@ class C
                      <N:5>select <N:6>Z(<N:7>() => <N:8>g.Last()</N:8></N:7>)</N:6></N:5></N:4>;
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
 
             var v0 = CompileAndVerify(compilation0);
@@ -937,7 +937,7 @@ class C
     }
 }");
 
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
             var compilation2 = compilation1.WithSource(source2.Tree);
             var v0 = CompileAndVerify(compilation0);
@@ -1046,7 +1046,7 @@ class C
     }
 }");
 
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
             var compilation2 = compilation1.WithSource(source2.Tree);
             var compilation3 = compilation2.WithSource(source3.Tree);
@@ -1262,7 +1262,7 @@ class C
     }
 }");
 
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
+            var compilation0 = CreateStandardCompilation(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll.WithMetadataImportOptions(MetadataImportOptions.All));
             var compilation1 = compilation0.WithSource(source1.Tree);
             var compilation2 = compilation1.WithSource(source2.Tree);
             var v0 = CompileAndVerify(compilation0);
@@ -1724,7 +1724,7 @@ class C
         return G(<N:0>a => a + G(<N:1>b => 2</N:1>)</N:0>);
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll);
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll);
             var compilation1 = compilation0.WithSource(source1.Tree);
             var v0 = CompileAndVerify(compilation0);
             var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
@@ -1792,7 +1792,7 @@ class C
         G(<N:3>a => a - 4</N:3>);
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll);
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll);
             var compilation1 = compilation0.WithSource(source1.Tree);
             var v0 = CompileAndVerify(compilation0);
             var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
@@ -1898,7 +1898,7 @@ class C
         G(<N:3>a => { int <N:7>v4 = 10</N:7>; return 4; }</N:3>);
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll);
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll);
             var compilation1 = compilation0.WithSource(source1.Tree);
             var v0 = CompileAndVerify(compilation0);
             var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
@@ -2018,7 +2018,7 @@ class C
         F(c => c + 1);
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll);
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll);
             var compilation1 = compilation0.WithSource(source1.Tree);
             var v0 = CompileAndVerify(compilation0);
             var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
@@ -2087,7 +2087,7 @@ class C
 ");
         }
 
-        [Fact(Skip = "2504"), WorkItem(2504)]
+        [Fact(Skip = "2504"), WorkItem(2504, "https://github.com/dotnet/roslyn/issues/2504")]
         public void InsertConstructorInPresenceOfFieldInitializersWithLambdas()
         {
             var source0 = MarkedSource(@"
@@ -2114,7 +2114,7 @@ class C
         F(c => c + 1);
     }
 }");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll);
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll);
             var compilation1 = compilation0.WithSource(source1.Tree);
             var v0 = CompileAndVerify(compilation0);
             var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
@@ -2175,7 +2175,7 @@ class C
     int[] array = null;
 }
 ");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll);
+            var compilation0 = CreateStandardCompilation(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll);
             var compilation1 = compilation0.WithSource(source1.Tree);
             var v0 = CompileAndVerify(compilation0);
             var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
@@ -2303,7 +2303,7 @@ class C
     int[] array = null;
 }
 ");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll);
+            var compilation0 = CreateStandardCompilation(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll);
             var compilation1 = compilation0.WithSource(source1.Tree);
             var v0 = CompileAndVerify(compilation0);
             var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
@@ -2419,7 +2419,7 @@ class C
     int[] array = null;
 }
 ");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll);
+            var compilation0 = CreateStandardCompilation(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll);
             var compilation1 = compilation0.WithSource(source1.Tree);
             var v0 = CompileAndVerify(compilation0);
             var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
@@ -2544,7 +2544,7 @@ class C
     int[] array = null;
 }
 ");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll);
+            var compilation0 = CreateStandardCompilation(source0.Tree, new[] { SystemCoreRef }, options: ComSafeDebugDll);
             var compilation1 = compilation0.WithSource(source1.Tree);
             var v0 = CompileAndVerify(compilation0);
             var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
@@ -2624,7 +2624,7 @@ class C
 ");
         }
 
-        [Fact, WorkItem(1170899, "DevDiv")]
+        [Fact, WorkItem(1170899, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1170899")]
         public void CapturedAnonymousTypes1()
         {
             var source0 = MarkedSource(@"
@@ -2666,7 +2666,7 @@ class C
     }</N:0>
 }
 ");
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll);
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll);
             var compilation1 = compilation0.WithSource(source1.Tree);
             var compilation2 = compilation1.WithSource(source2.Tree);
 
@@ -2767,7 +2767,7 @@ class C
 }");
         }
 
-        [Fact, WorkItem(1170899, "DevDiv")]
+        [Fact, WorkItem(1170899, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1170899")]
         public void CapturedAnonymousTypes2()
         {
             var template = @"
@@ -2787,7 +2787,7 @@ class C
             var source1 = MarkedSource(template.Replace("<<VALUE>>", "1"));
             var source2 = MarkedSource(template.Replace("<<VALUE>>", "2"));
 
-            var compilation0 = CreateCompilationWithMscorlib(source0.Tree, options: ComSafeDebugDll);
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll);
             var compilation1 = compilation0.WithSource(source1.Tree);
             var compilation2 = compilation1.WithSource(source2.Tree);
 
@@ -2849,6 +2849,186 @@ class C
                 "<>f__AnonymousType0<<X>j__TPar>: {Equals, GetHashCode, ToString}");
 
             diff2.VerifyIL("C.F", expectedIL.Replace("<<VALUE>>", "2"));
+        }
+
+        [WorkItem(179990, "https://devdiv.visualstudio.com:443/defaultcollection/DevDiv/_workitems/edit/179990")]
+        [Fact]
+        public void SynthesizedDelegates()
+        {
+            var template =
+@"class C
+{
+    static void F(dynamic d, out object x, object y)
+    <N:0>{
+        <<CALL>>;
+    }</N:0>
+}";
+            var source0 = MarkedSource(template.Replace("<<CALL>>", "d.F(out x, new { })"));
+            var source1 = MarkedSource(template.Replace("<<CALL>>", "d.F(out x, new { y })"));
+            var source2 = MarkedSource(template.Replace("<<CALL>>", "d.F(new { y }, out x)"));
+
+            var compilation0 = CreateStandardCompilation(source0.Tree, options: ComSafeDebugDll, references: new[] { SystemCoreRef, CSharpRef });
+            var compilation1 = compilation0.WithSource(source1.Tree);
+            var compilation2 = compilation1.WithSource(source2.Tree);
+
+            var v0 = CompileAndVerify(compilation0);
+            var md0 = ModuleMetadata.CreateFromImage(v0.EmittedAssemblyData);
+
+            var f0 = compilation0.GetMember<MethodSymbol>("C.F");
+            var f1 = compilation1.GetMember<MethodSymbol>("C.F");
+            var f2 = compilation2.GetMember<MethodSymbol>("C.F");
+
+            var generation0 = EmitBaseline.CreateInitialBaseline(md0, v0.CreateSymReader().GetEncMethodDebugInfo);
+            v0.VerifyIL("C.F",
+@"{
+  // Code size      112 (0x70)
+  .maxstack  9
+  IL_0000:  nop
+  IL_0001:  ldsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000004}<System.Runtime.CompilerServices.CallSite, dynamic, object, <empty anonymous type>>> C.<>o__0.<>p__0""
+  IL_0006:  brfalse.s  IL_000a
+  IL_0008:  br.s       IL_0053
+  IL_000a:  ldc.i4     0x100
+  IL_000f:  ldstr      ""F""
+  IL_0014:  ldnull
+  IL_0015:  ldtoken    ""C""
+  IL_001a:  call       ""System.Type System.Type.GetTypeFromHandle(System.RuntimeTypeHandle)""
+  IL_001f:  ldc.i4.3
+  IL_0020:  newarr     ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo""
+  IL_0025:  dup
+  IL_0026:  ldc.i4.0
+  IL_0027:  ldc.i4.0
+  IL_0028:  ldnull
+  IL_0029:  call       ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo.Create(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags, string)""
+  IL_002e:  stelem.ref
+  IL_002f:  dup
+  IL_0030:  ldc.i4.1
+  IL_0031:  ldc.i4.s   17
+  IL_0033:  ldnull
+  IL_0034:  call       ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo.Create(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags, string)""
+  IL_0039:  stelem.ref
+  IL_003a:  dup
+  IL_003b:  ldc.i4.2
+  IL_003c:  ldc.i4.1
+  IL_003d:  ldnull
+  IL_003e:  call       ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo.Create(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags, string)""
+  IL_0043:  stelem.ref
+  IL_0044:  call       ""System.Runtime.CompilerServices.CallSiteBinder Microsoft.CSharp.RuntimeBinder.Binder.InvokeMember(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags, string, System.Collections.Generic.IEnumerable<System.Type>, System.Type, System.Collections.Generic.IEnumerable<Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo>)""
+  IL_0049:  call       ""System.Runtime.CompilerServices.CallSite<<>A{00000004}<System.Runtime.CompilerServices.CallSite, dynamic, object, <empty anonymous type>>> System.Runtime.CompilerServices.CallSite<<>A{00000004}<System.Runtime.CompilerServices.CallSite, dynamic, object, <empty anonymous type>>>.Create(System.Runtime.CompilerServices.CallSiteBinder)""
+  IL_004e:  stsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000004}<System.Runtime.CompilerServices.CallSite, dynamic, object, <empty anonymous type>>> C.<>o__0.<>p__0""
+  IL_0053:  ldsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000004}<System.Runtime.CompilerServices.CallSite, dynamic, object, <empty anonymous type>>> C.<>o__0.<>p__0""
+  IL_0058:  ldfld      ""<>A{00000004}<System.Runtime.CompilerServices.CallSite, dynamic, object, <empty anonymous type>> System.Runtime.CompilerServices.CallSite<<>A{00000004}<System.Runtime.CompilerServices.CallSite, dynamic, object, <empty anonymous type>>>.Target""
+  IL_005d:  ldsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000004}<System.Runtime.CompilerServices.CallSite, dynamic, object, <empty anonymous type>>> C.<>o__0.<>p__0""
+  IL_0062:  ldarg.0
+  IL_0063:  ldarg.1
+  IL_0064:  newobj     ""<>f__AnonymousType0..ctor()""
+  IL_0069:  callvirt   ""void <>A{00000004}<System.Runtime.CompilerServices.CallSite, dynamic, object, <empty anonymous type>>.Invoke(System.Runtime.CompilerServices.CallSite, dynamic, ref object, <empty anonymous type>)""
+  IL_006e:  nop
+  IL_006f:  ret
+}");
+
+            var diff1 = compilation1.EmitDifference(
+                generation0,
+                ImmutableArray.Create(
+                    new SemanticEdit(SemanticEditKind.Update, f0, f1, GetSyntaxMapFromMarkers(source0, source1), preserveLocalVariables: true)));
+            diff1.VerifyIL("C.F",
+@"{
+  // Code size      113 (0x71)
+  .maxstack  9
+  IL_0000:  nop
+  IL_0001:  ldsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000004}#1<System.Runtime.CompilerServices.CallSite, dynamic, object, <anonymous type: object y>>> C.<>o__0#1.<>p__0""
+  IL_0006:  brfalse.s  IL_000a
+  IL_0008:  br.s       IL_0053
+  IL_000a:  ldc.i4     0x100
+  IL_000f:  ldstr      ""F""
+  IL_0014:  ldnull
+  IL_0015:  ldtoken    ""C""
+  IL_001a:  call       ""System.Type System.Type.GetTypeFromHandle(System.RuntimeTypeHandle)""
+  IL_001f:  ldc.i4.3
+  IL_0020:  newarr     ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo""
+  IL_0025:  dup
+  IL_0026:  ldc.i4.0
+  IL_0027:  ldc.i4.0
+  IL_0028:  ldnull
+  IL_0029:  call       ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo.Create(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags, string)""
+  IL_002e:  stelem.ref
+  IL_002f:  dup
+  IL_0030:  ldc.i4.1
+  IL_0031:  ldc.i4.s   17
+  IL_0033:  ldnull
+  IL_0034:  call       ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo.Create(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags, string)""
+  IL_0039:  stelem.ref
+  IL_003a:  dup
+  IL_003b:  ldc.i4.2
+  IL_003c:  ldc.i4.1
+  IL_003d:  ldnull
+  IL_003e:  call       ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo.Create(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags, string)""
+  IL_0043:  stelem.ref
+  IL_0044:  call       ""System.Runtime.CompilerServices.CallSiteBinder Microsoft.CSharp.RuntimeBinder.Binder.InvokeMember(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags, string, System.Collections.Generic.IEnumerable<System.Type>, System.Type, System.Collections.Generic.IEnumerable<Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo>)""
+  IL_0049:  call       ""System.Runtime.CompilerServices.CallSite<<>A{00000004}#1<System.Runtime.CompilerServices.CallSite, dynamic, object, <anonymous type: object y>>> System.Runtime.CompilerServices.CallSite<<>A{00000004}#1<System.Runtime.CompilerServices.CallSite, dynamic, object, <anonymous type: object y>>>.Create(System.Runtime.CompilerServices.CallSiteBinder)""
+  IL_004e:  stsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000004}#1<System.Runtime.CompilerServices.CallSite, dynamic, object, <anonymous type: object y>>> C.<>o__0#1.<>p__0""
+  IL_0053:  ldsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000004}#1<System.Runtime.CompilerServices.CallSite, dynamic, object, <anonymous type: object y>>> C.<>o__0#1.<>p__0""
+  IL_0058:  ldfld      ""<>A{00000004}#1<System.Runtime.CompilerServices.CallSite, dynamic, object, <anonymous type: object y>> System.Runtime.CompilerServices.CallSite<<>A{00000004}#1<System.Runtime.CompilerServices.CallSite, dynamic, object, <anonymous type: object y>>>.Target""
+  IL_005d:  ldsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000004}#1<System.Runtime.CompilerServices.CallSite, dynamic, object, <anonymous type: object y>>> C.<>o__0#1.<>p__0""
+  IL_0062:  ldarg.0
+  IL_0063:  ldarg.1
+  IL_0064:  ldarg.2
+  IL_0065:  newobj     ""<>f__AnonymousType1<object>..ctor(object)""
+  IL_006a:  callvirt   ""void <>A{00000004}#1<System.Runtime.CompilerServices.CallSite, dynamic, object, <anonymous type: object y>>.Invoke(System.Runtime.CompilerServices.CallSite, dynamic, ref object, <anonymous type: object y>)""
+  IL_006f:  nop
+  IL_0070:  ret
+}");
+
+            var diff2 = compilation2.EmitDifference(
+                diff1.NextGeneration,
+                ImmutableArray.Create(
+                    new SemanticEdit(SemanticEditKind.Update, f1, f2, GetSyntaxMapFromMarkers(source1, source2), preserveLocalVariables: true)));
+            diff2.VerifyIL("C.F",
+@"{
+  // Code size      113 (0x71)
+  .maxstack  9
+  IL_0000:  nop
+  IL_0001:  ldsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000008}#2<System.Runtime.CompilerServices.CallSite, dynamic, <anonymous type: object y>, object>> C.<>o__0#2.<>p__0""
+  IL_0006:  brfalse.s  IL_000a
+  IL_0008:  br.s       IL_0053
+  IL_000a:  ldc.i4     0x100
+  IL_000f:  ldstr      ""F""
+  IL_0014:  ldnull
+  IL_0015:  ldtoken    ""C""
+  IL_001a:  call       ""System.Type System.Type.GetTypeFromHandle(System.RuntimeTypeHandle)""
+  IL_001f:  ldc.i4.3
+  IL_0020:  newarr     ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo""
+  IL_0025:  dup
+  IL_0026:  ldc.i4.0
+  IL_0027:  ldc.i4.0
+  IL_0028:  ldnull
+  IL_0029:  call       ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo.Create(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags, string)""
+  IL_002e:  stelem.ref
+  IL_002f:  dup
+  IL_0030:  ldc.i4.1
+  IL_0031:  ldc.i4.1
+  IL_0032:  ldnull
+  IL_0033:  call       ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo.Create(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags, string)""
+  IL_0038:  stelem.ref
+  IL_0039:  dup
+  IL_003a:  ldc.i4.2
+  IL_003b:  ldc.i4.s   17
+  IL_003d:  ldnull
+  IL_003e:  call       ""Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo.Create(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags, string)""
+  IL_0043:  stelem.ref
+  IL_0044:  call       ""System.Runtime.CompilerServices.CallSiteBinder Microsoft.CSharp.RuntimeBinder.Binder.InvokeMember(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags, string, System.Collections.Generic.IEnumerable<System.Type>, System.Type, System.Collections.Generic.IEnumerable<Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo>)""
+  IL_0049:  call       ""System.Runtime.CompilerServices.CallSite<<>A{00000008}#2<System.Runtime.CompilerServices.CallSite, dynamic, <anonymous type: object y>, object>> System.Runtime.CompilerServices.CallSite<<>A{00000008}#2<System.Runtime.CompilerServices.CallSite, dynamic, <anonymous type: object y>, object>>.Create(System.Runtime.CompilerServices.CallSiteBinder)""
+  IL_004e:  stsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000008}#2<System.Runtime.CompilerServices.CallSite, dynamic, <anonymous type: object y>, object>> C.<>o__0#2.<>p__0""
+  IL_0053:  ldsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000008}#2<System.Runtime.CompilerServices.CallSite, dynamic, <anonymous type: object y>, object>> C.<>o__0#2.<>p__0""
+  IL_0058:  ldfld      ""<>A{00000008}#2<System.Runtime.CompilerServices.CallSite, dynamic, <anonymous type: object y>, object> System.Runtime.CompilerServices.CallSite<<>A{00000008}#2<System.Runtime.CompilerServices.CallSite, dynamic, <anonymous type: object y>, object>>.Target""
+  IL_005d:  ldsfld     ""System.Runtime.CompilerServices.CallSite<<>A{00000008}#2<System.Runtime.CompilerServices.CallSite, dynamic, <anonymous type: object y>, object>> C.<>o__0#2.<>p__0""
+  IL_0062:  ldarg.0
+  IL_0063:  ldarg.2
+  IL_0064:  newobj     ""<>f__AnonymousType1<object>..ctor(object)""
+  IL_0069:  ldarg.1
+  IL_006a:  callvirt   ""void <>A{00000008}#2<System.Runtime.CompilerServices.CallSite, dynamic, <anonymous type: object y>, object>.Invoke(System.Runtime.CompilerServices.CallSite, dynamic, <anonymous type: object y>, ref object)""
+  IL_006f:  nop
+  IL_0070:  ret
+}");
         }
     }
 }

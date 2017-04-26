@@ -29,7 +29,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests.PDB
             var tree1 = SyntaxFactory.ParseSyntaxTree(StringText.From(source1, Encoding.UTF8, SourceHashAlgorithm.Sha1), path: "sha1.cs");
             var tree256 = SyntaxFactory.ParseSyntaxTree(StringText.From(source256, Encoding.UTF8, SourceHashAlgorithm.Sha256), path: "sha256.cs");
 
-            var compilation = CreateCompilationWithMscorlib(new[] { tree1, tree256 });
+            var compilation = CreateStandardCompilation(new[] { tree1, tree256 });
             compilation.VerifyPdb(@"
 <symbols>
   <files>
@@ -224,7 +224,7 @@ int y = 1;
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(new[] { Parse(text1, "a.cs"), Parse(text2, "b.cs") });
+            var compilation = CreateStandardCompilation(new[] { Parse(text1, "a.cs"), Parse(text2, "b.cs") });
             compilation.VerifyPdb("C.Main", @"
 <symbols>
   <files>
@@ -250,7 +250,7 @@ int y = 1;
 </symbols>");
         }
 
-        [WorkItem(729235, "DevDiv")]
+        [WorkItem(729235, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/729235")]
         [Fact]
         public void NormalizedPath_Tree()
         {
@@ -322,7 +322,7 @@ class C { void M() { } }
 </symbols>");
         }
 
-        [WorkItem(729235, "DevDiv")]
+        [WorkItem(729235, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/729235")]
         [Fact]
         public void NormalizedPath_LineDirective()
         {
@@ -379,7 +379,7 @@ class C
 </symbols>");
         }
 
-        [WorkItem(729235, "DevDiv")]
+        [WorkItem(729235, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/729235")]
         [Fact]
         public void NormalizedPath_ChecksumDirective()
         {
@@ -444,7 +444,7 @@ class C
 </symbols>");
         }
 
-        [WorkItem(729235, "DevDiv")]
+        [WorkItem(729235, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/729235")]
         [Fact]
         public void NormalizedPath_NoBaseDirectory()
         {

@@ -12,7 +12,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests.Emit
 {
     public class OptionalArgumentsTests : CSharpTestBase
     {
-        [WorkItem(529684, "DevDiv")]
+        [WorkItem(529684, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529684")]
         [Fact]
         public void TestDuplicateConstantAttributesMetadata()
         {
@@ -112,7 +112,7 @@ System.Int64: 3
 System.Decimal: 3");
         }
 
-        [WorkItem(529684, "DevDiv")]
+        [WorkItem(529684, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529684")]
         [Fact]
         public void TestDuplicateConstantAttributesSameValues()
         {
@@ -136,7 +136,7 @@ public class C
 }
 public delegate object D([DecimalConstant(0, 0, 0, 0, 3)]decimal o = 3);
 ";
-            var comp1 = CreateCompilationWithMscorlib(source1, references: new[] { SystemRef }, options: TestOptions.DebugDll);
+            var comp1 = CreateStandardCompilation(source1, references: new[] { SystemRef }, options: TestOptions.DebugDll);
             comp1.VerifyDiagnostics();
             CompileAndVerify(comp1, sourceSymbolValidator: module =>
                 {
@@ -165,7 +165,7 @@ public delegate object D([DecimalConstant(0, 0, 0, 0, 3)]decimal o = 3);
         System.Console.WriteLine(o);   
     }
 }";
-            var comp2a = CreateCompilationWithMscorlib(
+            var comp2a = CreateStandardCompilation(
                 source2,
                 references: new[] { SystemRef, new CSharpCompilationReference(comp1) },
                 options: TestOptions.DebugExe);
@@ -174,7 +174,7 @@ public delegate object D([DecimalConstant(0, 0, 0, 0, 3)]decimal o = 3);
 @"1
 2
 3");
-            var comp2b = CreateCompilationWithMscorlib(
+            var comp2b = CreateStandardCompilation(
                 source2,
                 references: new[] { SystemRef, MetadataReference.CreateFromStream(comp1.EmitToStream()) },
                 options: TestOptions.DebugExe);
@@ -185,7 +185,7 @@ public delegate object D([DecimalConstant(0, 0, 0, 0, 3)]decimal o = 3);
 3");
         }
 
-        [WorkItem(529684, "DevDiv")]
+        [WorkItem(529684, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529684")]
         [Fact]
         public void TestDuplicateConstantAttributesSameValues_PartialMethods()
         {
@@ -199,7 +199,7 @@ partial class C
 {
     static partial void F([DecimalConstant(0, 0, 0, 0, 2)]decimal o) { }
 }";
-            var comp = CreateCompilationWithMscorlib(source, references: new[] { SystemRef });
+            var comp = CreateStandardCompilation(source, references: new[] { SystemRef });
             comp.VerifyDiagnostics();
             CompileAndVerify(comp, sourceSymbolValidator: module =>
                 {
@@ -230,7 +230,7 @@ partial class C
             }
         }
 
-        [WorkItem(529684, "DevDiv")]
+        [WorkItem(529684, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529684")]
         [Fact]
         public void TestDuplicateConstantAttributesDifferentValues()
         {
@@ -249,49 +249,59 @@ interface I
 }
 delegate void D([DecimalConstant(0, 0, 0, 0, 3)]decimal b = 4);
 ";
-            CreateCompilationWithMscorlib(source, references: new[] { SystemRef }).VerifyDiagnostics(
+            CreateStandardCompilation(source, references: new[] { SystemRef }).VerifyDiagnostics(
                 // (5,14): error CS1745: Cannot specify default parameter value in conjunction with DefaultParameterAttribute or OptionalAttribute
                 //     void F1([DefaultParameterValue(1)]int o = 2);
-                Diagnostic(ErrorCode.ERR_DefaultValueUsedWithAttributes, "DefaultParameterValue"),
+                Diagnostic(ErrorCode.ERR_DefaultValueUsedWithAttributes, "DefaultParameterValue").WithLocation(5, 14),
                 // (6,14): error CS1745: Cannot specify default parameter value in conjunction with DefaultParameterAttribute or OptionalAttribute
                 //     void F2([DefaultParameterValue(1)]decimal o = 2);
-                Diagnostic(ErrorCode.ERR_DefaultValueUsedWithAttributes, "DefaultParameterValue"),
+                Diagnostic(ErrorCode.ERR_DefaultValueUsedWithAttributes, "DefaultParameterValue").WithLocation(6, 14),
+                // (6,51): error CS8017: The parameter has multiple distinct default values.
+                //     void F2([DefaultParameterValue(1)]decimal o = 2);
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "2").WithLocation(6, 51),
                 // (7,57): error CS8017: The parameter has multiple distinct default values.
                 //     void F4([DecimalConstant(0, 0, 0, 0, 1)]decimal o = 2);
-                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "2"),
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "2").WithLocation(7, 57),
                 // (8,35): error CS1745: Cannot specify default parameter value in conjunction with DefaultParameterAttribute or OptionalAttribute
                 //     void F6([DateTimeConstant(1), DefaultParameterValue(1), DecimalConstant(0, 0, 0, 0, 1)]int o = 1);
-                Diagnostic(ErrorCode.ERR_DefaultValueUsedWithAttributes, "DefaultParameterValue"),
+                Diagnostic(ErrorCode.ERR_DefaultValueUsedWithAttributes, "DefaultParameterValue").WithLocation(8, 35),
                 // (8,61): error CS8017: The parameter has multiple distinct default values.
                 //     void F6([DateTimeConstant(1), DefaultParameterValue(1), DecimalConstant(0, 0, 0, 0, 1)]int o = 1);
-                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "DecimalConstant(0, 0, 0, 0, 1)"),
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "DecimalConstant(0, 0, 0, 0, 1)").WithLocation(8, 61),
                 // (8,100): error CS8017: The parameter has multiple distinct default values.
                 //     void F6([DateTimeConstant(1), DefaultParameterValue(1), DecimalConstant(0, 0, 0, 0, 1)]int o = 1);
-                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "1"),
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "1").WithLocation(8, 100),
                 // (9,35): error CS8017: The parameter has multiple distinct default values.
                 //     void F7([DateTimeConstant(2), DecimalConstant(0, 0, 0, 0, 2), DefaultParameterValue(2)]decimal o = 2);
-                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "DecimalConstant(0, 0, 0, 0, 2)"),
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "DecimalConstant(0, 0, 0, 0, 2)").WithLocation(9, 35),
                 // (9,67): error CS1745: Cannot specify default parameter value in conjunction with DefaultParameterAttribute or OptionalAttribute
                 //     void F7([DateTimeConstant(2), DecimalConstant(0, 0, 0, 0, 2), DefaultParameterValue(2)]decimal o = 2);
-                Diagnostic(ErrorCode.ERR_DefaultValueUsedWithAttributes, "DefaultParameterValue"),
+                Diagnostic(ErrorCode.ERR_DefaultValueUsedWithAttributes, "DefaultParameterValue").WithLocation(9, 67),
                 // (9,104): error CS8017: The parameter has multiple distinct default values.
                 //     void F7([DateTimeConstant(2), DecimalConstant(0, 0, 0, 0, 2), DefaultParameterValue(2)]decimal o = 2);
-                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "2"),
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "2").WithLocation(9, 104),
                 // (10,25): error CS1745: Cannot specify default parameter value in conjunction with DefaultParameterAttribute or OptionalAttribute
                 //     object this[int a, [DefaultParameterValue(1)]int o = 2] { get; set; }
-                Diagnostic(ErrorCode.ERR_DefaultValueUsedWithAttributes, "DefaultParameterValue"),
+                Diagnostic(ErrorCode.ERR_DefaultValueUsedWithAttributes, "DefaultParameterValue").WithLocation(10, 25),
+                // (10,58): error CS8017: The parameter has multiple distinct default values.
+                //     object this[int a, [DefaultParameterValue(1)]int o = 2] { get; set; }
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "2").WithLocation(10, 58),
                 // (11,44): error CS8017: The parameter has multiple distinct default values.
                 //     object this[[DefaultParameterValue(0), DecimalConstant(0, 0, 0, 0, 0), DateTimeConstant(0)]int o] { get; set; }
-                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "DecimalConstant(0, 0, 0, 0, 0)"),
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "DecimalConstant(0, 0, 0, 0, 0)").WithLocation(11, 44),
                 // (11,76): error CS8017: The parameter has multiple distinct default values.
                 //     object this[[DefaultParameterValue(0), DecimalConstant(0, 0, 0, 0, 0), DateTimeConstant(0)]int o] { get; set; }
-                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "DateTimeConstant(0)"),
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "DateTimeConstant(0)").WithLocation(11, 76),
+                // (5,47): error CS8017: The parameter has multiple distinct default values.
+                //     void F1([DefaultParameterValue(1)]int o = 2);
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "2").WithLocation(5, 47),
                 // (13,61): error CS8017: The parameter has multiple distinct default values.
                 // delegate void D([DecimalConstant(0, 0, 0, 0, 3)]decimal b = 4);
-                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "4"));
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "4").WithLocation(13, 61)
+                );
         }
 
-        [WorkItem(529684, "DevDiv")]
+        [WorkItem(529684, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529684")]
         [Fact]
         public void TestDuplicateConstantAttributesDifferentValues_PartialMethods()
         {
@@ -308,7 +318,7 @@ partial class C
     partial void F1(int o = 2);
     partial void F9([DecimalConstant(0, 0, 0, 0, 0), DateTimeConstant(0)]int o) {}
 }";
-            CreateCompilationWithMscorlib(source, references: new[] { SystemRef }).VerifyDiagnostics(
+            CreateStandardCompilation(source, references: new[] { SystemRef }).VerifyDiagnostics(
                 // (8,22): error CS8017: The parameter has multiple distinct default values.
                 //     partial void F9([DefaultParameterValue(0)]int o);
                 Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "DefaultParameterValue(0)"),
@@ -323,7 +333,7 @@ partial class C
         /// <summary>
         /// Should not report differences if either value is bad.
         /// </summary>
-        [WorkItem(529684, "DevDiv")]
+        [WorkItem(529684, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529684")]
         [Fact]
         public void TestDuplicateConstantAttributesDifferentValues_BadValue()
         {
@@ -334,17 +344,25 @@ interface I
 {
     void M1([DefaultParameterValue(typeof(C)), DecimalConstantAttribute(0, 0, 0, 0, 0)] decimal o);
     void M2([DefaultParameterValue(0), DecimalConstantAttribute(0, 0, 0, 0, typeof(C))] decimal o);
+    void M3([DefaultParameterValue(0), DecimalConstantAttribute(0, 0, 0, 0, 0)] decimal o);
 }";
-            CreateCompilationWithMscorlib(source, references: new[] { SystemRef }).VerifyDiagnostics(
+            CreateStandardCompilation(source, references: new[] { SystemRef }).VerifyDiagnostics(
+                // (7,40): error CS8017: The parameter has multiple distinct default values.
+                //     void M3([DefaultParameterValue(0), DecimalConstantAttribute(0, 0, 0, 0, 0)] decimal o);
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "DecimalConstantAttribute(0, 0, 0, 0, 0)").WithLocation(7, 40),
                 // (6,84): error CS0246: The type or namespace name 'C' could not be found (are you missing a using directive or an assembly reference?)
                 //     void M2([DefaultParameterValue(0), DecimalConstantAttribute(0, 0, 0, 0, typeof(C))] decimal o);
-                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "C").WithArguments("C"),
+                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "C").WithArguments("C").WithLocation(6, 84),
                 // (5,43): error CS0246: The type or namespace name 'C' could not be found (are you missing a using directive or an assembly reference?)
                 //     void M1([DefaultParameterValue(typeof(C)), DecimalConstantAttribute(0, 0, 0, 0, 0)] decimal o);
-                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "C").WithArguments("C"));
+                Diagnostic(ErrorCode.ERR_SingleTypeNameNotFound, "C").WithArguments("C").WithLocation(5, 43),
+                // (5,48): error CS8017: The parameter has multiple distinct default values.
+                //     void M1([DefaultParameterValue(typeof(C)), DecimalConstantAttribute(0, 0, 0, 0, 0)] decimal o);
+                Diagnostic(ErrorCode.ERR_ParamDefaultValueDiffersFromAttribute, "DecimalConstantAttribute(0, 0, 0, 0, 0)").WithLocation(5, 48)
+                );
         }
 
-        [WorkItem(529684, "DevDiv")]
+        [WorkItem(529684, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529684")]
         [Fact]
         public void TestExplicitConstantAttributesOnFields()
         {
@@ -383,7 +401,7 @@ class C
 
     [DecimalConstantAttribute(0, 128, 0, 0, 7)] public const decimal F15 = -7;
 }";
-            var comp = CreateCompilationWithMscorlib(source, references: new[] { SystemRef });
+            var comp = CreateStandardCompilation(source, references: new[] { SystemRef });
 
             comp.VerifyDiagnostics(
 // (11,38): error CS0579: Duplicate 'DecimalConstant' attribute

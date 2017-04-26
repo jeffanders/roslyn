@@ -3,6 +3,7 @@
 using Microsoft.CodeAnalysis.Host;
 using System.Threading;
 using Microsoft.CodeAnalysis.Options;
+using Microsoft.CodeAnalysis.FindUsages;
 
 namespace Microsoft.CodeAnalysis.Navigation
 {
@@ -25,7 +26,11 @@ namespace Microsoft.CodeAnalysis.Navigation
 
         /// <returns>True if the navigation would be handled.</returns>
         bool WouldNavigateToSymbol(
+<<<<<<< HEAD
             ISymbol symbol, Solution solution, CancellationToken cancellationToken,
+=======
+            DefinitionItem definitionItem, Solution solution, CancellationToken cancellationToken,
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             out string filePath, out int lineNumber, out int charOffset);
     }
 }

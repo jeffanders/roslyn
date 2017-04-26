@@ -34,7 +34,7 @@ class Program
         int i9 = new int();         // 0219
     }
 }";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics(
+            CreateStandardCompilation(program).VerifyDiagnostics(
                 // (7,13): warning CS0219: The variable 'i1' is assigned but its value is never used
                 //         int i1 = 123;               // 0219
                 Diagnostic(ErrorCode.WRN_UnreferencedVarAssg, "i1").WithArguments("i1"),
@@ -80,7 +80,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics(
+            CreateStandardCompilation(program).VerifyDiagnostics(
                 // (11,25): error CS0165: Use of unassigned local variable 'x'
                 //                 int y = x; x = y; // use of unassigned local variable 'x'
                 Diagnostic(ErrorCode.ERR_UseDefViolation, "x").WithArguments("x")
@@ -111,7 +111,7 @@ namespace ConsoleApplication1
         }
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             var errs = this.FlowDiagnostics(comp);
             Assert.Equal(0, errs.Count());
         }
@@ -126,7 +126,7 @@ class Program
     {
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             var errs = this.FlowDiagnostics(comp);
             Assert.Equal(1, errs.Count());
         }
@@ -147,7 +147,7 @@ class Program
                         }
                     }
                 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             int[] count = new int[4];
             foreach (var e in this.FlowDiagnostics(comp))
                 count[(int)e.Severity]++;
@@ -175,7 +175,7 @@ class Program
                     }
                 }
 ";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             int[] count = new int[4];
             foreach (var e in this.FlowDiagnostics(comp))
                 count[(int)e.Severity]++;
@@ -185,7 +185,7 @@ class Program
             Assert.Equal(0, count[(int)DiagnosticSeverity.Info]);
         }
 
-        [WorkItem(537918, "DevDiv")]
+        [WorkItem(537918, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537918")]
         [Fact]
         public void AssertForInvalidBreak()
         {
@@ -202,7 +202,7 @@ public class Test
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
 
             comp.GetMethodBodyDiagnostics().Verify(
                 // (7,9): error CS0139: No enclosing loop out of which to break or continue
@@ -210,7 +210,7 @@ public class Test
                 Diagnostic(ErrorCode.ERR_NoBreakOrCont, "break;"));
         }
 
-        [WorkItem(538064, "DevDiv")]
+        [WorkItem(538064, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538064")]
         [Fact]
         public void IfFalse()
         {
@@ -225,11 +225,11 @@ class Program
         }
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.Equal(0, this.FlowDiagnostics(comp).Count());
         }
 
-        [WorkItem(538067, "DevDiv")]
+        [WorkItem(538067, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538067")]
         [Fact]
         public void WhileConstEqualsConst()
         {
@@ -249,11 +249,11 @@ class Program
     {
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.Equal(0, this.FlowDiagnostics(comp).Count());
         }
 
-        [WorkItem(538175, "DevDiv")]
+        [WorkItem(538175, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538175")]
         [Fact]
         public void BreakWithoutTarget()
         {
@@ -265,7 +265,7 @@ class Program
             break;
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.Equal(0, this.FlowDiagnostics(comp).Count());
         }
 
@@ -283,7 +283,7 @@ class Program
         x = 1;
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.Equal(0, this.FlowDiagnostics(comp).Count());
         }
 
@@ -298,11 +298,11 @@ class Program
         if (b) return;
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.Equal(2, this.FlowDiagnostics(comp).Count());
         }
 
-        [WorkItem(539374, "DevDiv")]
+        [WorkItem(539374, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/539374")]
         [Fact]
         public void OutAssignedAfterCall01()
         {
@@ -318,11 +318,11 @@ class Program
         F(out x, x);
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.Equal(1, this.FlowDiagnostics(comp).Count());
         }
 
-        [WorkItem(538067, "DevDiv")]
+        [WorkItem(538067, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538067")]
         [Fact]
         public void WhileConstEqualsConst2()
         {
@@ -343,7 +343,7 @@ class Program
     {
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
 
             int[] count = new int[4];
             foreach (var e in this.FlowDiagnostics(comp))
@@ -354,7 +354,7 @@ class Program
             Assert.Equal(0, count[(int)DiagnosticSeverity.Info]);
         }
 
-        [WorkItem(538072, "DevDiv")]
+        [WorkItem(538072, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538072")]
         [Fact]
         public void UnusedLocal()
         {
@@ -374,7 +374,7 @@ class Program
         Console.WriteLine(z);
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
 
             int[] count = new int[4];
             Dictionary<int, int> warnings = new Dictionary<int, int>();
@@ -403,7 +403,7 @@ class Program
             // Assert.Equal(1, warnings[649]);
         }
 
-        [WorkItem(538384, "DevDiv")]
+        [WorkItem(538384, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538384")]
         [Fact]
         public void UnusedLocalConstants()
         {
@@ -425,11 +425,11 @@ class Program
             }
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.Equal(0, this.FlowDiagnostics(comp).Count());
         }
 
-        [WorkItem(538385, "DevDiv")]
+        [WorkItem(538385, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538385")]
         [Fact]
         public void UnusedLocalReferenceTypedVariables()
         {
@@ -448,11 +448,11 @@ class Program
             s = null;
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.Equal(0, this.FlowDiagnostics(comp).Count());
         }
 
-        [WorkItem(538386, "DevDiv")]
+        [WorkItem(538386, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/538386")]
         [Fact]
         public void UnusedLocalValueTypedVariables()
         {
@@ -472,7 +472,7 @@ class Program
         byte b11 = b1; // Should not report CS0219
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.Equal(0, this.FlowDiagnostics(comp).Count());
         }
 
@@ -489,7 +489,7 @@ class Program
     }
     static void F(ref int i) { }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.NotEmpty(this.FlowDiagnostics(comp).Where(e => e.Severity >= DiagnosticSeverity.Error));
         }
 
@@ -507,7 +507,7 @@ class Program
     }
     static void F(out int i) { i = 1; }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.Empty(this.FlowDiagnostics(comp).Where(e => e.Severity >= DiagnosticSeverity.Error));
         }
 
@@ -528,7 +528,7 @@ class Program
         int j = i; // i not definitely assigned
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.NotEmpty(this.FlowDiagnostics(comp).Where(e => e.Severity >= DiagnosticSeverity.Error));
         }
 
@@ -545,7 +545,7 @@ class Program
         Func fnc = (ref int arg, int arg2) => { arg = arg; };
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.Empty(this.FlowDiagnostics(comp).Where(e => e.Severity >= DiagnosticSeverity.Error));
         }
 
@@ -566,7 +566,7 @@ class Program
         int j = i;
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.NotEmpty(this.FlowDiagnostics(comp).Where(e => e.Severity >= DiagnosticSeverity.Error));
         }
 
@@ -584,12 +584,12 @@ class Program
         };
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.NotEmpty(this.FlowDiagnostics(comp).Where(e => e.Severity >= DiagnosticSeverity.Error));
         }
 
 
-        [Fact, WorkItem(528052, "DevDiv")]
+        [Fact, WorkItem(528052, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528052")]
         public void InnerVariablesAreNotDefinitelyAssignedInBeginningOfLambdaBody()
         {
             string program = @"
@@ -604,7 +604,7 @@ class Program
     }
 }";
 
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics(
+            CreateStandardCompilation(program).VerifyDiagnostics(
     // (9,9): warning CS0162: Unreachable code detected
     //         Action f = () => { int y = y; };
     Diagnostic(ErrorCode.WRN_UnreachableCode, "Action"),
@@ -614,7 +614,7 @@ class Program
                 );
         }
 
-        [WorkItem(540139, "DevDiv")]
+        [WorkItem(540139, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540139")]
         [Fact]
         public void DelegateCreationReceiverIsRead()
         {
@@ -630,11 +630,11 @@ class Program
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             Assert.NotEmpty(this.FlowDiagnostics(comp).Where(e => e.Severity >= DiagnosticSeverity.Error));
         }
 
-        [WorkItem(540405, "DevDiv")]
+        [WorkItem(540405, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540405")]
         [Fact]
         public void ErrorInFieldInitializerLambda()
         {
@@ -651,14 +651,14 @@ class Program
 }
 
 ";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics(
+            CreateStandardCompilation(program).VerifyDiagnostics(
                 // (6,54): error CS0165: Use of unassigned local variable 's'
                 //     static Func<string> x = () => { string s; return s; };
                 Diagnostic(ErrorCode.ERR_UseDefViolation, "s").WithArguments("s")
                 );
         }
 
-        [WorkItem(541389, "DevDiv")]
+        [WorkItem(541389, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541389")]
         [Fact]
         public void IterationWithEmptyBody()
         {
@@ -674,10 +674,10 @@ public class A
         while (len-- > 0);
     }
 }";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics();
+            CreateStandardCompilation(program).VerifyDiagnostics();
         }
 
-        [WorkItem(541389, "DevDiv")]
+        [WorkItem(541389, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541389")]
         [Fact]
         public void SelectionWithEmptyBody()
         {
@@ -690,12 +690,12 @@ public class A
         if (len++ < 9) ; else ;
     }
 }";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics(
+            CreateStandardCompilation(program).VerifyDiagnostics(
                 Diagnostic(ErrorCode.WRN_PossibleMistakenNullStatement, ";"),
                 Diagnostic(ErrorCode.WRN_PossibleMistakenNullStatement, ";"));
         }
 
-        [WorkItem(542146, "DevDiv")]
+        [WorkItem(542146, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542146")]
         [Fact]
         public void FieldlikeEvent()
         {
@@ -709,13 +709,13 @@ public struct S
         Ev += d;
     }
 }";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics(
+            CreateStandardCompilation(program).VerifyDiagnostics(
                 // (4,20): warning CS0414: The field 'S.Ev' is assigned but its value is never used
                 //     public event D Ev;
                 Diagnostic(ErrorCode.WRN_UnreferencedFieldAssg, "Ev").WithArguments("S.Ev"));
         }
 
-        [WorkItem(542187, "DevDiv")]
+        [WorkItem(542187, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542187")]
         [Fact]
         public void GotoFromTry()
         {
@@ -738,10 +738,10 @@ public struct S
         F(a);
     }
 }";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics();
+            CreateStandardCompilation(program).VerifyDiagnostics();
         }
 
-        [WorkItem(542154, "DevDiv")]
+        [WorkItem(542154, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542154")]
         [Fact]
         public void UnreachableThrow()
         {
@@ -760,10 +760,10 @@ public struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics();
+            CreateStandardCompilation(program).VerifyDiagnostics();
         }
 
-        [WorkItem(542585, "DevDiv")]
+        [WorkItem(542585, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542585")]
         [Fact]
         public void Bug9870()
         {
@@ -778,7 +778,7 @@ struct S<T>
         x.x = 1;
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             comp.VerifyDiagnostics(
                 // (8,9): error CS0120: An object reference is required for the non-static field, method, or property 'S<T>.x'
                 //         x.x = 1;
@@ -786,7 +786,7 @@ struct S<T>
                 );
         }
 
-        [WorkItem(542597, "DevDiv")]
+        [WorkItem(542597, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542597")]
         [Fact]
         public void LambdaEntryPointIsReachable()
         {
@@ -803,7 +803,7 @@ struct S<T>
         };
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             comp.VerifyDiagnostics(
                 // unreachable statement
                 // (7,23): warning CS0162: Unreachable code detected
@@ -815,7 +815,7 @@ struct S<T>
                 );
         }
 
-        [WorkItem(542597, "DevDiv")]
+        [WorkItem(542597, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542597")]
         [Fact]
         public void LambdaInUnimplementedPartial()
         {
@@ -831,7 +831,7 @@ partial class C
         Foo(() => { int x, y = x; });
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             comp.VerifyDiagnostics(
                 // (9,32): error CS0165: Use of unassigned local variable 'x'
                 //         Foo(() => { int x, y = x; });
@@ -839,7 +839,7 @@ partial class C
                 );
         }
 
-        [WorkItem(541887, "DevDiv")]
+        [WorkItem(541887, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541887")]
         [Fact]
         public void CascadedDiagnostics01()
         {
@@ -856,7 +856,7 @@ class Program
         return 1;
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             var parseErrors = comp.SyntaxTrees[0].GetDiagnostics();
             var errors = comp.GetDiagnostics();
             Assert.Equal(parseErrors.Count(), errors.Count());
@@ -870,7 +870,7 @@ class Program
 {
     System.Action a = () => { int i; int j = i; };
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             comp.VerifyDiagnostics(
                 // (3,46): error CS0165: Use of unassigned local variable 'i'
                 //     System.Action a = () => { int i; int j = i; };
@@ -878,7 +878,7 @@ class Program
                 );
         }
 
-        [WorkItem(543343, "DevDiv")]
+        [WorkItem(543343, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543343")]
         [Fact]
         public void ConstInSwitch()
         {
@@ -898,7 +898,7 @@ class Program
         }
     }
 }";
-            var comp = CreateCompilationWithMscorlib(program);
+            var comp = CreateStandardCompilation(program);
             comp.VerifyDiagnostics(
                 // (11,21): warning CS0219: The variable 'M' is assigned but its value is never used
                 //                 int M = N;
@@ -921,7 +921,7 @@ public struct A
     }
 }
 ";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics(
+            CreateStandardCompilation(program).VerifyDiagnostics(
     // (4,7): error CS0573: 'A': cannot have instance property or field initializers in structs
     //     A a = new A(); // CS8036
     Diagnostic(ErrorCode.ERR_FieldInitializerInStruct, "a").WithArguments("A").WithLocation(4, 7),
@@ -931,13 +931,13 @@ public struct A
     // (7,11): warning CS0219: The variable 'a' is assigned but its value is never used
     //         A a = new A();
     Diagnostic(ErrorCode.WRN_UnreferencedVarAssg, "a").WithArguments("a").WithLocation(7, 11),
-    // (4,7): warning CS0414: The field 'A.a' is assigned but its value is never used
+    // (4,7): warning CS0169: The field 'A.a' is never used
     //     A a = new A(); // CS8036
-    Diagnostic(ErrorCode.WRN_UnreferencedFieldAssg, "a").WithArguments("A.a").WithLocation(4, 7)
+    Diagnostic(ErrorCode.WRN_UnreferencedField, "a").WithArguments("A.a").WithLocation(4, 7)
     );
         }
 
-        [WorkItem(542356, "DevDiv")]
+        [WorkItem(542356, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542356")]
         [Fact]
         public void StaticMemberExplosion()
         {
@@ -961,7 +961,7 @@ struct D<T>
     static C<D<T>> x;
 }
 ";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 // (14,17): error CS0523: Struct member 'C<T>.x' of type 'D<T>' causes a cycle in the struct layout
                 //     static D<T> x;
@@ -1000,7 +1000,7 @@ partial struct S
 {
     public static int y;
 }";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 // (4,23): warning CS0649: Field 'S.x' is never assigned to, and will always have its default value 0
                 //     public static int x;
@@ -1011,7 +1011,7 @@ partial struct S
                 );
         }
 
-        [WorkItem(542567, "DevDiv")]
+        [WorkItem(542567, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542567")]
         [Fact]
         public void ImplicitFieldSequential()
         {
@@ -1036,7 +1036,7 @@ partial struct S2
 {
     public event D y;
 }";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 // (1,16): warning CS0282: There is no defined ordering between fields in multiple declarations of partial struct 'S1'. To specify an ordering, all instance fields must be in the same declaration.
                 // partial struct S1
@@ -1069,7 +1069,7 @@ public struct A
     }
 }
 ";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 Diagnostic(ErrorCode.ERR_UseDefViolation, "j").WithArguments("j")
                 );
@@ -1094,7 +1094,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 );
         }
@@ -1117,7 +1117,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 // (12,15): error CS0165: Use of unassigned local variable 's'
                 //         S t = s;
@@ -1149,7 +1149,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 // (4,19): warning CS0649: Field 'S.y' is never assigned to, and will always have its default value 0
                 //     public int x, y;
@@ -1174,7 +1174,7 @@ class Program
     }
 }
 ";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 );
         }
@@ -1188,7 +1188,7 @@ struct S
     int x, y;
     S(int x, int y) { this.x = x; this.y = y; }
 }";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 );
         }
@@ -1202,7 +1202,7 @@ struct S
     int x, y;
     S(int x) { this.x = x; }
 }";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 // (5,5): error CS0171: Field 'S.y' must be fully assigned before control is returned to the caller
                 //     S(int x) { this.x = x; }
@@ -1213,7 +1213,7 @@ struct S
                 );
         }
 
-        [WorkItem(543429, "DevDiv")]
+        [WorkItem(543429, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543429")]
         [Fact]
         public void ConstructorCannotComplete()
         {
@@ -1226,7 +1226,7 @@ public struct S
         throw new NotImplementedException();
     }
 }";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics(
+            CreateStandardCompilation(program).VerifyDiagnostics(
                 // (4,9): warning CS0169: The field 'S.value' is never used
                 //     int value;
                 Diagnostic(ErrorCode.WRN_UnreferencedField, "value").WithArguments("S.value")
@@ -1247,7 +1247,7 @@ struct Program
     {
     }
 }";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 // (5,12): error CS0843: Backing field for automatically implemented property 'Program.X' must be fully assigned before control is returned to the caller. Consider calling the default constructor from a constructor initializer.
                 Diagnostic(ErrorCode.ERR_UnassignedThisAutoProperty, "Program").WithArguments("Program.X"));
@@ -1265,7 +1265,7 @@ struct Program
     public S(int i) {}
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics(
     // (3,16): error CS0573: 'S': cannot have instance property or field initializers in structs
     //     public int P { get; set; } = 1;
@@ -1291,7 +1291,7 @@ struct Program
     }
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics(
     // (5,20): error CS0573: 'S': cannot have instance property or field initializers in structs
     //     public decimal R { get; } = 300;
@@ -1331,7 +1331,7 @@ struct Program
     }
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics(
     // (16,9): error CS1612: Cannot modify the return value of 'Program.x' because it is not a variable
     //         x.i = 1;
@@ -1380,7 +1380,7 @@ struct Program
     }
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics(
     // (16,9): error CS1612: Cannot modify the return value of 'Program.x' because it is not a variable
     //         x.i = 1;
@@ -1432,7 +1432,7 @@ struct Program
     }
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics(
     // (17,9): error CS1612: Cannot modify the return value of 'Program.x' because it is not a variable
     //         x.i += 1;
@@ -1484,7 +1484,7 @@ struct Program
     }
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics(
     // (20,13): error CS1673: Anonymous methods, lambda expressions, and query expressions inside structs cannot access instance members of 'this'. Consider copying 'this' to a local variable outside the anonymous method, lambda expression or query expression and using the local instead.
     //             this.x = new S1();
@@ -1537,7 +1537,7 @@ class Program
     }
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics(
     // (23,13): error CS0200: Property or indexer 'Program.x2' cannot be assigned to -- it is read only
     //             this.x2 = new S1();
@@ -1579,7 +1579,7 @@ struct Program
     }
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics(
     // (6,20): warning CS0649: Field 'Program.S1.i' is never assigned to, and will always have its default value 0
     //         public int i;
@@ -1615,7 +1615,7 @@ struct Program
     }
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             // no errors since S1 is empty
             comp.VerifyDiagnostics(
                 );
@@ -1662,7 +1662,7 @@ struct Program
     }
 }";
 
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             // no errors since S1 is empty
             comp.VerifyDiagnostics(
     // (15,17): error CS0206: A property or indexer may not be passed as an out or ref parameter
@@ -1708,7 +1708,7 @@ struct S
     }
 }
 ";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 );
         }
@@ -1735,7 +1735,7 @@ struct T
         return t;
     }
 }";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 // (13,15): warning CS0169: The field 'T.s3' is never used
                 //     S s1, s2, s3;
@@ -1749,11 +1749,11 @@ struct T
                 );
         }
 
-        [WorkItem(543466, "DevDiv")]
+        [WorkItem(543466, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543466")]
         [Fact]
         public void UnreferencedFieldWarningsMissingInEmit()
         {
-            var comp = CreateCompilationWithMscorlib(@"
+            var comp = CreateStandardCompilation(@"
 public class Class1
 {
     int field1;
@@ -1791,13 +1791,13 @@ class Test
     }
 }
 ";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 );
         }
 
-        [WorkItem(540896, "DevDiv")]
-        [WorkItem(541268, "DevDiv")]
+        [WorkItem(540896, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540896")]
+        [WorkItem(541268, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541268")]
         [Fact]
         public void ChainToStructDefaultConstructor()
         {
@@ -1824,13 +1824,13 @@ namespace Roslyn.Compilers.CSharp
     }
 }
 ";
-            CreateCompilationWithMscorlib(program)
+            CreateStandardCompilation(program)
                 .VerifyDiagnostics(
                 );
         }
 
-        [WorkItem(541298, "DevDiv")]
-        [WorkItem(541298, "DevDiv")]
+        [WorkItem(541298, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541298")]
+        [WorkItem(541298, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/541298")]
         [Fact]
         public void SetStaticPropertyOnStruct()
         {
@@ -1848,7 +1848,7 @@ class C
     }
 }
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
         [Fact]
@@ -1868,7 +1868,7 @@ class Program
         s.x = 12;
     }
 }";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics();
+            CreateStandardCompilation(program).VerifyDiagnostics();
         }
 
         [Fact]
@@ -1886,7 +1886,7 @@ public struct A
     }
 }
 ";
-            var c = CreateCompilationWithMscorlib(program, new[] { TestReferences.SymbolsTests.CycledStructs });
+            var c = CreateStandardCompilation(program, new[] { TestReferences.SymbolsTests.CycledStructs });
 
             c.VerifyDiagnostics(
                 // (6,12): warning CS0219: The variable 's1' is assigned but its value is never used
@@ -1912,11 +1912,11 @@ struct S<T>
         x.a.a.a.a.a.a.a.b = x.a.a.a.a.a.a.a.a;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
         [Fact]
-        [WorkItem(542901, "DevDiv")]
+        [WorkItem(542901, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542901")]
         public void DataFlowForStructFieldAssignment()
         {
             string program = @"struct S
@@ -1950,7 +1950,7 @@ struct S<T>
     }
 }
 ";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics(
+            CreateStandardCompilation(program).VerifyDiagnostics(
                 // (12,17): error CS0170: Use of possibly unassigned field 'X'
                 //             if (s.X < 3)
                 Diagnostic(ErrorCode.ERR_UseDefViolationField, "s.X").WithArguments("X"),
@@ -2023,14 +2023,43 @@ public class OperationExecutor
 
         #endregion
 
-        [Fact, WorkItem(545347, "DevDiv")]
-        public void FieldInAbstractClass()
+        [Fact, WorkItem(545347, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545347")]
+        public void FieldInAbstractClass_UnusedField()
         {
-            CreateCompilationWithMscorlib(@"abstract class AbstractType { public int Kind; }").VerifyDiagnostics();
+            var text = @"
+abstract class AbstractType
+{
+    public int Kind;
+}";
+
+            CreateStandardCompilation(text).VerifyDiagnostics(
+                // (4,16): warning CS0649: Field 'AbstractType.Kind' is never assigned to, and will always have its default value 0
+                //     public int Kind;
+                Diagnostic(ErrorCode.WRN_UnassignedInternalField, "Kind").WithArguments("AbstractType.Kind", "0").WithLocation(4, 16));
+        }
+
+        [Fact, WorkItem(545347, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545347")]
+        public void FieldInAbstractClass_FieldUsedInChildType()
+        {
+            var text = @"
+abstract class AbstractType
+{
+    public int Kind;
+}
+class ChildType : AbstractType
+{
+    public ChildType()
+    {
+        this.Kind = 1;
+    }
+}
+";
+
+            CreateStandardCompilation(text).VerifyDiagnostics();
         }
 
         [Fact]
-        [WorkItem(545642, "DevDiv")]
+        [WorkItem(545642, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545642")]
         public void InitializerAndConstructorWithOutParameter()
         {
             string program =
@@ -2043,11 +2072,11 @@ public class OperationExecutor
         x = 13;
     }
 }";
-            CreateCompilationWithMscorlib(program).VerifyDiagnostics();
+            CreateStandardCompilation(program).VerifyDiagnostics();
         }
 
         [Fact]
-        [WorkItem(545875, "DevDiv")]
+        [WorkItem(545875, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545875")]
         public void TestSuppressUnreferencedVarAssgOnIntPtr()
         {
             var source = @"
@@ -2070,11 +2099,11 @@ public class Test
         long lp2 = (long)uz;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
         [Fact]
-        [WorkItem(546183, "DevDiv")]
+        [WorkItem(546183, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546183")]
         public void TestUnassignedStructFieldsInPInvokePassByRefCase()
         {
             var source = @"
@@ -2135,10 +2164,10 @@ namespace ManagedDebuggingAssistants
         #endregion
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics();
+            CreateStandardCompilation(source).VerifyDiagnostics();
         }
 
-        [WorkItem(546673, "DevDiv")]
+        [WorkItem(546673, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546673")]
         [Fact]
         public void TestBreakInsideNonLocalScopeBinder()
         {
@@ -2205,7 +2234,7 @@ public class C
             CompileAndVerify(source, options: TestOptions.UnsafeReleaseExe, expectedOutput: "");
         }
 
-        [WorkItem(611904, "DevDiv")]
+        [WorkItem(611904, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/611904")]
         [Fact]
         public void LabelAtTopLevelInsideLambda()
         {
@@ -2250,7 +2279,7 @@ class Program
                 );
         }
 
-        [WorkItem(633927, "DevDiv")]
+        [WorkItem(633927, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/633927")]
         [Fact]
         public void Xyzzy()
         {
@@ -2283,7 +2312,7 @@ class Program
                 );
         }
 
-        [WorkItem(667368, "DevDiv")]
+        [WorkItem(667368, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/667368")]
         [Fact]
         public void RegressionTest667368()
         {
@@ -2317,7 +2346,7 @@ namespace ConsoleApplication1
                 );
         }
 
-        [WorkItem(690921, "DevDiv")]
+        [WorkItem(690921, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/690921")]
         [Fact]
         public void RegressionTest690921()
         {
@@ -2350,7 +2379,7 @@ namespace ConsoleApplication1
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(715338, "DevDiv")]
+        [WorkItem(715338, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/715338")]
         [Fact]
         public void RegressionTest715338()
         {
@@ -2372,7 +2401,7 @@ static class Program
             comp.VerifyDiagnostics();
         }
 
-        [WorkItem(808567, "DevDiv")]
+        [WorkItem(808567, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/808567")]
         [Fact]
         public void RegressionTest808567()
         {
@@ -2402,7 +2431,7 @@ class Derived2 : Base
                 );
         }
 
-        [WorkItem(949324, "DevDiv")]
+        [WorkItem(949324, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/949324")]
         [Fact]
         public void RegressionTest949324()
         {
@@ -2447,7 +2476,7 @@ class Derived2 : Base
         string s = k;
     }
 }";
-            CSharpCompilation comp = CreateCompilationWithMscorlib(source);
+            CSharpCompilation comp = CreateStandardCompilation(source);
             comp.VerifyDiagnostics(
                 // (8,9): error CS8070: Control cannot fall out of switch from final case label ('case 1:')
                 //         case 1:
@@ -2455,6 +2484,51 @@ class Derived2 : Base
                 // (10,20): error CS0165: Use of unassigned local variable 'k'
                 //         string s = k;
                 Diagnostic(ErrorCode.ERR_UseDefViolation, "k").WithArguments("k").WithLocation(10, 20)
+                );
+        }
+
+        [WorkItem(9581, "https://github.com/dotnet/roslyn/issues/9581")]
+        [Fact]
+        public void UsingSelfAssignment()
+        {
+            var source =
+@"class Program
+{
+    static void Main()
+    {
+        using (System.IDisposable x = x)
+        {
+        }
+    }
+}";
+            CSharpCompilation comp = CreateStandardCompilation(source);
+            comp.VerifyDiagnostics(
+                // (5,39): error CS0165: Use of unassigned local variable 'x'
+                //         using (System.IDisposable x = x)
+                Diagnostic(ErrorCode.ERR_UseDefViolation, "x").WithArguments("x").WithLocation(5, 39)
+                );
+        }
+
+        [Fact]
+        public void UsingAssignment()
+        {
+            var source =
+@"class Program
+{
+    static void Main()
+    {
+        using (System.IDisposable x = null)
+        {
+            System.Console.WriteLine(x.ToString());
+        }
+        using (System.IDisposable x = null, y = x)
+        {
+            System.Console.WriteLine(y.ToString());
+        }
+    }
+}";
+            CSharpCompilation comp = CreateStandardCompilation(source);
+            comp.VerifyDiagnostics(
                 );
         }
     }

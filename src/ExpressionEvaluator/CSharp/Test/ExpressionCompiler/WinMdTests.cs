@@ -292,9 +292,12 @@ class C
         }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         [WorkItem(1117084)]
         [ConditionalFact(typeof(OSVersionWin8))]
 =======
+=======
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
         [WorkItem(1117084, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1117084")]
         [Fact]
 >>>>>>> roslynOrigin/master

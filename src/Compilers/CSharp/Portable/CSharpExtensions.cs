@@ -9,7 +9,11 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Roslyn.Utilities;
 using System.ComponentModel;
+<<<<<<< HEAD
 using Microsoft.CodeAnalysis.Symbols;
+=======
+using Microsoft.CodeAnalysis.Syntax;
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
 
 namespace Microsoft.CodeAnalysis
 {
@@ -235,7 +239,7 @@ namespace Microsoft.CodeAnalysis.CSharp
             }
             else
             {
-                var builder = new Syntax.SyntaxTokenListBuilder(list.Count + items.Length);
+                var builder = new SyntaxTokenListBuilder(list.Count + items.Length);
                 if (index > 0)
                 {
                     builder.Add(list, 0, index);
@@ -620,7 +624,6 @@ namespace Microsoft.CodeAnalysis.CSharp
             }
         }
 
-
         public static TypeInfo GetTypeInfo(this SemanticModel semanticModel, SelectOrGroupClauseSyntax node, CancellationToken cancellationToken = default(CancellationToken))
         {
             var csmodel = semanticModel as CSharpSemanticModel;
@@ -711,6 +714,19 @@ namespace Microsoft.CodeAnalysis.CSharp
         }
 
         public static ForEachStatementInfo GetForEachStatementInfo(this SemanticModel semanticModel, ForEachStatementSyntax forEachStatement)
+        {
+            var csmodel = semanticModel as CSharpSemanticModel;
+            if (csmodel != null)
+            {
+                return csmodel.GetForEachStatementInfo(forEachStatement);
+            }
+            else
+            {
+                return default(ForEachStatementInfo);
+            }
+        }
+
+        public static ForEachStatementInfo GetForEachStatementInfo(this SemanticModel semanticModel, CommonForEachStatementSyntax forEachStatement)
         {
             var csmodel = semanticModel as CSharpSemanticModel;
             if (csmodel != null)
@@ -1204,6 +1220,24 @@ namespace Microsoft.CodeAnalysis.CSharp
         }
 
         /// <summary>
+        /// Given a syntax node of tuple expression, get the tuple type symbol.
+        /// </summary>
+        public static INamedTypeSymbol GetDeclaredSymbol(this SemanticModel semanticModel, TupleExpressionSyntax declaratorSyntax, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var csmodel = semanticModel as CSharpSemanticModel;
+            return csmodel?.GetDeclaredSymbol(declaratorSyntax, cancellationToken);
+        }
+
+        /// <summary>
+        /// Given a syntax node of a tuple argument, get the tuple element symbol.
+        /// </summary>
+        public static ISymbol GetDeclaredSymbol(this SemanticModel semanticModel, ArgumentSyntax declaratorSyntax, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var csmodel = semanticModel as CSharpSemanticModel;
+            return csmodel?.GetDeclaredSymbol(declaratorSyntax, cancellationToken);
+        }
+
+        /// <summary>
         /// Given a syntax node that declares a property or member accessor, get the corresponding symbol.
         /// </summary>
         public static IMethodSymbol GetDeclaredSymbol(this SemanticModel semanticModel, AccessorDeclarationSyntax declarationSyntax, CancellationToken cancellationToken = default(CancellationToken))
@@ -1215,7 +1249,25 @@ namespace Microsoft.CodeAnalysis.CSharp
         /// <summary>
         /// Given a variable declarator syntax, get the corresponding symbol.
         /// </summary>
+        public static ISymbol GetDeclaredSymbol(this SemanticModel semanticModel, SingleVariableDesignationSyntax designationSyntax, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var csmodel = semanticModel as CSharpSemanticModel;
+            return csmodel?.GetDeclaredSymbol(designationSyntax, cancellationToken);
+        }
+
+        /// <summary>
+        /// Given a variable declarator syntax, get the corresponding symbol.
+        /// </summary>
         public static ISymbol GetDeclaredSymbol(this SemanticModel semanticModel, VariableDeclaratorSyntax declarationSyntax, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var csmodel = semanticModel as CSharpSemanticModel;
+            return csmodel?.GetDeclaredSymbol(declarationSyntax, cancellationToken);
+        }
+
+        /// <summary>
+        /// Given a tuple element syntax, get the corresponding symbol.
+        /// </summary>
+        public static ISymbol GetDeclaredSymbol(this SemanticModel semanticModel, TupleElementSyntax declarationSyntax, CancellationToken cancellationToken = default(CancellationToken))
         {
             var csmodel = semanticModel as CSharpSemanticModel;
             return csmodel?.GetDeclaredSymbol(declarationSyntax, cancellationToken);

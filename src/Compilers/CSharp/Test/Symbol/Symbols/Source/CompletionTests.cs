@@ -65,7 +65,7 @@ class A {
     object P { get; set; }
     object this[object o] { get { return null; } set { } }
 }";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var a = global.GetMember<NamedTypeSymbol>("A");
@@ -101,7 +101,7 @@ class A {
         /// failed before the fix was applied.  Now it documents the former problem
         /// and gives us some level of confidence in the fix.
         /// </summary>
-        [Fact, WorkItem(546196, "DevDiv"), WorkItem(546604, "DevDiv")]
+        [Fact, WorkItem(546196, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546196"), WorkItem(546604, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546604")]
         public void TestNextCompletionPart()
         {
             SymbolCompletionState state = new SymbolCompletionState();

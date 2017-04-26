@@ -1,11 +1,12 @@
-// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
-using Microsoft.CodeAnalysis.FindSymbols;
+using Microsoft.CodeAnalysis.PatternMatching;
 using Microsoft.CodeAnalysis.Shared.Utilities;
 using Microsoft.CodeAnalysis.Text;
 using Roslyn.Test.Utilities;
@@ -15,79 +16,79 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Utilities
 {
     public class PatternMatcherTests
     {
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_EmptyIdentifier()
         {
             VerifyBreakIntoCharacterParts(string.Empty, Array.Empty<string>());
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_SimpleIdentifier()
         {
             VerifyBreakIntoCharacterParts("foo", "foo");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_PrefixUnderscoredIdentifier()
         {
             VerifyBreakIntoCharacterParts("_foo", "_", "foo");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_UnderscoredIdentifier()
         {
             VerifyBreakIntoCharacterParts("f_oo", "f", "_", "oo");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_PostfixUnderscoredIdentifier()
         {
             VerifyBreakIntoCharacterParts("foo_", "foo", "_");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_PrefixUnderscoredIdentifierWithCapital()
         {
             VerifyBreakIntoCharacterParts("_Foo", "_", "Foo");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_MUnderscorePrefixed()
         {
             VerifyBreakIntoCharacterParts("m_foo", "m", "_", "foo");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_CamelCaseIdentifier()
         {
             VerifyBreakIntoCharacterParts("FogBar", "Fog", "Bar");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_MixedCaseIdentifier()
         {
             VerifyBreakIntoCharacterParts("fogBar", "fog", "Bar");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_TwoCharacterCapitalIdentifier()
         {
             VerifyBreakIntoCharacterParts("UIElement", "U", "I", "Element");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_NumberSuffixedIdentifier()
         {
             VerifyBreakIntoCharacterParts("Foo42", "Foo", "42");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_NumberContainingIdentifier()
         {
             VerifyBreakIntoCharacterParts("Fog42Bar", "Fog", "42", "Bar");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoCharacterParts_NumberPrefixedIdentifier()
         {
             // 42Bar is not a valid identifier in either C# or VB, but it is entirely conceivable the user might be
@@ -95,62 +96,62 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Utilities
             VerifyBreakIntoCharacterParts("42Bar", "42", "Bar");
         }
 
-        [WpfFact]
-        [WorkItem(544296)]
+        [Fact]
+        [WorkItem(544296, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544296")]
         public void BreakIntoWordParts_VerbatimIdentifier()
         {
             VerifyBreakIntoWordParts("@int:", "int");
         }
 
-        [WpfFact]
-        [WorkItem(537875)]
+        [Fact]
+        [WorkItem(537875, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537875")]
         public void BreakIntoWordParts_AllCapsConstant()
         {
             VerifyBreakIntoWordParts("C_STYLE_CONSTANT", "C", "_", "STYLE", "_", "CONSTANT");
         }
 
-        [WpfFact]
-        [WorkItem(540087)]
+        [Fact]
+        [WorkItem(540087, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540087")]
         public void BreakIntoWordParts_SingleLetterPrefix1()
         {
             VerifyBreakIntoWordParts("UInteger", "U", "Integer");
         }
 
-        [WpfFact]
-        [WorkItem(540087)]
+        [Fact]
+        [WorkItem(540087, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540087")]
         public void BreakIntoWordParts_SingleLetterPrefix2()
         {
             VerifyBreakIntoWordParts("IDisposable", "I", "Disposable");
         }
 
-        [WpfFact]
-        [WorkItem(540087)]
+        [Fact]
+        [WorkItem(540087, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540087")]
         public void BreakIntoWordParts_TwoCharacterCapitalIdentifier()
         {
             VerifyBreakIntoWordParts("UIElement", "UI", "Element");
         }
 
-        [WpfFact]
-        [WorkItem(540087)]
+        [Fact]
+        [WorkItem(540087, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540087")]
         public void BreakIntoWordParts_XDocument()
         {
             VerifyBreakIntoWordParts("XDocument", "X", "Document");
         }
 
-        [WpfFact]
-        [WorkItem(540087)]
+        [Fact]
+        [WorkItem(540087, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540087")]
         public void BreakIntoWordParts_XMLDocument1()
         {
             VerifyBreakIntoWordParts("XMLDocument", "XML", "Document");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoWordParts_XMLDocument2()
         {
             VerifyBreakIntoWordParts("XmlDocument", "Xml", "Document");
         }
 
-        [WpfFact]
+        [Fact]
         public void BreakIntoWordParts_TwoUppercaseCharacters()
         {
             VerifyBreakIntoWordParts("SimpleUIElement", "Simple", "UI", "Element");
@@ -166,301 +167,115 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Utilities
             AssertEx.Equal(parts, BreakIntoCharacterParts(original));
         }
 
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveExact()
-        {
-            var match = TryMatchSingleWordPattern("Foo", "Foo");
+        private const bool CaseSensitive = true;
+        private const bool CaseInsensitive = !CaseSensitive;
 
-            Assert.Equal(PatternMatchKind.Exact, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
+        [Theory]
+        [InlineData("[|Foo|]", "Foo", PatternMatchKind.Exact, CaseSensitive)]
+        [InlineData("[|foo|]", "Foo", PatternMatchKind.Exact, CaseInsensitive)]
+        [InlineData("[|Foo|]", "foo", PatternMatchKind.Exact, CaseInsensitive)]
+
+        [InlineData("[|Fo|]o", "Fo", PatternMatchKind.Prefix, CaseSensitive)]
+        [InlineData("[|Fog|]Bar", "Fog", PatternMatchKind.Prefix, CaseSensitive)]
+
+        [InlineData("[|Fo|]o", "fo", PatternMatchKind.Prefix, CaseInsensitive)]
+        [InlineData("[|Fog|]Bar", "fog", PatternMatchKind.Prefix, CaseInsensitive)]
+        [InlineData("[|fog|]BarFoo", "Fog", PatternMatchKind.Prefix, CaseInsensitive)]
+
+        [InlineData("[|system.ref|]lection", "system.ref", PatternMatchKind.Prefix, CaseSensitive)]
+
+        [InlineData("Fog[|B|]ar", "b", PatternMatchKind.Substring, CaseInsensitive)]
+
+        [InlineData("_[|my|]Button", "my", PatternMatchKind.Substring, CaseSensitive)]
+        [InlineData("my[|_b|]utton", "_b", PatternMatchKind.Substring, CaseSensitive)]
+        [InlineData("_[|my|]button", "my", PatternMatchKind.Substring, CaseSensitive)]
+        [InlineData("_my[|_b|]utton", "_b", PatternMatchKind.Substring, CaseSensitive)]
+        [InlineData("_[|myb|]utton", "myb", PatternMatchKind.Substring, CaseSensitive)]
+        [InlineData("_[|myB|]utton", "myB", PatternMatchKind.Substring, CaseSensitive)]
+
+        [InlineData("my[|_B|]utton", "_b", PatternMatchKind.Substring, CaseInsensitive)]
+        [InlineData("_my[|_B|]utton", "_b", PatternMatchKind.Substring, CaseInsensitive)]
+        [InlineData("_[|myB|]utton", "myb", PatternMatchKind.Substring, CaseInsensitive)]
+
+        [InlineData("[|AbCd|]xxx[|Ef|]Cd[|Gh|]", "AbCdEfGh", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseMatchesFromStartBonus)]
+
+        [InlineData("A[|BCD|]EFGH", "bcd", PatternMatchKind.Substring, CaseInsensitive)]
+        [InlineData("Abcdefghij[|EfgHij|]", "efghij", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseContiguousBonus)]
+
+        [InlineData("[|F|]og[|B|]ar", "FB", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("[|Fo|]g[|B|]ar", "FoB", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("[|_f|]og[|B|]ar", "_fB", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("[|F|]og[|_B|]ar", "F_B", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("[|F|]og[|B|]ar", "fB", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("Baz[|F|]ogBar[|F|]oo[|F|]oo", "FFF", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.NoBonus)]
+        [InlineData("[|F|]og[|B|]arBaz", "FB", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("[|F|]og_[|B|]ar", "FB", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseMatchesFromStartBonus)]
+        [InlineData("[|F|]ooFlob[|B|]az", "FB", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseMatchesFromStartBonus)]
+        [InlineData("Bar[|F|]oo[|F|]oo[|F|]oo", "FFF", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseContiguousBonus)]
+        [InlineData("BazBar[|F|]oo[|F|]oo[|F|]oo", "FFF", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseContiguousBonus)]
+        [InlineData("[|Fo|]oBarry[|Bas|]il", "FoBas", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseMatchesFromStartBonus)]
+        [InlineData("[|F|]ogBar[|F|]oo[|F|]oo", "FFF", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseMatchesFromStartBonus)]
+
+        [InlineData("[|F|]og[|_B|]ar", "F_b", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("[|_F|]og[|B|]ar", "_fB", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("[|F|]og[|_B|]ar", "f_B", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("FogBar[|ChangedEventArgs|]", "changedeventargs", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseContiguousBonus)]
+
+        [InlineData("[|Si|]mple[|UI|]Element", "SiUI", PatternMatchKind.CamelCase, CaseSensitive, PatternMatcher.CamelCaseMaxWeight)]
+
+        [InlineData("_[|co|]deFix[|Pro|]vider", "copro", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.NoBonus)]
+        [InlineData("Code[|Fi|]xObject[|Pro|]vider", "fipro", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.NoBonus)]
+        [InlineData("[|Co|]de[|Fi|]x[|Pro|]vider", "cofipro", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("Code[|Fi|]x[|Pro|]vider", "fipro", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseContiguousBonus)]
+        [InlineData("[|Co|]deFix[|Pro|]vider", "copro", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMatchesFromStartBonus)]
+        [InlineData("[|co|]deFix[|Pro|]vider", "copro", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMatchesFromStartBonus)]
+        [InlineData("[|Co|]deFix_[|Pro|]vider", "copro", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMatchesFromStartBonus)]
+        [InlineData("[|C|]ore[|Ofi|]lac[|Pro|]fessional", "cofipro", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("[|C|]lear[|Ofi|]lac[|Pro|]fessional", "cofipro", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMaxWeight)]
+        [InlineData("[|CO|]DE_FIX_[|PRO|]VIDER", "copro", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMatchesFromStartBonus)]
+
+        [InlineData("my[|_b|]utton", "_B", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseContiguousBonus)]
+        [InlineData("[|_|]my_[|b|]utton", "_B", PatternMatchKind.CamelCase, CaseInsensitive, PatternMatcher.CamelCaseMatchesFromStartBonus)]
+        public void TestNonFuzzyMatch(
+            string candidate, string pattern, int matchKindInt, bool isCaseSensitive, int? camelCaseWeight = null)
+        {
+            var match = TestNonFuzzyMatch(candidate, pattern);
+            Assert.NotNull(match);
+
+            var matchKind = (PatternMatchKind)matchKindInt;
+            Assert.Equal(match.Value.Kind, matchKind);
+            Assert.Equal(match.Value.IsCaseSensitive, isCaseSensitive);
+
+            if (matchKind == PatternMatchKind.CamelCase)
+            {
+                Assert.NotNull(match.Value.CamelCaseWeight);
+                Assert.NotNull(camelCaseWeight);
+
+                Assert.Equal(match.Value.CamelCaseWeight, camelCaseWeight);
+            }
+            else
+            {
+                Assert.Null(match.Value.CamelCaseWeight);
+                Assert.Null(camelCaseWeight);
+            }
         }
 
-        [WpfFact]
-        public void TryMatchSingleWordPattern_SingleWordPreferCaseSensitiveExactInsensitive()
+        [Theory]
+        [InlineData("CodeFixObjectProvider", "ficopro")]
+        [InlineData("FogBar", "FBB")]
+        [InlineData("FogBarBaz", "ZZ")]
+        [InlineData("FogBar", "FoooB")]
+        [InlineData("FooActBarCatAlp", "FooAlpBarCat")]
+        [InlineData("Abcdefghijefghij", "efghij")]
+        [InlineData("Fog_Bar", "F__B")]
+        [InlineData("FogBarBaz", "FZ")]
+        [InlineData("_mybutton", "myB")]
+        [InlineData("FogBarChangedEventArgs", "changedeventarrrgh")]
+        [InlineData("runtime.native.system", "system.reflection")]
+        public void TestNonFuzzyMatch_NoMatch(string candidate, string pattern)
         {
-            var match = TryMatchSingleWordPattern("foo", "Foo");
-
-            Assert.Equal(PatternMatchKind.Exact, match.Value.Kind);
-            Assert.Equal(false, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitivePrefix()
-        {
-            var match = TryMatchSingleWordPattern("Foo", "Fo");
-
-            Assert.Equal(PatternMatchKind.Prefix, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitivePrefixCaseInsensitive()
-        {
-            var match = TryMatchSingleWordPattern("Foo", "fo");
-
-            Assert.Equal(PatternMatchKind.Prefix, match.Value.Kind);
-            Assert.Equal(false, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveCamelCaseMatchSimple()
-        {
-            var match = TryMatchSingleWordPattern("FogBar", "FB");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
-            Assert.InRange((int)match.Value.CamelCaseWeight, 1, int.MaxValue);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveCamelCaseMatchPartialPattern()
-        {
-            var match = TryMatchSingleWordPattern("FogBar", "FoB");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveCamelCaseMatchToLongPattern1()
-        {
-            var match = TryMatchSingleWordPattern("FogBar", "FBB");
-
+            var match = TestNonFuzzyMatch(candidate, pattern);
             Assert.Null(match);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveCamelCaseMatchToLongPattern2()
-        {
-            var match = TryMatchSingleWordPattern("FogBar", "FoooB");
-
-            Assert.Null(match);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_CamelCaseMatchPartiallyUnmatched()
-        {
-            var match = TryMatchSingleWordPattern("FogBarBaz", "FZ");
-
-            Assert.Null(match);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_CamelCaseMatchCompletelyUnmatched()
-        {
-            var match = TryMatchSingleWordPattern("FogBarBaz", "ZZ");
-
-            Assert.Null(match);
-        }
-
-        [WpfFact]
-        [WorkItem(544975)]
-        public void TryMatchSingleWordPattern_TwoUppercaseCharacters()
-        {
-            var match = TryMatchSingleWordPattern("SimpleUIElement", "SiUI");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.True(match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveLowercasePattern()
-        {
-            var match = TryMatchSingleWordPattern("FogBar", "b");
-
-            Assert.Equal(PatternMatchKind.Substring, match.Value.Kind);
-            Assert.False(match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveLowercasePattern2()
-        {
-            var match = TryMatchSingleWordPattern("FogBar", "fB");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(false, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveTryUnderscoredName()
-        {
-            var match = TryMatchSingleWordPattern("_fogBar", "_fB");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
-        }
-
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveTryUnderscoredName2()
-        {
-            var match = TryMatchSingleWordPattern("_fogBar", "fB");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveTryUnderscoredNameInsensitive()
-        {
-            var match = TryMatchSingleWordPattern("_FogBar", "_fB");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(false, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveMiddleUnderscore()
-        {
-            var match = TryMatchSingleWordPattern("Fog_Bar", "FB");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveMiddleUnderscore2()
-        {
-            var match = TryMatchSingleWordPattern("Fog_Bar", "F_B");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveMiddleUnderscore3()
-        {
-            var match = TryMatchSingleWordPattern("Fog_Bar", "F__B");
-
-            Assert.Null(match);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveMiddleUnderscore4()
-        {
-            var match = TryMatchSingleWordPattern("Fog_Bar", "f_B");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(false, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveMiddleUnderscore5()
-        {
-            var match = TryMatchSingleWordPattern("Fog_Bar", "F_b");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(false, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveRelativeWeights1()
-        {
-            var match1 = TryMatchSingleWordPattern("FogBarBaz", "FB");
-            var match2 = TryMatchSingleWordPattern("FooFlobBaz", "FB");
-
-            // We should prefer something that starts at the beginning if possible
-            Assert.InRange((int)match1.Value.CamelCaseWeight, (int)match2.Value.CamelCaseWeight + 1, int.MaxValue);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveRelativeWeights2()
-        {
-            var match1 = TryMatchSingleWordPattern("BazBarFooFooFoo", "FFF");
-            var match2 = TryMatchSingleWordPattern("BazFogBarFooFoo", "FFF");
-
-            // Contiguous things should also be preferred
-            Assert.InRange((int)match1.Value.CamelCaseWeight, (int)match2.Value.CamelCaseWeight + 1, int.MaxValue);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveRelativeWeights3()
-        {
-            var match1 = TryMatchSingleWordPattern("FogBarFooFoo", "FFF");
-            var match2 = TryMatchSingleWordPattern("BarFooFooFoo", "FFF");
-
-            // The weight of being first should be greater than the weight of being contiguous
-            Assert.InRange((int)match1.Value.CamelCaseWeight, (int)match2.Value.CamelCaseWeight + 1, int.MaxValue);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseInsensitiveBasicEquals()
-        {
-            var match = TryMatchSingleWordPattern("Foo", "foo");
-
-            Assert.Equal(PatternMatchKind.Exact, match.Value.Kind);
-            Assert.Equal(false, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseInsensitiveBasicEquals2()
-        {
-            var match = TryMatchSingleWordPattern("Foo", "Foo");
-
-            // Since it's actually case sensitive, we'll report it as such even though we didn't prefer it
-            Assert.Equal(PatternMatchKind.Exact, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseInsensitiveBasicPrefix()
-        {
-            var match = TryMatchSingleWordPattern("FogBar", "fog");
-
-            Assert.Equal(PatternMatchKind.Prefix, match.Value.Kind);
-            Assert.Equal(false, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseInsensitiveBasicPrefix2()
-        {
-            var match = TryMatchSingleWordPattern("FogBar", "Fog");
-
-            Assert.Equal(PatternMatchKind.Prefix, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseInsensitiveCamelCase1()
-        {
-            var match = TryMatchSingleWordPattern("FogBar", "FB");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseInsensitiveCamelCase2()
-        {
-            var match = TryMatchSingleWordPattern("FogBar", "fB");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(false, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseInsensitiveCamelCase3()
-        {
-            var match = TryMatchSingleWordPattern("fogBar", "fB");
-
-            Assert.Equal(PatternMatchKind.CamelCase, match.Value.Kind);
-            Assert.Equal(true, match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseSensitiveWhenPrefix()
-        {
-            var match = TryMatchSingleWordPattern("fogBarFoo", "Fog");
-
-            Assert.Equal(PatternMatchKind.Prefix, match.Value.Kind);
-            Assert.False(match.Value.IsCaseSensitive);
-        }
-
-        [WpfFact]
-        public void TryMatchSingleWordPattern_PreferCaseInsensitiveWhenPrefix()
-        {
-            var match = TryMatchSingleWordPattern("fogBarFoo", "Fog");
-
-            Assert.Equal(PatternMatchKind.Prefix, match.Value.Kind);
-            Assert.Equal(false, match.Value.IsCaseSensitive);
         }
 
         private void AssertContainsType(PatternMatchKind type, IEnumerable<PatternMatch> results)
@@ -468,188 +283,188 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Utilities
             Assert.True(results.Any(r => r.Kind == type));
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_ExactWithLowercase()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "addmetadatareference");
+            var match = TryMatchMultiWordPattern("[|AddMetadataReference|]", "addmetadatareference");
 
             AssertContainsType(PatternMatchKind.Exact, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_SingleLowercasedSearchWord1()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "add");
+            var match = TryMatchMultiWordPattern("[|Add|]MetadataReference", "add");
 
             AssertContainsType(PatternMatchKind.Prefix, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_SingleLowercasedSearchWord2()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "metadata");
+            var match = TryMatchMultiWordPattern("Add[|Metadata|]Reference", "metadata");
 
             AssertContainsType(PatternMatchKind.Substring, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_SingleUppercaseSearchWord1()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "Add");
+            var match = TryMatchMultiWordPattern("[|Add|]MetadataReference", "Add");
 
             AssertContainsType(PatternMatchKind.Prefix, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_SingleUppercaseSearchWord2()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "Metadata");
+            var match = TryMatchMultiWordPattern("Add[|Metadata|]Reference", "Metadata");
 
             AssertContainsType(PatternMatchKind.Substring, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_SingleUppercaseSearchLetter1()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "A");
+            var match = TryMatchMultiWordPattern("[|A|]ddMetadataReference", "A");
 
             AssertContainsType(PatternMatchKind.Prefix, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_SingleUppercaseSearchLetter2()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "M");
+            var match = TryMatchMultiWordPattern("Add[|M|]etadataReference", "M");
 
             AssertContainsType(PatternMatchKind.Substring, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_TwoLowercaseWords()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "add metadata");
+            var match = TryMatchMultiWordPattern("[|Add|][|Metadata|]Reference", "add metadata");
 
             AssertContainsType(PatternMatchKind.Prefix, match);
             AssertContainsType(PatternMatchKind.Substring, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_TwoUppercaseLettersSeparateWords()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "A M");
+            var match = TryMatchMultiWordPattern("[|A|]dd[|M|]etadataReference", "A M");
 
             AssertContainsType(PatternMatchKind.Prefix, match);
             AssertContainsType(PatternMatchKind.Substring, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_TwoUppercaseLettersOneWord()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "AM");
+            var match = TryMatchMultiWordPattern("[|A|]dd[|M|]etadataReference", "AM");
 
             AssertContainsType(PatternMatchKind.CamelCase, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_Mixed1()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "ref Metadata");
+            var match = TryMatchMultiWordPattern("Add[|Metadata|][|Ref|]erence", "ref Metadata");
 
             Assert.True(match.Select(m => m.Kind).SequenceEqual(new[] { PatternMatchKind.Substring, PatternMatchKind.Substring }));
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_Mixed2()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "ref M");
+            var match = TryMatchMultiWordPattern("Add[|M|]etadata[|Ref|]erence", "ref M");
 
             Assert.True(match.Select(m => m.Kind).SequenceEqual(new[] { PatternMatchKind.Substring, PatternMatchKind.Substring }));
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_MixedCamelCase()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "AMRe");
+            var match = TryMatchMultiWordPattern("[|A|]dd[|M|]etadata[|Re|]ference", "AMRe");
 
             AssertContainsType(PatternMatchKind.CamelCase, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_BlankPattern()
         {
             Assert.Null(TryMatchMultiWordPattern("AddMetadataReference", string.Empty));
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_WhitespaceOnlyPattern()
         {
             Assert.Null(TryMatchMultiWordPattern("AddMetadataReference", " "));
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_EachWordSeparately1()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "add Meta");
+            var match = TryMatchMultiWordPattern("[|Add|][|Meta|]dataReference", "add Meta");
 
             AssertContainsType(PatternMatchKind.Prefix, match);
             AssertContainsType(PatternMatchKind.Substring, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_EachWordSeparately2()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "Add meta");
+            var match = TryMatchMultiWordPattern("[|Add|][|Meta|]dataReference", "Add meta");
 
             AssertContainsType(PatternMatchKind.Prefix, match);
             AssertContainsType(PatternMatchKind.Substring, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_EachWordSeparately3()
         {
-            var match = TryMatchMultiWordPattern("AddMetadataReference", "Add Meta");
+            var match = TryMatchMultiWordPattern("[|Add|][|Meta|]dataReference", "Add Meta");
 
             AssertContainsType(PatternMatchKind.Prefix, match);
             AssertContainsType(PatternMatchKind.Substring, match);
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_MixedCasing1()
         {
             Assert.Null(TryMatchMultiWordPattern("AddMetadataReference", "mEta"));
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_MixedCasing2()
         {
             Assert.Null(TryMatchMultiWordPattern("AddMetadataReference", "Data"));
         }
 
-        [WpfFact]
+        [Fact]
         public void MatchMultiWordPattern_AsteriskSplit()
         {
-            var match = TryMatchMultiWordPattern("GetKeyWord", "K*W");
+            var match = TryMatchMultiWordPattern("Get[|K|]ey[|W|]ord", "K*W");
 
             Assert.True(match.Select(m => m.Kind).SequenceEqual(new[] { PatternMatchKind.Substring, PatternMatchKind.Substring }));
         }
 
-        [WorkItem(544628)]
-        [WpfFact]
+        [WorkItem(544628, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544628")]
+        [Fact]
         public void MatchMultiWordPattern_LowercaseSubstring1()
         {
             Assert.Null(TryMatchMultiWordPattern("Operator", "a"));
         }
 
-        [WorkItem(544628)]
-        [WpfFact]
+        [WorkItem(544628, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544628")]
+        [Fact]
         public void MatchMultiWordPattern_LowercaseSubstring2()
         {
-            var match = TryMatchMultiWordPattern("FooAttribute", "a");
+            var match = TryMatchMultiWordPattern("Foo[|A|]ttribute", "a");
             AssertContainsType(PatternMatchKind.Substring, match);
             Assert.False(match.First().IsCaseSensitive);
         }
 
-        [WpfFact]
+        [Fact]
         public void TryMatchSingleWordPattern_CultureAwareSingleWordPreferCaseSensitiveExactInsensitive()
         {
             var previousCulture = Thread.CurrentThread.CurrentCulture;
@@ -658,7 +473,7 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Utilities
 
             try
             {
-                var match = TryMatchSingleWordPattern("ioo", "\u0130oo"); // u0130 = Capital I with dot
+                var match = TestNonFuzzyMatch("[|ioo|]", "\u0130oo"); // u0130 = Capital I with dot
 
                 Assert.Equal(PatternMatchKind.Exact, match.Value.Kind);
                 Assert.False(match.Value.IsCaseSensitive);
@@ -669,34 +484,10 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Utilities
             }
         }
 
-        [WpfFact]
-        public void MatchAllLowerPattern1()
-        {
-            Assert.NotNull(TryMatchSingleWordPattern("FogBarChangedEventArgs", "changedeventargs"));
-        }
-
-        [WpfFact]
-        public void MatchAllLowerPattern2()
-        {
-            Assert.Null(TryMatchSingleWordPattern("FogBarChangedEventArgs", "changedeventarrrgh"));
-        }
-
-        [WpfFact]
-        public void MatchAllLowerPattern3()
-        {
-            Assert.NotNull(TryMatchSingleWordPattern("ABCDEFGH", "bcd"));
-        }
-
-        [WpfFact]
-        public void MatchAllLowerPattern4()
-        {
-            Assert.Null(TryMatchSingleWordPattern("AbcdefghijEfgHij", "efghij"));
-        }
-
         private static IList<string> PartListToSubstrings(string identifier, StringBreaks parts)
         {
-            List<string> result = new List<string>();
-            for (int i = 0; i < parts.Count; i++)
+            var result = new List<string>();
+            for (int i = 0, n = parts.GetCount(); i < n; i++)
             {
                 var span = parts[i];
                 result.Add(identifier.Substring(span.Start, span.Length));
@@ -706,23 +497,50 @@ namespace Microsoft.CodeAnalysis.Editor.UnitTests.Utilities
         }
 
         private static IList<string> BreakIntoCharacterParts(string identifier)
-        {
-            return PartListToSubstrings(identifier, StringBreaker.BreakIntoCharacterParts(identifier));
-        }
+            => PartListToSubstrings(identifier, StringBreaker.BreakIntoCharacterParts(identifier));
 
         private static IList<string> BreakIntoWordParts(string identifier)
-        {
-            return PartListToSubstrings(identifier, StringBreaker.BreakIntoWordParts(identifier));
-        }
+            => PartListToSubstrings(identifier, StringBreaker.BreakIntoWordParts(identifier));
 
-        private static PatternMatch? TryMatchSingleWordPattern(string candidate, string pattern)
+        private static PatternMatch? TestNonFuzzyMatch(string candidate, string pattern)
         {
-            return new PatternMatcher(pattern).MatchSingleWordPattern_ForTestingOnly(candidate);
+            MarkupTestFile.GetSpans(candidate, out candidate, out ImmutableArray<TextSpan> spans);
+
+            var match = new PatternMatcher(pattern).GetFirstMatch(candidate, includeMatchSpans: true);
+            if (match?.Kind == PatternMatchKind.Fuzzy)
+            {
+                match = null;
+            }
+
+            if (match == null)
+            {
+                Assert.True(spans.Length == 0);
+            }
+            else
+            {
+                Assert.Equal<TextSpan>(match.Value.MatchedSpans, spans);
+            }
+
+            return match;
         }
 
         private static IEnumerable<PatternMatch> TryMatchMultiWordPattern(string candidate, string pattern)
         {
-            return new PatternMatcher(pattern).GetMatches(candidate);
+            MarkupTestFile.GetSpans(candidate, out candidate, out ImmutableArray<TextSpan> expectedSpans);
+
+            var matches = new PatternMatcher(pattern).GetMatches(candidate, includeMatchSpans: true);
+
+            if (matches.IsDefaultOrEmpty)
+            {
+                Assert.True(expectedSpans.Length == 0);
+                return null;
+            }
+            else
+            {
+                var actualSpans = matches.SelectMany(m => m.MatchedSpans).OrderBy(s => s.Start).ToList();
+                Assert.Equal(expectedSpans, actualSpans);
+                return matches;
+            }
         }
     }
 }

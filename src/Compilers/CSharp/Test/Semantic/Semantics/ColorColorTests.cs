@@ -1,10 +1,14 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using System;
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Symbols;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp.Test.Utilities;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Test.Utilities;
+using Microsoft.CodeAnalysis.Text;
 using Roslyn.Test.Utilities;
 using Xunit;
 
@@ -139,7 +143,7 @@ class F
                 SymbolKind.Method, "void E.M(System.Int32 x)");
         }
 
-        [WorkItem(542642, "DevDiv")]
+        [WorkItem(542642, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542642")]
         [Fact]
         public void TestNonInitializedLocalOnLeft()
         {
@@ -153,7 +157,7 @@ class Color
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
 
             comp.VerifyDiagnostics(
                     // Dev10 does not give a warning about unused variable. Should we?
@@ -282,7 +286,7 @@ class F
             );
         }
 
-        [WorkItem(542407, "DevDiv")]
+        [WorkItem(542407, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542407")]
         [Fact]
         public void TestClassOnRight()
         {
@@ -577,7 +581,7 @@ class F
             // Can't use CheckExpressionAndParent because we're using alias.
 
             var tree = Parse(text);
-            var comp = CreateCompilationWithMscorlib(tree, new[] { TestReferences.NetFx.v4_0_30319.System_Core });
+            var comp = CreateStandardCompilation(tree, new[] { TestReferences.NetFx.v4_0_30319.System_Core });
             var model = comp.GetSemanticModel(tree);
 
             var expr = (IdentifierNameSyntax)GetExprSyntaxForBinding(GetExprSyntaxList(tree));
@@ -595,7 +599,7 @@ class F
 
         #endregion Aliases
 
-        [WorkItem(864605, "DevDiv")]
+        [WorkItem(864605, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/864605")]
         [Fact]
         public void TestTypeOrValueInMethodGroupIsExpression()
         {
@@ -617,7 +621,7 @@ class C
 ";
             var tree = Parse(text);
 
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics(
                 // (13,44): error CS0837: The first operand of an 'is' or 'as' operator may not be a lambda expression, anonymous method, or method group.
                 //         System.Console.WriteLine(/*<bind>*/Color/*</bind>*/.M is object);
@@ -720,7 +724,7 @@ class Program
             Assert.NotNull(info);
         }
 
-        [WorkItem(542642, "DevDiv")]
+        [WorkItem(542642, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542642")]
         [Fact]
         public void TestAliasNameCollisionMemberNameMatchesAlias01()
         {
@@ -759,7 +763,7 @@ class F
 );
         }
 
-        [WorkItem(542642, "DevDiv")]
+        [WorkItem(542642, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542642")]
         [Fact]
         public void TestAliasNameCollisionMemberNameMatchesAlias02()
         {
@@ -798,7 +802,7 @@ class F
 );
         }
 
-        [WorkItem(542642, "DevDiv")]
+        [WorkItem(542642, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542642")]
         [Fact]
         public void TestAliasNameCollisionMemberNameMatchesDefinition01()
         {
@@ -837,7 +841,7 @@ class F
 );
         }
 
-        [WorkItem(542642, "DevDiv")]
+        [WorkItem(542642, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542642")]
         [Fact]
         public void TestAliasNameCollisionMemberNameMatchesDefinition02()
         {
@@ -923,7 +927,7 @@ class C
                 SymbolKind.Method, "void C.Static()");
         }
 
-        [WorkItem(542642, "DevDiv")]
+        [WorkItem(542642, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542642")]
         [Fact]
         public void LambdaConversion()
         {
@@ -964,7 +968,7 @@ class Program
         var xs = var<int>.field;
     }
 }";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 // (9,13): warning CS0219: The variable 'var' is assigned but its value is never used
                 //         var var = "A";
                 Diagnostic(ErrorCode.WRN_UnreferencedVarAssg, "var").WithArguments("var"),
@@ -974,7 +978,7 @@ class Program
                 );
         }
 
-        [WorkItem(543551, "DevDiv")]
+        [WorkItem(543551, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/543551")]
         [Fact]
         public void FieldOfEnumType()
         {
@@ -994,10 +998,10 @@ class C
         }
     }
 }";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics();
+            CreateStandardCompilation(text).VerifyDiagnostics();
         }
 
-        [WorkItem(531386, "DevDiv")]
+        [WorkItem(531386, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/531386")]
         [Fact]
         public void AlternateTypeAndVariable()
         {
@@ -1020,7 +1024,7 @@ public class Program
         }
     }
 }";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics();
+            CreateStandardCompilation(text).VerifyDiagnostics();
         }
 
         #region Error cases
@@ -1047,7 +1051,7 @@ class F
 ";
             var tree = Parse(text);
 
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics(
             // (14,32): error CS1061: 'E' does not contain a definition for 'Q' and no extension method 'Q' accepting a first argument of type 'E' could be found (are you missing a using directive or an assembly reference?)
                 Diagnostic(ErrorCode.ERR_NoSuchMemberOrExtension, "Q").WithArguments("E", "Q"));
@@ -1092,7 +1096,7 @@ class F
 ";
             var tree = Parse(text);
 
-            var comp = CreateCompilationWithMscorlib(tree, new[] { TestReferences.NetFx.v4_0_30319.System_Core });
+            var comp = CreateStandardCompilation(tree, new[] { TestReferences.NetFx.v4_0_30319.System_Core });
             comp.VerifyDiagnostics(
             // (14,32): error CS1061: 'E' does not contain a definition for 'Q' and no extension method 'Q' accepting a first argument of type 'E' could be found (are you missing a using directive or an assembly reference?)
                 Diagnostic(ErrorCode.ERR_NoSuchMemberOrExtension, "Q").WithArguments("E", "Q"));
@@ -1137,7 +1141,7 @@ class F
 ";
             var tree = Parse(text);
 
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics(
             // (14,34): error CS1503: Argument 1: cannot convert from 'string' to 'int'
                 Diagnostic(ErrorCode.ERR_BadArgType, @"""Hello""").WithArguments("1", "string", "int"));
@@ -1182,7 +1186,7 @@ class F
 ";
             var tree = Parse(text);
 
-            var comp = CreateCompilationWithMscorlib(tree, new[] { TestReferences.NetFx.v4_0_30319.System_Core });
+            var comp = CreateStandardCompilation(tree, new[] { TestReferences.NetFx.v4_0_30319.System_Core });
             comp.VerifyDiagnostics(
             // (14,58): error CS0123: No overload for 'M' matches delegate 'System.Action<string>'
                 Diagnostic(ErrorCode.ERR_MethDelegateMismatch, "M").WithArguments("M", "System.Action<string>"));
@@ -1223,7 +1227,7 @@ class F
 ";
             var tree = Parse(text);
 
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics(
             // (10,19): error CS0079: The event 'F.E' can only appear on the left hand side of += or -=
                 Diagnostic(ErrorCode.ERR_BadEventUsageNoField, "E").WithArguments("F.E"));
@@ -1260,7 +1264,7 @@ enum Color
 ";
             var tree = Parse(text);
 
-            var comp = CreateCompilationWithMscorlib(tree);
+            var comp = CreateStandardCompilation(tree);
             comp.VerifyDiagnostics(
             // (6,18): error CS1061: 'int' does not contain a definition for 'Blue' and no extension method 'Blue' accepting a first argument of type 'int' could be found (are you missing a using directive or an assembly reference?)
                 Diagnostic(ErrorCode.ERR_NoSuchMemberOrExtension, "Blue").WithArguments("int", "Blue"));
@@ -1283,7 +1287,7 @@ enum Color
             Assert.Equal(0, parentInfo.CandidateSymbols.Length);
         }
 
-        [WorkItem(542586, "DevDiv")]
+        [WorkItem(542586, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542586")]
         [Fact]
         public void TestNestedNameCollisionType()
         {
@@ -1316,7 +1320,7 @@ class F
 );
         }
 
-        [WorkItem(542586, "DevDiv")]
+        [WorkItem(542586, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542586")]
         [Fact]
         public void TestNestedNameCollisionType02()
         {
@@ -1342,7 +1346,7 @@ class F
                 SymbolKind.Method, "void E.M(params System.Int32[] a)");
         }
 
-        [WorkItem(542586, "DevDiv")]
+        [WorkItem(542586, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542586")]
         [Fact]
         public void TestNestedNameCollisionValue()
         {
@@ -1375,7 +1379,7 @@ class F
 );
         }
 
-        [WorkItem(542642, "DevDiv")]
+        [WorkItem(542642, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542642")]
         [Fact]
         public void TestNameCollisionType()
         {
@@ -1402,7 +1406,7 @@ class F
                 Diagnostic(ErrorCode.WRN_UnreferencedVarAssg, "E").WithArguments("E"));
         }
 
-        [WorkItem(542642, "DevDiv")]
+        [WorkItem(542642, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542642")]
         [Fact]
         public void TestNameCollisionValue()
         {
@@ -1428,7 +1432,7 @@ class F
                 SymbolKind.Method, "void E.M(System.Int32 x)");
         }
 
-        [WorkItem(542039, "DevDiv")]
+        [WorkItem(542039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542039")]
         [Fact]
         public void FieldAndMethodSameName()
         {
@@ -1449,10 +1453,10 @@ class F
         static void Bar(D x) { }
     }
 }";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics();
+            CreateStandardCompilation(text).VerifyDiagnostics();
         }
 
-        [WorkItem(542039, "DevDiv")]
+        [WorkItem(542039, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/542039")]
         [Fact]
         public void TypeAndMethodSameName()
         {
@@ -1473,14 +1477,14 @@ class F
         static void Bar(int x) { }
     }
 }";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics();
+            CreateStandardCompilation(text).VerifyDiagnostics();
         }
 
         #endregion Error cases
 
         #region Regression cases
 
-        [WorkItem(546427, "DevDiv")]
+        [WorkItem(546427, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546427")]
         [Fact]
         public void ExtensionMethodWithColorColorReceiver()
         {
@@ -1539,7 +1543,7 @@ static class Test
 ");
         }
 
-        [WorkItem(938389, "DevDiv")]
+        [WorkItem(938389, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/938389")]
         [Fact]
         public void ShadowedTypeReceiver_1()
         {
@@ -1565,9 +1569,9 @@ namespace Foo
     }
 }";
 
-            var comp1 = CreateCompilationWithMscorlib(source1, options: TestOptions.ReleaseDll, assemblyName: System.Guid.NewGuid().ToString());
+            var comp1 = CreateStandardCompilation(source1, options: TestOptions.ReleaseDll, assemblyName: System.Guid.NewGuid().ToString());
             var ref1 = MetadataReference.CreateFromStream(comp1.EmitToStream());
-            var refIdentity = ((AssemblyMetadata)ref1.GetMetadata()).GetAssembly().Identity.ToString();
+            var refIdentity = ((AssemblyMetadata)ref1.GetMetadataNoCopy()).GetAssembly().Identity.ToString();
             CompileAndVerify(source2, new[] { ref1 }, expectedOutput: "42").VerifyDiagnostics(
                 // (8,16): warning CS0436: The type 'A' in '' conflicts with the imported type 'A' in '04f2260a-2ee6-4e74-938a-c47b6dc61d9c, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null'. Using the type defined in ''.
                 //         static A A { get { return null; } }
@@ -1580,7 +1584,7 @@ namespace Foo
                 Diagnostic(ErrorCode.WRN_SameFullNameThisAggAgg, "A").WithArguments("", "Foo.A", refIdentity, "Foo.A").WithLocation(12, 38));
         }
 
-        [WorkItem(938389, "DevDiv")]
+        [WorkItem(938389, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/938389")]
         [Fact]
         public void ShadowedTypeReceiver_2()
         {
@@ -1606,9 +1610,9 @@ namespace Foo
     }
 }";
 
-            var comp1 = CreateCompilationWithMscorlib(source1, options: TestOptions.ReleaseDll, assemblyName: System.Guid.NewGuid().ToString());
+            var comp1 = CreateStandardCompilation(source1, options: TestOptions.ReleaseDll, assemblyName: System.Guid.NewGuid().ToString());
             var ref1 = MetadataReference.CreateFromStream(comp1.EmitToStream());
-            var refIdentity = ((AssemblyMetadata)ref1.GetMetadata()).GetAssembly().Identity.ToString();
+            var refIdentity = ((AssemblyMetadata)ref1.GetMetadataNoCopy()).GetAssembly().Identity.ToString();
             CompileAndVerify(source2, new[] { ref1 }, expectedOutput: "42").VerifyDiagnostics(
                 // (8,16): warning CS0436: The type 'A' in '' conflicts with the imported type 'A' in '59c700fa-e88d-45e4-acec-fd0bae894f9d, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null'. Using the type defined in ''.
                 //         static A A { get { return new A(); } }
@@ -1618,7 +1622,7 @@ namespace Foo
                 Diagnostic(ErrorCode.WRN_SameFullNameThisAggAgg, "A").WithArguments("", "Foo.A", refIdentity, "Foo.A").WithLocation(8, 39));
         }
 
-        [WorkItem(938389, "DevDiv")]
+        [WorkItem(938389, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/938389")]
         [Fact]
         public void ShadowedTypeReceiver_3()
         {
@@ -1644,9 +1648,9 @@ namespace Foo
     }
 }";
 
-            var comp1 = CreateCompilationWithMscorlib(source1, options: TestOptions.ReleaseDll, assemblyName: System.Guid.NewGuid().ToString());
+            var comp1 = CreateStandardCompilation(source1, options: TestOptions.ReleaseDll, assemblyName: System.Guid.NewGuid().ToString());
             var ref1 = MetadataReference.CreateFromStream(comp1.EmitToStream());
-            var refIdentity = ((AssemblyMetadata)ref1.GetMetadata()).GetAssembly().Identity.ToString();
+            var refIdentity = ((AssemblyMetadata)ref1.GetMetadataNoCopy()).GetAssembly().Identity.ToString();
             CompileAndVerify(source2, new[] { ref1 }, expectedOutput: "42").VerifyDiagnostics(
                 // (8,16): warning CS0436: The type 'A' in '' conflicts with the imported type 'A' in '499975c2-0b0d-4d9b-8f1f-4d91133627db, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null'. Using the type defined in ''.
                 //         static A A { get { return null; } }
@@ -1659,7 +1663,7 @@ namespace Foo
                 Diagnostic(ErrorCode.WRN_SameFullNameThisAggAgg, "A").WithArguments("", "Foo.A", refIdentity, "Foo.A").WithLocation(12, 38));
         }
 
-        [WorkItem(938389, "DevDiv")]
+        [WorkItem(938389, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/938389")]
         [Fact]
         public void ShadowedTypeReceiver_4()
         {
@@ -1685,9 +1689,9 @@ namespace Foo
     }
 }";
 
-            var comp1 = CreateCompilationWithMscorlib(source1, options: TestOptions.ReleaseDll, assemblyName: System.Guid.NewGuid().ToString());
+            var comp1 = CreateStandardCompilation(source1, options: TestOptions.ReleaseDll, assemblyName: System.Guid.NewGuid().ToString());
             var ref1 = MetadataReference.CreateFromStream(comp1.EmitToStream());
-            var refIdentity = ((AssemblyMetadata)ref1.GetMetadata()).GetAssembly().Identity.ToString();
+            var refIdentity = ((AssemblyMetadata)ref1.GetMetadataNoCopy()).GetAssembly().Identity.ToString();
             CompileAndVerify(source2, new[] { ref1 }, expectedOutput: "42").VerifyDiagnostics(
                 // (8,16): warning CS0436: The type 'A' in '' conflicts with the imported type 'A' in 'cb07e894-1bb8-4db2-93ba-747f45e89f22, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null'. Using the type defined in ''.
                 //         static A A { get { return new A(); } }
@@ -1697,7 +1701,7 @@ namespace Foo
                 Diagnostic(ErrorCode.WRN_SameFullNameThisAggAgg, "A").WithArguments("", "Foo.A", refIdentity, "Foo.A").WithLocation(8, 39));
         }
 
-        [WorkItem(1095020, "DevDiv")]
+        [WorkItem(1095020, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1095020")]
         [Fact]
         public void RangeVariableColorColor()
         {
@@ -1729,6 +1733,89 @@ class X
             CompileAndVerify(comp, expectedOutput: "42");
         }
 
+        [WorkItem(5362, "https://github.com/dotnet/roslyn/issues/5362")]
+        [Fact]
+        public void TestColorColorSymbolInfoInArrowExpressionClauseSyntax()
+        {
+            const string source = @"public enum Lifetime
+{
+    Persistent,
+    Transient,
+    Scoped
+}
+public class Example
+{
+    public Lifetime Lifetime => Lifetime.Persistent;
+    //                          ^^^^^^^^
+}";
+            var analyzer = new ColorColorSymbolInfoInArrowExpressionClauseSyntaxAnalyzer();
+            CreateCompilationWithMscorlibAndSystemCore(source, options: TestOptions.ReleaseDll)
+                .VerifyAnalyzerOccurrenceCount(new[] { analyzer }, 0);
+
+            Assert.True(analyzer.ActionFired);
+        }
+
+        class ColorColorSymbolInfoInArrowExpressionClauseSyntaxAnalyzer : DiagnosticAnalyzer
+        {
+            public bool ActionFired { get; private set; }
+
+            private static readonly DiagnosticDescriptor Descriptor =
+               new DiagnosticDescriptor("XY0000", "Test", "Test", "Test", DiagnosticSeverity.Warning, true, "Test", "Test");
+
+            public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
+            => ImmutableArray.Create(Descriptor);
+
+            public override void Initialize(AnalysisContext context)
+            {
+                context.RegisterSyntaxNodeAction(HandleMemberAccessExpression, SyntaxKind.SimpleMemberAccessExpression);
+            }
+
+            private void HandleMemberAccessExpression(SyntaxNodeAnalysisContext context)
+            {
+                ActionFired = true;
+
+                var memberAccessExpression = context.Node as MemberAccessExpressionSyntax;
+
+                var actualSymbol = context.SemanticModel.GetSymbolInfo(memberAccessExpression.Expression);
+
+                Assert.Equal("Lifetime", actualSymbol.Symbol.ToTestDisplayString());
+                Assert.Equal(SymbolKind.NamedType, actualSymbol.Symbol.Kind);
+            }
+        }
+
+        [WorkItem(5362, "https://github.com/dotnet/roslyn/issues/5362")]
+        [Fact]
+        public void TestColorColorSymbolInfoInArrowExpressionClauseSyntax_2()
+        {
+            const string source = @"public enum Lifetime
+{
+    Persistent,
+    Transient,
+    Scoped
+}
+public class Example
+{
+    public Lifetime Lifetime => Lifetime.Persistent;
+    //                          ^^^^^^^^
+}";
+            var comp = CreateCompilationWithMscorlibAndSystemCore(source, options: TestOptions.ReleaseDll);
+            comp.VerifyDiagnostics();
+
+            var syntaxTree = comp.SyntaxTrees[0];
+            var syntaxRoot = syntaxTree.GetRoot();
+
+            var semanticModel = comp.GetSemanticModel(syntaxTree, false);
+
+            var memberAccess = syntaxRoot.DescendantNodes().Single(node => node.IsKind(SyntaxKind.SimpleMemberAccessExpression)) as MemberAccessExpressionSyntax;
+            Assert.Equal("Lifetime", memberAccess.Expression.ToString());
+            Assert.Equal("Lifetime.Persistent", memberAccess.ToString());
+
+            var actualSymbol = semanticModel.GetSymbolInfo(memberAccess.Expression);
+
+            Assert.Equal("Lifetime", actualSymbol.Symbol.ToTestDisplayString());
+            Assert.Equal(SymbolKind.NamedType, actualSymbol.Symbol.Kind);
+        }
+
         #endregion Regression cases
 
 
@@ -1742,7 +1829,7 @@ class X
         {
             var tree = Parse(text);
 
-            var comp = CreateCompilationWithMscorlib(tree, new[] { TestReferences.NetFx.v4_0_30319.System_Core });
+            var comp = CreateStandardCompilation(tree, new[] { TestReferences.NetFx.v4_0_30319.System_Core });
             comp.VerifyDiagnostics(expectedDiagnostics);
 
             var model = comp.GetSemanticModel(tree);
@@ -1762,7 +1849,7 @@ class X
             Assert.Equal(parentDisplayString, parentInfo.Symbol.ToTestDisplayString());
         }
 
-        [WorkItem(969006, "DevDiv")]
+        [WorkItem(969006, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/969006")]
         [Fact]
         public void Bug969006_1()
         {
@@ -1781,7 +1868,7 @@ class C
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             var tree = compilation.SyntaxTrees[0];
             var model1 = compilation.GetSemanticModel(tree);
@@ -1815,7 +1902,7 @@ class C
                 );
         }
 
-        [WorkItem(969006, "DevDiv"), WorkItem(1112493, "DevDiv")]
+        [WorkItem(969006, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/969006"), WorkItem(1112493, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1112493")]
         [Fact]
         public void Bug969006_2()
         {
@@ -1838,7 +1925,7 @@ class C
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             var tree = compilation.SyntaxTrees[0];
             var model1 = compilation.GetSemanticModel(tree);
@@ -1866,19 +1953,16 @@ class C
             Assert.Equal(SymbolKind.Local, symbolInfo.Symbol.Kind);
 
             compilation.VerifyDiagnostics(
-                // (11,9): error CS0822: Implicitly-typed variables cannot be constant
+                // (11,15): error CS0822: Implicitly-typed variables cannot be constant
                 //         const var E = E.A;
-                Diagnostic(ErrorCode.ERR_ImplicitlyTypedVariableCannotBeConst, "const var E = E.A;").WithLocation(11, 9),
-                // (11,23): error CS0110: The evaluation of the constant value for 'E' involves a circular definition
-                //         const var E = E.A;
-                Diagnostic(ErrorCode.ERR_CircConstValue, "E").WithArguments("E").WithLocation(11, 23),
+                Diagnostic(ErrorCode.ERR_ImplicitlyTypedVariableCannotBeConst, "var E = E.A").WithLocation(11, 15),
                 // (11,23): error CS0841: Cannot use local variable 'E' before it is declared
                 //         const var E = E.A;
                 Diagnostic(ErrorCode.ERR_VariableUsedBeforeDeclaration, "E").WithArguments("E").WithLocation(11, 23)
                 );
         }
 
-        [WorkItem(969006, "DevDiv")]
+        [WorkItem(969006, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/969006")]
         [Fact]
         public void Bug969006_3()
         {
@@ -1898,7 +1982,7 @@ class C
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             var tree = compilation.SyntaxTrees[0];
             var model1 = compilation.GetSemanticModel(tree);
@@ -1928,7 +2012,7 @@ class C
             compilation.VerifyDiagnostics();
         }
 
-        [WorkItem(969006, "DevDiv")]
+        [WorkItem(969006, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/969006")]
         [Fact]
         public void Bug969006_4()
         {
@@ -1948,7 +2032,7 @@ class C
 }
 ";
 
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
 
             var tree = compilation.SyntaxTrees[0];
             var model1 = compilation.GetSemanticModel(tree);
@@ -1974,12 +2058,9 @@ class C
             Assert.Equal("? E", symbolInfo.Symbol.ToTestDisplayString());
 
             compilation.VerifyDiagnostics(
-    // (11,17): error CS0841: Cannot use local variable 'E' before it is declared
-    //         var E = E.A;
-    Diagnostic(ErrorCode.ERR_VariableUsedBeforeDeclaration, "E").WithArguments("E").WithLocation(11, 17),
-    // (11,17): error CS0165: Use of unassigned local variable 'E'
-    //         var E = E.A;
-    Diagnostic(ErrorCode.ERR_UseDefViolation, "E").WithArguments("E").WithLocation(11, 17)
+                // (11,17): error CS0841: Cannot use local variable 'E' before it is declared
+                //         var E = E.A;
+                Diagnostic(ErrorCode.ERR_VariableUsedBeforeDeclaration, "E").WithArguments("E").WithLocation(11, 17)
                 );
         }
     }

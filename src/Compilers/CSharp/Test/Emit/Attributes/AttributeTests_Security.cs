@@ -20,7 +20,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
     {
         #region Functional Tests
 
-        [WorkItem(544918, "DevDiv")]
+        [WorkItem(544918, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544918")]
         [Fact]
         public void HostProtectionSecurityAttribute()
         {
@@ -63,7 +63,7 @@ public struct EventDescriptor
             CompileAndVerify(source, symbolValidator: attributeValidator(false), sourceSymbolValidator: attributeValidator(true));
         }
 
-        [Fact, WorkItem(544956, "DevDiv")]
+        [Fact, WorkItem(544956, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544956")]
         public void SuppressUnmanagedCodeSecurityAttribute()
         {
             string source = @"
@@ -76,7 +76,7 @@ class Foo
             CompileAndVerify(source);
         }
 
-        [WorkItem(544929, "DevDiv")]
+        [WorkItem(544929, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544929")]
         [Fact]
         public void PrincipalPermissionAttribute()
         {
@@ -96,7 +96,7 @@ class Program
     {
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (9,26): warning CS0618: 'System.Security.Permissions.SecurityAction.Deny' is obsolete: 'Deny is obsolete and will be removed in a future release of the .NET Framework. See http://go.microsoft.com/fwlink/?LinkID=155570 for more information.'
                 //     [PrincipalPermission(SecurityAction.Deny)]
                 Diagnostic(ErrorCode.WRN_DeprecatedSymbolStr, "SecurityAction.Deny").WithArguments("System.Security.Permissions.SecurityAction.Deny", "Deny is obsolete and will be removed in a future release of the .NET Framework. See http://go.microsoft.com/fwlink/?LinkID=155570 for more information."),
@@ -108,7 +108,7 @@ class Program
                 Diagnostic(ErrorCode.ERR_PrincipalPermissionInvalidAction, "SecurityAction.LinkDemand").WithArguments("SecurityAction.LinkDemand"));
         }
 
-        [WorkItem(544918, "DevDiv")]
+        [WorkItem(544918, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544918")]
         [Fact]
         public void CS7048ERR_SecurityAttributeMissingAction()
         {
@@ -135,7 +135,7 @@ class MySecurityAttribute : CodeAccessSecurityAttribute
 [MySecurityAttribute(a1: SecurityAction.Assert, x: 0)]
 public class C {}
 ";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (15,2): error CS7048: First argument to a security attribute must be a valid SecurityAction
                 // [MySecurityAttribute()]
                 Diagnostic(ErrorCode.ERR_SecurityAttributeMissingAction, "MySecurityAttribute"),
@@ -159,7 +159,7 @@ public class C {}
                 Diagnostic(ErrorCode.ERR_SecurityAttributeMissingAction, "MySecurityAttribute"));
         }
 
-        [WorkItem(544918, "DevDiv")]
+        [WorkItem(544918, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544918")]
         [Fact]
         public void CS7049ERR_SecurityAttributeInvalidAction()
         {
@@ -178,7 +178,7 @@ namespace N
         public int x;
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (9,6): error CS7036: There is no argument given that corresponds to the required formal parameter 'action' of 'System.Security.Permissions.PrincipalPermissionAttribute.PrincipalPermissionAttribute(System.Security.Permissions.SecurityAction)'
                 //     [PrincipalPermission()]                         // Invalid attribute constructor
@@ -197,7 +197,7 @@ namespace N
                 Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "PrincipalPermission").WithArguments("PrincipalPermission", "class, method").WithLocation(12, 10));
         }
 
-        [WorkItem(544918, "DevDiv")]
+        [WorkItem(544918, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544918")]
         [Fact]
         public void CS7049ERR_SecurityAttributeInvalidAction_02()
         {
@@ -222,7 +222,7 @@ namespace N
         public int x;
     }
 }";
-            var compilation = CreateCompilationWithMscorlib(source);
+            var compilation = CreateStandardCompilation(source);
             compilation.VerifyDiagnostics(
                 // (12,26): error CS7049: Security attribute 'MySecurityAttribute' has an invalid SecurityAction value '(SecurityAction)0'
                 //     [MySecurityAttribute((SecurityAction)0)]        // Invalid attribute argument
@@ -241,7 +241,7 @@ namespace N
                 Diagnostic(ErrorCode.ERR_AttributeOnBadSymbolType, "MySecurityAttribute").WithArguments("MySecurityAttribute", "assembly, class, struct, constructor, method").WithLocation(18, 10));
         }
 
-        [WorkItem(544918, "DevDiv")]
+        [WorkItem(544918, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544918")]
         [Fact]
         public void ValidSecurityAttributeActionsForAssembly()
         {
@@ -275,7 +275,7 @@ class MyCodeAccessSecurityAttribute : CodeAccessSecurityAttribute
             CompileAndVerify(source);
         }
 
-        [WorkItem(544918, "DevDiv")]
+        [WorkItem(544918, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544918")]
         [Fact]
         public void CS7050ERR_SecurityAttributeInvalidActionAssembly()
         {
@@ -312,7 +312,7 @@ class MyCodeAccessSecurityAttribute : CodeAccessSecurityAttribute
     public override IPermission CreatePermission() { return null; }
     public static void Main() {}
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (8,32): warning CS0618: 'System.Security.Permissions.SecurityAction.Deny' is obsolete: 'Deny is obsolete and will be removed in a future release of the .NET Framework. See http://go.microsoft.com/fwlink/?LinkID=155570 for more information.'
                 // [assembly: MySecurityAttribute(SecurityAction.Deny)]
                 Diagnostic(ErrorCode.WRN_DeprecatedSymbolStr, "SecurityAction.Deny").WithArguments("System.Security.Permissions.SecurityAction.Deny", "Deny is obsolete and will be removed in a future release of the .NET Framework. See http://go.microsoft.com/fwlink/?LinkID=155570 for more information."),
@@ -363,7 +363,7 @@ class MyCodeAccessSecurityAttribute : CodeAccessSecurityAttribute
                 Diagnostic(ErrorCode.ERR_SecurityAttributeInvalidActionAssembly, "SecurityAction.PermitOnly").WithArguments("SecurityAction.PermitOnly"));
         }
 
-        [WorkItem(544918, "DevDiv")]
+        [WorkItem(544918, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544918")]
         [Fact]
         public void ValidSecurityAttributeActionsForTypeOrMethod()
         {
@@ -420,7 +420,7 @@ class Test
             CompileAndVerify(source);
         }
 
-        [WorkItem(544918, "DevDiv")]
+        [WorkItem(544918, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/544918")]
         [Fact]
         public void CS7051ERR_SecurityAttributeInvalidActionTypeOrMethod()
         {
@@ -456,7 +456,7 @@ class Test
     [MyCodeAccessSecurityAttribute(SecurityAction.RequestRefuse)]
     public static void Main() {}
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (17,22): warning CS0618: 'System.Security.Permissions.SecurityAction.RequestMinimum' is obsolete: 'Assembly level declarative security is obsolete and is no longer enforced by the CLR by default. See http://go.microsoft.com/fwlink/?LinkID=155570 for more information.'
                 // [MySecurityAttribute(SecurityAction.RequestMinimum)]
                 Diagnostic(ErrorCode.WRN_DeprecatedSymbolStr, "SecurityAction.RequestMinimum").WithArguments("System.Security.Permissions.SecurityAction.RequestMinimum", "Assembly level declarative security is obsolete and is no longer enforced by the CLR by default. See http://go.microsoft.com/fwlink/?LinkID=155570 for more information."),
@@ -531,7 +531,7 @@ class Test
                 Diagnostic(ErrorCode.ERR_SecurityAttributeInvalidActionTypeOrMethod, "SecurityAction.RequestRefuse").WithArguments("SecurityAction.RequestRefuse"));
         }
 
-        [WorkItem(546623, "DevDiv")]
+        [WorkItem(546623, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546623")]
         [Fact]
         public void CS7070ERR_SecurityAttributeInvalidTarget()
         {
@@ -558,13 +558,13 @@ class MyPermissionAttribute : CodeAccessSecurityAttribute
         return null;
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (8,6): error CS7070: Security attribute 'MyPermission' is not valid on this declaration type. Security attributes are only valid on assembly, type and method declarations.
                 //     [MyPermission(SecurityAction.Demand)]
                 Diagnostic(ErrorCode.ERR_SecurityAttributeInvalidTarget, "MyPermission").WithArguments("MyPermission"));
         }
 
-        [WorkItem(546056, "DevDiv")]
+        [WorkItem(546056, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546056")]
         [Fact]
         public void TestMissingCodeAccessSecurityAttributeGeneratesNoErrors()
         {
@@ -661,7 +661,7 @@ namespace N
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll, assemblyName: "Test");
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll, assemblyName: "Test");
             compilation.VerifyDiagnostics();
             ValidateDeclSecurity(compilation,
                 new DeclSecurityEntry
@@ -713,7 +713,7 @@ namespace N
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
             compilation.VerifyDiagnostics();
             ValidateDeclSecurity(compilation,
                 new DeclSecurityEntry
@@ -752,7 +752,7 @@ namespace N
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
             compilation.VerifyDiagnostics();
             ValidateDeclSecurity(compilation,
                 new DeclSecurityEntry
@@ -804,7 +804,7 @@ namespace N
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
             compilation.VerifyDiagnostics();
             ValidateDeclSecurity(compilation,
                 new DeclSecurityEntry
@@ -855,7 +855,7 @@ namespace N
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
             compilation.VerifyDiagnostics();
             ValidateDeclSecurity(compilation,
                 new DeclSecurityEntry
@@ -914,7 +914,7 @@ namespace N
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
             compilation.VerifyDiagnostics();
             ValidateDeclSecurity(compilation,
                 new DeclSecurityEntry
@@ -979,7 +979,7 @@ namespace N2
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
             compilation.VerifyDiagnostics();
             ValidateDeclSecurity(compilation,
                 new DeclSecurityEntry
@@ -1040,7 +1040,7 @@ namespace N
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
             compilation.VerifyDiagnostics();
             ValidateDeclSecurity(compilation,
                 new DeclSecurityEntry
@@ -1102,7 +1102,7 @@ namespace N
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.ReleaseDll);
 
             compilation.VerifyDiagnostics(
                 // (4,31): warning CS0618: 'System.Security.Permissions.SecurityAction.RequestOptional' is obsolete: 'Assembly level declarative security is obsolete and is no longer enforced by the CLR by default. See http://go.microsoft.com/fwlink/?LinkID=155570 for more information.'
@@ -1203,7 +1203,7 @@ namespace N
     }
 }
 ";
-            var compilation = CreateCompilationWithMscorlib(source, options: TestOptions.UnsafeReleaseDll);
+            var compilation = CreateStandardCompilation(source, options: TestOptions.UnsafeReleaseDll);
             compilation.VerifyDiagnostics();
             ValidateDeclSecurity(compilation,
                 new DeclSecurityEntry
@@ -1364,7 +1364,7 @@ namespace N
             CompileAndVerify(source, options: TestOptions.UnsafeReleaseDll, symbolValidator: attributeValidator(false), sourceSymbolValidator: attributeValidator(true));
         }
 
-        [WorkItem(545084, "DevDiv"), WorkItem(529492, "DevDiv")]
+        [WorkItem(545084, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545084"), WorkItem(529492, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529492")]
         [Fact]
         public void PermissionSetAttribute_Fixup()
         {
@@ -1427,7 +1427,7 @@ public class MyClass
                 });
         }
 
-        [WorkItem(545084, "DevDiv"), WorkItem(529492, "DevDiv")]
+        [WorkItem(545084, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545084"), WorkItem(529492, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529492")]
         [Fact]
         public void CS7056ERR_PermissionSetAttributeInvalidFile()
         {
@@ -1439,7 +1439,7 @@ using System.Security.Permissions;
 public class MyClass 
 {
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (4,25): warning CS0618: 'System.Security.Permissions.SecurityAction.Deny' is obsolete: 'Deny is obsolete and will be removed in a future release of the .NET Framework. See http://go.microsoft.com/fwlink/?LinkID=155570 for more information.'
                 // [PermissionSetAttribute(SecurityAction.Deny, File = @"NonExistentFile.xml")]
                 Diagnostic(ErrorCode.WRN_DeprecatedSymbolStr, "SecurityAction.Deny").WithArguments("System.Security.Permissions.SecurityAction.Deny", "Deny is obsolete and will be removed in a future release of the .NET Framework. See http://go.microsoft.com/fwlink/?LinkID=155570 for more information."),
@@ -1454,7 +1454,7 @@ public class MyClass
                 Diagnostic(ErrorCode.ERR_PermissionSetAttributeInvalidFile, "File = null").WithArguments("<null>", "File").WithLocation(5, 46));
         }
 
-        [WorkItem(545084, "DevDiv"), WorkItem(529492, "DevDiv")]
+        [WorkItem(545084, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/545084"), WorkItem(529492, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/529492")]
         [Fact]
         public void CS7057ERR_PermissionSetAttributeFileReadError()
         {
@@ -1512,7 +1512,7 @@ public class MyClass
         #endregion
 
         [Fact]
-        [WorkItem(1034429)]
+        [WorkItem(1034429, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1034429")]
         public void CrashOnParamsInSecurityAttribute()
         {
             const string source = @"
@@ -1532,11 +1532,11 @@ public class A : CodeAccessSecurityAttribute
     {
     }
 }";
-            CreateCompilationWithMscorlib(source).GetDiagnostics();
+            CreateStandardCompilation(source).GetDiagnostics();
         }
 
         [Fact]
-        [WorkItem(1036339)]
+        [WorkItem(1036339, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1036339")]
         public void CrashOnOptionalParameterInSecurityAttribute()
         {
             const string source = @"
@@ -1550,7 +1550,7 @@ class A : CodeAccessSecurityAttribute
     {
     }
 }";
-            CreateCompilationWithMscorlib(source).VerifyDiagnostics(
+            CreateStandardCompilation(source).VerifyDiagnostics(
                 // (4,2): error CS7049: Security attribute 'A' has an invalid SecurityAction value '0'
                 // [A]
                 Diagnostic(ErrorCode.ERR_SecurityAttributeInvalidAction, "A").WithArguments("A", "0").WithLocation(4, 2),

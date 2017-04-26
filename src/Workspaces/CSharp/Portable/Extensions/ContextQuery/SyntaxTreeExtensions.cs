@@ -1260,6 +1260,23 @@ namespace Microsoft.CodeAnalysis.CSharp.Extensions.ContextQuery
             return false;
         }
 
+<<<<<<< HEAD
+=======
+        public static bool IsPatternContext(this SyntaxTree syntaxTree, SyntaxToken leftToken, int position)
+        {
+            leftToken = leftToken.GetPreviousTokenIfTouchingWord(position);
+
+            // case $$
+            // is $$
+            if (leftToken.IsKind(SyntaxKind.CaseKeyword, SyntaxKind.IsKeyword))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
         private static SyntaxToken FindTokenOnLeftOfNode(SyntaxNode node)
         {
             return node.FindTokenOnLeftOfPosition(node.SpanStart);

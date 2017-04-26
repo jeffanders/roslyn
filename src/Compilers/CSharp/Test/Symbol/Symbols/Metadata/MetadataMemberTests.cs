@@ -14,7 +14,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
 {
     public class MetadataMemberTests : CSharpTestBase
     {
-        private const string VTableGapClassIL = @"
+        private static readonly string VTableGapClassIL = @"
 .class public auto ansi beforefieldinit Class
        extends [mscorlib]System.Object
 {
@@ -139,16 +139,16 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
 } // end of class Interface
 ";
 
-        [WorkItem(537346, "DevDiv")]
+        [WorkItem(537346, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537346")]
         [Fact]
         public void MetadataMethodSymbolCtor01()
         {
             var text = "public class A {}";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
 
             var mscorlib = compilation.ExternalReferences[0];
             var mscorNS = compilation.GetReferencedAssemblySymbol(mscorlib);
-            Assert.Equal("mscorlib", mscorNS.Name);
+            Assert.Equal(RuntimeCorLibName.Name, mscorNS.Name);
             Assert.Equal(SymbolKind.Assembly, mscorNS.Kind);
             var ns1 = mscorNS.GlobalNamespace.GetMembers("System").Single() as NamespaceSymbol;
             var type1 = ns1.GetTypeMembers("StringComparer").Single() as NamedTypeSymbol;
@@ -174,12 +174,12 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.Empty(compilation.GetDeclarationDiagnostics());
         }
 
-        [WorkItem(537345, "DevDiv")]
+        [WorkItem(537345, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537345")]
         [Fact]
         public void MetadataMethodSymbol01()
         {
             var text = "public class A {}";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateCompilation(text, new[] { MscorlibRef });
 
             var mscorlib = compilation.ExternalReferences[0];
             var mscorNS = compilation.GetReferencedAssemblySymbol(mscorlib);
@@ -225,13 +225,13 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.Empty(compilation.GetDeclarationDiagnostics());
         }
 
-        [WorkItem(527150, "DevDiv")]
-        [WorkItem(527151, "DevDiv")]
+        [WorkItem(527150, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/527150")]
+        [WorkItem(527151, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/527151")]
         [Fact]
         public void MetadataParameterSymbol01()
         {
             var text = "public class A {}";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateCompilation(text, new[] { MscorlibRef });
 
             var mscorlib = compilation.ExternalReferences[0];
             var mscorNS = compilation.GetReferencedAssemblySymbol(mscorlib);
@@ -289,7 +289,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         public void MetadataMethodSymbolGen02()
         {
             var text = "public class A {}";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
 
             var mscorlib = compilation.ExternalReferences[0];
             var mscorNS = compilation.GetReferencedAssemblySymbol(mscorlib);
@@ -334,7 +334,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
         public void MetadataParameterSymbolGen02()
         {
             var text = "public class A {}";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
 
             var mscorlib = compilation.ExternalReferences[0];
             var mscorNS = compilation.GetReferencedAssemblySymbol(mscorlib);
@@ -373,7 +373,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UnitTests
             Assert.Empty(compilation.GetDeclarationDiagnostics());
         }
 
-        [WorkItem(537424, "DevDiv")]
+        [WorkItem(537424, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/537424")]
         [Fact]
         public void MetadataMethodStaticAndInstanceCtor()
         {
@@ -383,7 +383,7 @@ class C
     C() { }
     static C() { }
 }";
-            var compilation = CreateCompilationWithMscorlib(text);
+            var compilation = CreateStandardCompilation(text);
             Assert.False(compilation.GetDiagnostics().Any());
             var classC = compilation.SourceModule.GlobalNamespace.GetTypeMembers("C").Single();
             // NamedTypeSymbol.Constructors only contains instance constructors
@@ -465,7 +465,7 @@ class B {
         }
 
         // TODO: Update this test if we decide to include gaps in the symbol table for NoPIA (DevDiv #17472).
-        [WorkItem(546951, "DevDiv")]
+        [WorkItem(546951, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546951")]
         [Fact]
         public void VTableGapsNotInSymbolTable()
         {
@@ -496,7 +496,7 @@ class B {
             Assert.False(propWithoutSetter.MustCallMethodsDirectly);
         }
 
-        [WorkItem(546951, "DevDiv")]
+        [WorkItem(546951, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546951")]
         [Fact]
         public void CallVTableGap()
         {
@@ -541,7 +541,7 @@ class Test
                 Diagnostic(ErrorCode.ERR_AssgReadonlyProp, "c.SetterIsGap").WithArguments("Class.SetterIsGap"));
         }
 
-        [WorkItem(546951, "DevDiv")]
+        [WorkItem(546951, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/546951")]
         [Fact]
         public void ImplementVTableGap()
         {
@@ -589,7 +589,7 @@ class Explicit : Interface
                 Diagnostic(ErrorCode.ERR_InterfaceMemberNotFound, "_VtblGap1_1").WithArguments("Explicit._VtblGap1_1()"));
         }
 
-        [Fact, WorkItem(1094411, "DevDiv")]
+        [Fact, WorkItem(1094411, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1094411")]
         public void Bug1094411_01()
         {
             var source1 =
@@ -608,7 +608,7 @@ class Test
 ";
             var members = new[] { "F", "P", "E", "M" };
 
-            var comp1 = CreateCompilationWithMscorlib(source1, options: TestOptions.ReleaseDll);
+            var comp1 = CreateStandardCompilation(source1, options: TestOptions.ReleaseDll);
 
             var test1 = comp1.GetTypeByMetadataName("Test");
             var memberNames1 = new HashSet<string>(test1.MemberNames);
@@ -618,7 +618,7 @@ class Test
                 Assert.True(memberNames1.Contains(m), m);
             }
 
-            var comp2 = CreateCompilationWithMscorlib("", new[] { comp1.EmitToImageReference() });
+            var comp2 = CreateStandardCompilation("", new[] { comp1.EmitToImageReference() });
 
             var test2 = comp2.GetTypeByMetadataName("Test");
             var memberNames2 = new HashSet<string>(test2.MemberNames);
@@ -629,7 +629,7 @@ class Test
             }
         }
 
-        [Fact, WorkItem(1094411, "DevDiv")]
+        [Fact, WorkItem(1094411, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1094411")]
         public void Bug1094411_02()
         {
             var source1 =
@@ -648,7 +648,7 @@ class Test
 ";
             var members = new[] { "F", "P", "E", "M" };
 
-            var comp1 = CreateCompilationWithMscorlib(source1, options: TestOptions.ReleaseDll);
+            var comp1 = CreateStandardCompilation(source1, options: TestOptions.ReleaseDll);
 
             var test1 = comp1.GetTypeByMetadataName("Test");
             test1.GetMembers();
@@ -659,7 +659,7 @@ class Test
                 Assert.True(memberNames1.Contains(m), m);
             }
 
-            var comp2 = CreateCompilationWithMscorlib("", new[] { comp1.EmitToImageReference() });
+            var comp2 = CreateStandardCompilation("", new[] { comp1.EmitToImageReference() });
 
             var test2 = comp2.GetTypeByMetadataName("Test");
             test2.GetMembers();

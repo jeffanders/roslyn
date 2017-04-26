@@ -23,7 +23,7 @@ class C
     event System.Action E;
 }
 ";
-            var comp = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseWinMD);
+            var comp = CreateStandardCompilation(source, options: TestOptions.ReleaseWinMD);
             comp.VerifyDiagnostics(
                 // For the backing field and accessors:
 
@@ -58,7 +58,7 @@ class C
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseWinMD);
+            var comp = CreateStandardCompilation(source, options: TestOptions.ReleaseWinMD);
             comp.VerifyEmitDiagnostics(
                 // For the backing field and accessors:
 
@@ -100,7 +100,7 @@ class C
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseWinMD);
+            var comp = CreateStandardCompilation(source, options: TestOptions.ReleaseWinMD);
             comp.VerifyEmitDiagnostics(
                 // For the backing field and accessors:
 
@@ -142,7 +142,7 @@ class C
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(source, options: TestOptions.ReleaseWinMD);
+            var comp = CreateStandardCompilation(source, options: TestOptions.ReleaseWinMD);
             comp.VerifyEmitDiagnostics(
                 // For the backing field and accessors:
 
@@ -164,7 +164,7 @@ class C
             );
         }
 
-        [Fact(), WorkItem(1003193)]
+        [Fact(), WorkItem(1003193, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1003193")]
         public void InstanceFieldLikeEventAccessors()
         {
             var source = @"
@@ -200,7 +200,7 @@ class C
 }");
         }
 
-        [Fact(), WorkItem(1003193)]
+        [Fact(), WorkItem(1003193, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1003193")]
         public void StaticFieldLikeEventAccessors()
         {
             var source = @"
@@ -533,7 +533,7 @@ class C
         /// <remarks>
         /// I'm assuming this is why the final dev11 impl uses GetOrCreateEventRegistrationTokenTable.
         /// </remarks>
-        [WorkItem(1003193)]
+        [WorkItem(1003193, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1003193")]
         [Fact(Skip = "Issue #321")]
         public void FieldLikeEventSerialization()
         {
@@ -626,7 +626,7 @@ null
 B");
         }
 
-        [WorkItem(1079725)]
+        [WorkItem(1079725, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1079725")]
         [Fact]
         public void EventAssignmentExpression()
         {
@@ -647,7 +647,7 @@ B");
                 Diagnostic(ErrorCode.ERR_ImplicitlyTypedVariableAssignedBadValue, "f = E = null").WithArguments("void").WithLocation(7, 13));
         }
 
-        [WorkItem(1079725)]
+        [WorkItem(1079725, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/1079725")]
         [Fact]
         public void EventAssignmentExpression_SemanticModel()
         {

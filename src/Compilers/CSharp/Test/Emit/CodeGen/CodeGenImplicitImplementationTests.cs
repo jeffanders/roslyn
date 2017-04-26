@@ -744,7 +744,7 @@ Derived2.P.set";
             CompileAndVerify(source, expectedOutput: expectedOutput);
         }
 
-        [WorkItem(540410, "DevDiv")]
+        [WorkItem(540410, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540410")]
         [Fact]
         public void ImplementMultipleInterfaceWithCommonBase()
         {
@@ -814,14 +814,14 @@ class C1 : IInterface
     }
 }
 ";
-            CreateCompilationWithMscorlib(source)
+            CreateStandardCompilation(source)
                 .VerifyDiagnostics(
                     // (26,9): error CS0121: The call is ambiguous between the following methods or properties: 'IBase1.BaseFoo()' and 'IBase2.BaseFoo()'
                     //         ((IInterface)c).BaseFoo();
                     Diagnostic(ErrorCode.ERR_AmbigCall, "BaseFoo").WithArguments("IBase1.BaseFoo()", "IBase2.BaseFoo()"));
         }
 
-        [WorkItem(540410, "DevDiv")]
+        [WorkItem(540410, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540410")]
         [Fact]
         public void InterfaceDiamondInheritenceWithNewMember()
         {
@@ -2287,10 +2287,10 @@ D.M").VerifyDiagnostics(); // No errors
         /// </summary>
         private static CSharpCompilation CreateCompilationWithMscorlibAndReference(string libSource, string exeSource)
         {
-            var libComp = CreateCompilationWithMscorlib(libSource, options: TestOptions.ReleaseDll, assemblyName: "OtherAssembly");
+            var libComp = CreateStandardCompilation(libSource, options: TestOptions.ReleaseDll, assemblyName: "OtherAssembly");
             libComp.VerifyDiagnostics();
 
-            var exeComp = CreateCompilationWithMscorlib(exeSource, options: TestOptions.ReleaseExe, references: new[] { new CSharpCompilationReference(libComp) });
+            var exeComp = CreateStandardCompilation(exeSource, options: TestOptions.ReleaseExe, references: new[] { new CSharpCompilationReference(libComp) });
             exeComp.VerifyDiagnostics();
 
             return exeComp;

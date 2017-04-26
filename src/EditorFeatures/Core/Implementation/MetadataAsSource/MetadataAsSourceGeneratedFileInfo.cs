@@ -33,10 +33,7 @@ namespace Microsoft.CodeAnalysis.Editor.Implementation.MetadataAsSource
             this.TemporaryFilePath = Path.Combine(rootPath, directoryName, topLevelNamedType.Name + extension);
         }
 
-        public Encoding Encoding
-        {
-            get { return Encoding.UTF8; }
-        }
+        public Encoding Encoding => Encoding.UTF8;
 
         /// <summary>
         /// Creates a ProjectInfo to represent the fake project created for metadata as source documents.
@@ -78,9 +75,9 @@ namespace Microsoft.CodeAnalysis.Editor.Implementation.MetadataAsSource
             var projectInfo = ProjectInfo.Create(
                 projectId,
                 VersionStamp.Default,
-                "MetadataAsSourceProject",
-                AssemblyIdentity.Name,
-                LanguageName,
+                name: AssemblyIdentity.Name,
+                assemblyName: AssemblyIdentity.Name,
+                language: LanguageName,
                 compilationOptions: compilationOptions,
                 documents: new[] { assemblyInfoDocument, generatedDocument },
                 metadataReferences: References);

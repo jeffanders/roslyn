@@ -42,7 +42,7 @@ interface Interface
     void Method();
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var @base = (NamedTypeSymbol)global.GetMembers("Base").Single();
@@ -113,7 +113,7 @@ class Class : Interface
     public void Method() { }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var baseInterface = (NamedTypeSymbol)global.GetMembers("BaseInterface").Single();
@@ -169,7 +169,7 @@ class Class : Interface
     public int this[int x] { get { return 0; } }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var baseInterface = (NamedTypeSymbol)global.GetMembers("BaseInterface").Single();
@@ -227,15 +227,15 @@ class Class : Interface
 }
 ";
 
-            var comp1 = CreateCompilationWithMscorlib(text1);
+            var comp1 = CreateStandardCompilation(text1);
             var comp1ref = new CSharpCompilationReference(comp1);
             var refs = new System.Collections.Generic.List<MetadataReference>() { comp1ref };
 
-            var comp2 = CreateCompilationWithMscorlib(text2, references: refs, assemblyName: "Test2");
+            var comp2 = CreateStandardCompilation(text2, references: refs, assemblyName: "Test2");
             var comp2ref = new CSharpCompilationReference(comp2);
 
             refs.Add(comp2ref);
-            var comp = CreateCompilationWithMscorlib(text3, refs, assemblyName: "Test3");
+            var comp = CreateStandardCompilation(text3, refs, assemblyName: "Test3");
 
             var global = comp.GlobalNamespace;
 
@@ -299,15 +299,15 @@ class Class : Interface
 }
 ";
 
-            var comp1 = CreateCompilationWithMscorlib(text1);
+            var comp1 = CreateStandardCompilation(text1);
             var comp1ref = new CSharpCompilationReference(comp1);
             var refs = new System.Collections.Generic.List<MetadataReference>() { comp1ref };
 
-            var comp2 = CreateCompilationWithMscorlib(text2, references: refs, assemblyName: "Test2");
+            var comp2 = CreateStandardCompilation(text2, references: refs, assemblyName: "Test2");
             var comp2ref = new CSharpCompilationReference(comp2);
 
             refs.Add(comp2ref);
-            var comp = CreateCompilationWithMscorlib(text3, refs, assemblyName: "Test3");
+            var comp = CreateStandardCompilation(text3, refs, assemblyName: "Test3");
 
             var global = comp.GlobalNamespace;
 
@@ -365,7 +365,7 @@ class Class2 : Interface
     public static void Method<T>(T t, int i) { } //static methods don't participate
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var @interface = (NamedTypeSymbol)global.GetMembers("Interface").Single();
@@ -413,15 +413,15 @@ class Class2 : BaseClass //does not declare interface
 }
 ";
 
-            var comp1 = CreateCompilationWithMscorlib(text1);
+            var comp1 = CreateStandardCompilation(text1);
             var comp1ref = new CSharpCompilationReference(comp1);
             var refs = new System.Collections.Generic.List<MetadataReference>() { comp1ref };
 
-            var comp2 = CreateCompilationWithMscorlib(text2, references: refs, assemblyName: "Test2");
+            var comp2 = CreateStandardCompilation(text2, references: refs, assemblyName: "Test2");
             var comp2ref = new CSharpCompilationReference(comp2);
 
             refs.Add(comp2ref);
-            var comp = CreateCompilationWithMscorlib(text3, refs, assemblyName: "Test3");
+            var comp = CreateStandardCompilation(text3, refs, assemblyName: "Test3");
 
             var global = comp.GlobalNamespace;
 
@@ -498,7 +498,7 @@ class Class2 : BaseClass //does not declare interface
 {
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var baseInterface1 = (NamedTypeSymbol)global.GetMembers("BaseInterface1").Single();
@@ -566,7 +566,7 @@ class Class2 : BaseClass //does not declare interface
 {
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var @interface = (NamedTypeSymbol)global.GetMembers("Interface").Single();
@@ -616,7 +616,7 @@ class Class2 : BaseClass //does not declare interface
 {
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var @interface = (NamedTypeSymbol)global.GetMembers("Interface").Single();
@@ -667,7 +667,7 @@ class Class2 : BaseClass //does not declare interface
     public void Method() { }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var @interface = (NamedTypeSymbol)global.GetMembers("Interface").Single();
@@ -728,7 +728,7 @@ class Class2 : BaseClass //does not declare interface
     public new void NonVirtual() { }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var @interface = (NamedTypeSymbol)global.GetMembers("Interface").Single();
@@ -818,7 +818,7 @@ class DeclaringClass2 : NonDeclaringClass2, Interface
 {
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var @interface = (NamedTypeSymbol)global.GetMembers("Interface").Single();
@@ -900,7 +900,7 @@ public class Derived : Base, Interface
 {
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             Assert.False(comp.GetDiagnostics().Any(), string.Join("\n", comp.GetDiagnostics()));
@@ -961,12 +961,12 @@ public class Derived : Base, Interface
 {
 }
 ";
-            var comp1 = CreateCompilationWithMscorlib(text1,
+            var comp1 = CreateStandardCompilation(text1,
                 assemblyName: "OtherAssembly",
                 options: TestOptions.ReleaseDll);
             Assert.False(comp1.GetDiagnostics().Any(), string.Join("\n", comp1.GetDiagnostics()));
 
-            var comp2 = CreateCompilationWithMscorlib(text2,
+            var comp2 = CreateStandardCompilation(text2,
                 references: new MetadataReference[] { new CSharpCompilationReference(comp1) },
                 assemblyName: "SourceAssembly",
                 options: TestOptions.ReleaseDll);
@@ -1048,7 +1048,7 @@ class Class : CustomModifierOverridingD, Interface
 ";
             var ilAssemblyReference = TestReferences.SymbolsTests.CustomModifiers.Modifiers.dll;
 
-            var comp = CreateCompilationWithMscorlib(text, new MetadataReference[] { ilAssemblyReference });
+            var comp = CreateStandardCompilation(text, new MetadataReference[] { ilAssemblyReference });
             var global = comp.GlobalNamespace;
 
             Assert.False(comp.GetDiagnostics().Any());
@@ -1102,7 +1102,7 @@ class Class : ContainsStatic
 ";
             var ilAssemblyReference = TestReferences.SymbolsTests.Interface.StaticMethodInInterface;
 
-            var comp = CreateCompilationWithMscorlib(text, new[] { ilAssemblyReference });
+            var comp = CreateStandardCompilation(text, new[] { ilAssemblyReference });
 
             comp.VerifyDiagnostics(
                 // (5,25): error CS0539: 'Class.StaticMethod()' in explicit interface declaration is not a member of interface
@@ -1120,7 +1120,7 @@ class Class : ContainsStatic
 ";
             var ilAssemblyReference = TestReferences.SymbolsTests.Interface.StaticMethodInInterface;
 
-            var comp = CreateCompilationWithMscorlib(text, new[] { ilAssemblyReference });
+            var comp = CreateStandardCompilation(text, new[] { ilAssemblyReference });
 
             comp.VerifyDiagnostics();
         }
@@ -1141,7 +1141,7 @@ public class c2 : c1, I1
     public override int bar { get { return 2; } }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
             var type = comp.GlobalNamespace.GetTypeMembers("c2").Single();
             Assert.NotEmpty(type.Interfaces);
@@ -1165,10 +1165,10 @@ partial class Base
     public void Method1() { }
 }
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics();
+            CreateStandardCompilation(text).VerifyDiagnostics();
         }
 
-        [WorkItem(540451, "DevDiv")]
+        [WorkItem(540451, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540451")]
         /// <summary>
         /// I -> M(ref int)
         /// B -> M(out int)
@@ -1208,7 +1208,7 @@ class Program
 }
 ";
 
-            var comp = CreateCompilationWithMscorlib(csharp);
+            var comp = CreateStandardCompilation(csharp);
             comp.VerifyDiagnostics(
                 // (15,7): error CS0535: 'Derived' does not implement interface member 'Interface.M(ref int)'
                 Diagnostic(ErrorCode.ERR_UnimplementedInterfaceMember, "Interface").WithArguments("Derived", "Interface.M(ref int)"));
@@ -1220,7 +1220,7 @@ class Program
         // I source, B source, D metadata - skip: metadata implementing source
         // public void TestSourceMetadataImplicitImplementation2()
 
-        [WorkItem(540451, "DevDiv")]
+        [WorkItem(540451, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540451")]
         /// <summary>
         /// I -> M(ref int)
         /// B -> M(out int)
@@ -1291,7 +1291,7 @@ class Program
         // I source, B metadata, D metadata - skip: metadata implementing source
         // public void TestSourceMetadataImplicitImplementation4()
 
-        [WorkItem(540451, "DevDiv")]
+        [WorkItem(540451, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540451")]
         /// <summary>
         /// I -> M(ref int)
         /// B -> M(out int)
@@ -1347,7 +1347,7 @@ class Program
         // I metadata, B source, D metadata - skip: metadata extending source
         // public void TestSourceMetadataImplicitImplementation6()
 
-        [WorkItem(540451, "DevDiv")]
+        [WorkItem(540451, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540451")]
         /// <summary>
         /// I -> M(ref int)
         /// B -> M(out int)
@@ -1419,7 +1419,7 @@ class Program
                 global.GetMember<NamedTypeSymbol>("Interface").GetMember<MethodSymbol>("M")));
         }
 
-        [WorkItem(528858, "DevDiv")]
+        [WorkItem(528858, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528858")]
         [Fact(Skip = "528858")]
         public void InconsistentTypeParameters()
         {
@@ -1438,7 +1438,7 @@ class C : I<int>.I2 { }
                 Diagnostic(ErrorCode.ERR_BogusType));
         }
 
-        [WorkItem(528901, "DevDiv")]
+        [WorkItem(528901, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528901")]
         [Fact(Skip = "528901")]
         public void BaseInterfacesWithWeirdNamesCanBeImplementedThroughInterfaceInheritance()
         {
@@ -1453,7 +1453,7 @@ class C : B { }
             CompileWithCustomILSource(csharp, il);
         }
 
-        [WorkItem(540451, "DevDiv")]
+        [WorkItem(540451, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540451")]
         /// <summary>
         /// I -> M(ref int)
         /// B -> M(out int)
@@ -1541,7 +1541,7 @@ class Program
                     global.GetMember<NamedTypeSymbol>("Interface").GetMember<MethodSymbol>("M")));
         }
 
-        [WorkItem(540451, "DevDiv")]
+        [WorkItem(540451, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540451")]
         [Fact]
         public void TestImplementRefParamWithOutParam()
         {
@@ -1555,7 +1555,7 @@ class C1 : I1
     public void Foo(ref int x) { }
 }
 ";
-            CreateCompilationWithMscorlib(text).VerifyDiagnostics(
+            CreateStandardCompilation(text).VerifyDiagnostics(
                 Diagnostic(ErrorCode.ERR_UnimplementedInterfaceMember, "I1").WithArguments("C1", "I1.Foo(out int)"));
         }
 
@@ -1581,7 +1581,7 @@ static class Program
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             comp.VerifyDiagnostics();
 
             var typeSymbol = comp.GlobalNamespace.GetTypeMembers("C1").Single();
@@ -1595,7 +1595,7 @@ static class Program
             Assert.Equal(fooMethod, typeSymbol.FindImplementationForInterfaceMember(secondInterfaceMethod));
         }
 
-        [WorkItem(540558, "DevDiv")]
+        [WorkItem(540558, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540558")]
         /// <summary>
         /// In this case, C# thinks B.M implements I.M for C, but the CLR thinks A.M does.  To make sure that we get the
         /// desired behavior, we have to insert an explicit bridge method.
@@ -1622,7 +1622,7 @@ class B : A
 
 class C : B, I { }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var @interface = global.GetMember<NamedTypeSymbol>("I");
@@ -1655,7 +1655,7 @@ class C : B, I { }
             Assert.Equal(classBMethod, synthesizedExplicitImpl.ImplementingMethod);
         }
 
-        [WorkItem(540558, "DevDiv")]
+        [WorkItem(540558, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/540558")]
         /// <summary>
         /// In this case, C# thinks B.M implements I.M for C, but the CLR thinks A.M does.  However,
         /// B.M overrides A.M, so there's no problem (distinguish from TestCSharpClrDisagreement_NonOverride).
@@ -1682,7 +1682,7 @@ class B : A
 
 class C : B, I { }
 ";
-            var comp = CreateCompilationWithMscorlib(text);
+            var comp = CreateStandardCompilation(text);
             var global = comp.GlobalNamespace;
 
             var @interface = global.GetMember<NamedTypeSymbol>("I");
@@ -1777,7 +1777,7 @@ class D : I
             Assert.Equal("void D.set_Item(System.Int32 x, System.Int32 value)", classD.FindImplementationForInterfaceMember(interfaceSetter).ToTestDisplayString());
         }
 
-        [WorkItem(528898, "DevDiv")]
+        [WorkItem(528898, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528898")]
         [ClrOnlyFact]
         public void GenericTypeWithObsoleteBangAritySuffixIsNotAvailable()
         {
@@ -1802,7 +1802,7 @@ class C : object, B.I<string>
             CompileWithCustomILSource(csharpSource, ilSource);
         }
 
-        [WorkItem(528913, "DevDiv")]
+        [WorkItem(528913, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/528913")]
         [Fact(Skip = "528913")]
         public void StaticTypesCannotBeUsedAsTypeArgumentsInInterfacesImplementedThroughInterfaceInheritance()
         {
@@ -1820,7 +1820,7 @@ class D : C { }
                 Diagnostic(ErrorCode.ERR_GenericArgIsStaticClass, "B"));
         }
 
-        [WorkItem(530224, "DevDiv")]
+        [WorkItem(530224, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530224")]
         [Fact]
         public void IsMetadataVirtualBeforeForceComplete()
         {
@@ -1848,7 +1848,7 @@ class Base
     }
 }
 ";
-            var comp = CreateCompilationWithMscorlib(source);
+            var comp = CreateStandardCompilation(source);
 
             var global = comp.GlobalNamespace;
 
@@ -1886,11 +1886,11 @@ class D : B, I
 {
 }
 ";
-            var comp1 = CreateCompilationWithMscorlib(source1, options: TestOptions.ReleaseDll, assemblyName: "asm1");
+            var comp1 = CreateStandardCompilation(source1, options: TestOptions.ReleaseDll, assemblyName: "asm1");
             comp1.VerifyDiagnostics();
             var ref1 = new CSharpCompilationReference(comp1);
 
-            var comp2 = CreateCompilationWithMscorlib(source2, new[] { ref1 }, options: TestOptions.ReleaseDll, assemblyName: "asm2");
+            var comp2 = CreateStandardCompilation(source2, new[] { ref1 }, options: TestOptions.ReleaseDll, assemblyName: "asm2");
             comp2.VerifyDiagnostics();
 
             var derivedType = comp2.GlobalNamespace.GetMember<SourceNamedTypeSymbol>("D");
@@ -1898,7 +1898,7 @@ class D : B, I
             Assert.Equal("NonVirtual", bridgeMethod.ImplementingMethod.Name);
         }
 
-        [WorkItem(530358, "DevDiv")]
+        [WorkItem(530358, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530358")]
         [Fact]
         public void ExplicitImplementationWithoutInterfaceInName()
         {
@@ -1972,7 +1972,7 @@ class Derived : Base, I2
         }
 
         [Fact]
-        [WorkItem(530164, "DevDiv"), WorkItem(531642, "DevDiv"), WorkItem(531643, "DevDiv")]
+        [WorkItem(530164, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/530164"), WorkItem(531642, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/531642"), WorkItem(531643, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/531643")]
         public void ImplicitImplementationOfByRefReturn()
         {
             var il = @"
@@ -2025,14 +2025,9 @@ public class D : B, I
 
             var derivedType = global.GetMember<SourceNamedTypeSymbol>("D");
 
-            var byRefType = (ByRefReturnErrorTypeSymbol)interfaceMethod.ReturnType;
-
-            // General characteristics of type:
-            Assert.NotEqual(byRefType, byRefType.ReferencedType);
-            Assert.NotEqual(byRefType.GetHashCode(), byRefType.ReferencedType.GetHashCode());
-
             // Interface implementation:
-            Assert.Equal(byRefType, interfaceMethod.ReturnType);
+            Assert.Equal(RefKind.Ref, interfaceMethod.RefKind);
+            Assert.Equal(RefKind.Ref, baseMethod.RefKind);
             Assert.Equal(baseMethod, derivedType.FindImplementationForInterfaceMember(interfaceMethod));
 
             var synthesized = derivedType.GetSynthesizedExplicitImplementations(CancellationToken.None).Single();
@@ -2052,13 +2047,10 @@ public class D : B, I
 }
 ";
 
-            CreateCompilationWithCustomILSource(source2, il).VerifyDiagnostics(
-                // (7,17): error CS7085: By-reference return type 'ref int' is not supported.
-                //         var x = i.M();
-                Diagnostic(ErrorCode.ERR_ByRefReturnUnsupported, "M").WithArguments("int"));
+            CreateCompilationWithCustomILSource(source2, il).VerifyDiagnostics();
         }
 
-        [WorkItem(547149, "DevDiv")]
+        [WorkItem(547149, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/547149")]
         [Fact]
         public void BaseTypeDoesNotActuallyImplementInterface()
         {
@@ -2103,7 +2095,7 @@ class Derived2 : Base2, Interface
 
             // Base1 is in metadata, so we just trust it when it claims to implement Interface.
             // Base2 is identical, but in source.  We produce errors for both Base2 and Derived2.
-            CreateCompilationWithMscorlib(source, new[] { ilRef }).VerifyDiagnostics(
+            CreateStandardCompilation(source, new[] { ilRef }).VerifyDiagnostics(
                 // (6,7): error CS0535: 'Base2' does not implement interface member 'Interface.M()'
                 // class Base2 : Interface
                 Diagnostic(ErrorCode.ERR_UnimplementedInterfaceMember, "Interface").WithArguments("Base2", "Interface.M()"),
@@ -2112,7 +2104,7 @@ class Derived2 : Base2, Interface
                 Diagnostic(ErrorCode.ERR_UnimplementedInterfaceMember, "Interface").WithArguments("Derived2", "Interface.M()"));
         }
 
-        [WorkItem(718115, "DevDiv")]
+        [WorkItem(718115, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/718115")]
         [ClrOnlyFact]
         public void ExplicitlyImplementedAccessorsWithoutEvent()
         {
@@ -2236,7 +2228,7 @@ Explicit implementation
             Assert.Null(baseType.FindImplementationForInterfaceMember(interfaceEvent));
         }
 
-        [WorkItem(718115, "DevDiv")]
+        [WorkItem(718115, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/718115")]
         [Fact]
         public void ExplicitlyImplementedParameterizedPropertyAccessor()
         {
@@ -2311,7 +2303,7 @@ public class Derived : Base, I
             Assert.Equal(derivedGetter, derivedType.FindImplementationForInterfaceMember(interfaceGetter));
         }
 
-        [WorkItem(943542, "DevDiv"), WorkItem(137, "CodePlex")]
+        [WorkItem(943542, "http://vstfdevdiv:8080/DevDiv2/DevDiv/_workitems/edit/943542"), WorkItem(137, "CodePlex")]
         [ClrOnlyFact]
         public void Bug943542()
         {

@@ -1353,6 +1353,12 @@ namespace Microsoft.CodeAnalysis.CSharp.EditAndContinue
                 case SyntaxKind.RefExpression:
                 case SyntaxKind.DeclarationPattern:
                 case SyntaxKind.SimpleAssignmentExpression:
+<<<<<<< HEAD
+=======
+                case SyntaxKind.WhenClause:
+                case SyntaxKind.SingleVariableDesignation:
+                case SyntaxKind.CasePatternSwitchLabel:
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
                     return node.Span;
 
                 default:

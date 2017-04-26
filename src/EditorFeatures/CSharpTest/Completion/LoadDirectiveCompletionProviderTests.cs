@@ -19,7 +19,7 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Completion
         {
         }
 
-        internal override CompletionListProvider CreateCompletionProvider()
+        internal override CompletionProvider CreateCompletionProvider()
         {
             return new LoadDirectiveCompletionProvider();
         }
@@ -29,16 +29,15 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Completion
             return actualItem.Equals(expectedItem, StringComparison.OrdinalIgnoreCase);
         }
 
-        protected override Task VerifyWorkerAsync(string code, int position, string expectedItemOrNull, string expectedDescriptionOrNull, SourceCodeKind sourceCodeKind, bool usePreviousCharAsTrigger, bool checkForAbsence, bool experimental, int? glyph)
+        protected override Task VerifyWorkerAsync(
+            string code, int position, string expectedItemOrNull, string expectedDescriptionOrNull,
+            SourceCodeKind sourceCodeKind, bool usePreviousCharAsTrigger, bool checkForAbsence, 
+            int? glyph, int? matchPriority, bool? hasSuggestionItem)
         {
-            return BaseVerifyWorkerAsync(code,
-                position,
-                expectedItemOrNull,
-                expectedDescriptionOrNull,
-                sourceCodeKind,
-                usePreviousCharAsTrigger,
-                checkForAbsence,
-                glyph);
+            return BaseVerifyWorkerAsync(
+                code, position, expectedItemOrNull, expectedDescriptionOrNull,
+                sourceCodeKind, usePreviousCharAsTrigger, checkForAbsence,
+                glyph, matchPriority, hasSuggestionItem);
         }
 
         private async Task VerifyItemExistsInScriptAsync(string markup, string expected)
@@ -51,7 +50,7 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Completion
             await VerifyItemIsAbsentAsync(markup, expected, expectedDescriptionOrNull: null, sourceCodeKind: SourceCodeKind.Script, usePreviousCharAsTrigger: false);
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Completion)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Completion)]
         public async Task NetworkPath()
         {
             await VerifyItemExistsInScriptAsync(
@@ -59,7 +58,7 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Completion
                 @"\\");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Completion)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Completion)]
         public async Task NetworkPathAfterInitialBackslash()
         {
             await VerifyItemExistsInScriptAsync(
@@ -67,7 +66,7 @@ namespace Microsoft.CodeAnalysis.Editor.CSharp.UnitTests.Completion
                 @"\\");
         }
 
-        [WpfFact, Trait(Traits.Feature, Traits.Features.Completion)]
+        [Fact, Trait(Traits.Feature, Traits.Features.Completion)]
         public async Task UpOneDirectoryNotShownAtRoot()
         {
             // after so many ".." we should be at the root drive an should no longer suggest the parent.  we can determine

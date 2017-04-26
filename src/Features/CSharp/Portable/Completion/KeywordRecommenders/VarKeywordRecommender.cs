@@ -19,7 +19,12 @@ namespace Microsoft.CodeAnalysis.CSharp.Completion.KeywordRecommenders
         {
             if (context.IsStatementContext ||
                 context.IsGlobalStatementContext ||
+<<<<<<< HEAD
                 context.IsPossibleTupleContext)
+=======
+                context.IsPossibleTupleContext ||
+                context.IsPatternContext)
+>>>>>>> 865fef487a864b6fe69ab020e32218c87befdd00
             {
                 return true;
             }
